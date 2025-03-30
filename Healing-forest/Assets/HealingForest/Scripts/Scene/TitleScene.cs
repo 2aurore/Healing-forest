@@ -17,14 +17,14 @@ namespace HF
                 yield return null;
             }
 
-            // UIManager.Show<TitleUI>(UIList.TitleUI);
+            UIManager.Show<TitleUI>(UIList.TitleUI);
         }
 
         public override IEnumerator OnEnd()
         {
             yield return null;
 
-            // UIManager.Hide<TitleUI>(UIList.TitleUI);
+            UIManager.Hide<TitleUI>(UIList.TitleUI);
         }
     }
 }
