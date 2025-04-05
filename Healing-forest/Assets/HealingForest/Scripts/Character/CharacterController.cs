@@ -24,7 +24,7 @@ namespace HF
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
 
-            // linkedCharacter.IsRunning = Input.GetKey(KeyCode.LeftShift);
+            linkedCharacter.IsRunning = Input.GetKey(KeyCode.LeftShift);
 
             Vector2 input = new Vector2(horizontal, vertical);
             linkedCharacter.Move(input);
