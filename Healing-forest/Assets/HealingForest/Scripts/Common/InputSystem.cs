@@ -8,30 +8,22 @@ namespace HF
     {
         public bool IsForceCursorVisible { get; set; }
 
-        private bool isCommonCursorVisible = false;
 
+        public System.Action OnLeftMouseButtonDown;
+        public System.Action OnRightMouseButtonDown;
         public System.Action OnEscapeInput;
         public System.Action OnTab;
         public System.Action<float> OnScrollWheel;
 
         private void Start()
         {
-            // SetCursorVisible(false);
         }
 
         private void Update()
         {
-            // 인게임 마우스 숨김 부분
-            // IsForceCursorVisible = Input.GetKey(KeyCode.LeftAlt);
-            // if (IsForceCursorVisible)
-            // {
-            //     Cursor.lockState = CursorLockMode.None;
-            //     Cursor.visible = true;
-            // }
-            // else
-            // {
-            //     SetCursorVisible(isCommonCursorVisible);
-            // }
+            // 마우스 버튼 입력 처리
+            if (Input.GetMouseButtonDown(0)) OnLeftMouseButtonDown?.Invoke();
+            if (Input.GetMouseButtonDown(1)) OnRightMouseButtonDown?.Invoke();
 
             if (Input.GetKeyUp(KeyCode.Escape))
             {
@@ -54,19 +46,6 @@ namespace HF
 
         }
 
-        public void SetCursorVisible(bool isVisible)
-        {
-            isCommonCursorVisible = isVisible;
-            if (isVisible)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-        }
+
     }
 }
