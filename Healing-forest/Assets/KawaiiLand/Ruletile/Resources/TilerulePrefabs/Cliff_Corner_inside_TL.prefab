@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3346082899631619903}
   - component: {fileID: 4308633695441035515}
   - component: {fileID: 7115404423366739958}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cliff_Corner_inside_TL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
