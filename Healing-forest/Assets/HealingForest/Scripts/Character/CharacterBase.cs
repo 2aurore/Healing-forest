@@ -11,6 +11,7 @@ namespace HF
 
         public bool IsRunning { get; set; }
         public bool IsCrouching { get; set; }
+        public bool IsProgressingAction { get; set; }
 
         public Animator animator;
         public float moveSpeed = 2f;    // 이동 속도
@@ -35,6 +36,11 @@ namespace HF
 
         public void Move(Vector2 input)
         {
+            if (IsProgressingAction)
+            {
+                // 액션 진행 중에는 이동을 하지 않음
+                return;
+            }
 
             animationParameterSpeed = input.sqrMagnitude > 0f ? IsRunning ? 3f : 0.5f : 0f;
             animationParameterHorizontal = input.x;
@@ -57,6 +63,20 @@ namespace HF
                 transform.position += transform.forward * dynamicMoveSpeed * Time.deltaTime;
             }
 
+        }
+
+        public void Action(float yAxis)
+        {
+            if (IsProgressingAction)
+            {
+                // 이미 액션을 진행 중인 경우에는 아무것도 하지 않음
+                return;
+            }
+
+            IsProgressingAction = true;
+            // TODO: 들고있는 도구에 따라 다른 애니메이터 실행하도록 구현 필요
+            transform.rotation = Quaternion.Euler(0f, yAxis, 0f);
+            animator.Play("Pickax(PropA)");
         }
     }
 }
