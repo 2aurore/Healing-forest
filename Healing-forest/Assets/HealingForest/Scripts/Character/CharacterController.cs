@@ -38,15 +38,6 @@ namespace HF
             // linkedCharacter.Rotate(mouseX);
         }
 
-        private void InitializeTools()
-        {
-            // 툴 초기화 로직
-            if (linkedCharacter.equippedTool != null)
-            {
-                linkedCharacter.SetToolDataDTO(GameDataModel.Singleton.ToolDataDTO);
-            }
-        }
-
         private void LeftMouseButtonEvent()
         {
             // 마우스 포인터 방향으로 액션 수행하도록 적용

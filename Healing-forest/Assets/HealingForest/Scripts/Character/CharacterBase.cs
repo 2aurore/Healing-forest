@@ -12,13 +12,13 @@ namespace HF
         public bool IsCrouching { get; set; }
         public bool IsProgressingAction { get; set; }
         public bool IsGrounded { get; set; }
-        public ToolDataDTO toolDataDTO { get; private set; } = new ToolDataDTO(); // 툴 데이터 DTO
-        public GameObject equippedTool { get; private set; } // 장착된 툴 데이터;
 
 
         public Animator animator;
         public float moveSpeed = 2f;    // 이동 속도
         public float rotationSpeed = 10f; // 회전 속도
+        public ToolDataSO currentToolData = null; // 툴 ID
+        public GameObject equippedTool = null; // 장착된 툴 데이터;
 
 
         [SerializeField] private GameObject toolPosition; // 툴을 장착할 위치
@@ -106,11 +106,13 @@ namespace HF
 
         public void EquipTool(string toolID)
         {
+
             // toolId가 null인 경우에는 툴을 제거하고 애니메이터의 ToolType을 0으로 설정
             if (toolID == null)
             {
                 Destroy(equippedTool);
 
+                this.currentToolData = null;
                 equippedTool = null;
                 animator.SetInteger("ToolType", 0);
                 return;
@@ -123,18 +125,14 @@ namespace HF
                 Destroy(equippedTool);
             }
 
-            ToolDataSO toolData = GameDataModel.Singleton.GetToolData(toolID);
-            animator.SetInteger("ToolType", toolData.Tool_Type == "PropA" ? 1 : 2);
-            equippedTool = Instantiate(toolData.Visual_Prefab, toolPosition.transform);
+            currentToolData = GameDataModel.Singleton.GetToolData(toolID);
+            animator.SetInteger("ToolType", currentToolData.Tool_Type == "PropA" ? 1 : 2);
+            equippedTool = Instantiate(currentToolData.Visual_Prefab, toolPosition.transform);
             equippedTool.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             equippedTool.transform.SetParent(toolPosition.transform); // 툴을 툴 포지션의 자식으로 설정
         }
 
-        public void SetToolDataDTO(ToolDataDTO toolDataDTO)
-        {
-            // 툴 데이터 DTO 설정
-            this.toolDataDTO = toolDataDTO;
-        }
+
 
         public void Action(float yAxis)
         {
@@ -144,14 +142,36 @@ namespace HF
                 return;
             }
 
+            if (currentToolData == null)
+            {
+                // 툴이 장착되어 있지 않은 경우에는 아무것도 하지 않음
+                Debug.Log("Tool is not equipped.");
+                // TODO: 앞에 나무가 있는지 체크하고 나무인 경우 액션과 아이템, 잡초인 경우 액션 다르게 설정
+                return;
+            }
+
+
             // 애니메이터의 Upper Body Layer의 Weight를 0으로 설정
             int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
             animator.SetLayerWeight(upperBodyLayerIndex, 0f);
 
             IsProgressingAction = true;
-            // TODO: 들고있는 도구에 따라 다른 애니메이터 실행하도록 구현 필요
             transform.rotation = Quaternion.Euler(0f, yAxis, 0f);
-            animator.Play("Pickax(PropA)");
+
+            if (currentToolData.Tool_Name == "FishingRod")
+            {
+                if (!IsGrounded)
+                {
+                    // 앞이 Ground가 아닌 상태에서만 낚시대를 던질 수 있음
+                    // TODO: 낚시대 던지는 애니메이션 재생
+                    Debug.Log("Can use Fishing Rod while not grounded.");
+                    return;
+                }
+            }
+            else
+            {
+                animator.Play($"Action {currentToolData.Tool_Name}");
+            }
         }
     }
 }
