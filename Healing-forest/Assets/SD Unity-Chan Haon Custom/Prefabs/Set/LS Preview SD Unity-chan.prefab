@@ -414,7 +414,6 @@ GameObject:
   m_Component:
   - component: {fileID: 679278111240313229}
   - component: {fileID: 679278111240313227}
-  - component: {fileID: 679278111240313226}
   m_Layer: 0
   m_Name: GuideDummy Prop_R
   m_TagString: Untagged
@@ -430,13 +429,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 679278111240313228}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.04944535, y: 0.039220955, z: -0.77464974, w: 0.62923336}
+  m_LocalRotation: {x: 0.06160892, y: -0.0137004815, z: 0.00084575836, w: 0.998006}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8371405442995453601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 7.065, y: -1.573, z: 0}
 --- !u!23 &679278111240313227
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -479,30 +478,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!102 &679278111240313226
-TextMesh:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 679278111240313228}
-  m_Text: 'Prop_R
-
-'
-  m_OffsetZ: 0
-  m_CharacterSize: 0.02
-  m_LineSpacing: 1
-  m_Anchor: 0
-  m_Alignment: 0
-  m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 0
-  m_RichText: 1
-  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Color:
-    serializedVersion: 2
-    rgba: 4278190080
 --- !u!1 &679278111526630334
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ namespace HF
         private void Start()
         {
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
-            // InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
+            InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
         }
 
         private void Update()
@@ -36,8 +36,15 @@ namespace HF
             Vector2 input = new Vector2(horizontal, vertical);
             linkedCharacter.Move(input);
             // linkedCharacter.Rotate(mouseX);
+        }
 
-
+        private void InitializeTools()
+        {
+            // 툴 초기화 로직
+            if (linkedCharacter.equippedTool != null)
+            {
+                linkedCharacter.SetToolDataDTO(GameDataModel.Singleton.ToolDataDTO);
+            }
         }
 
         private void LeftMouseButtonEvent()
@@ -52,6 +59,30 @@ namespace HF
                 float yAxisAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
                 linkedCharacter.Action(yAxisAngle);
             }
+        }
+
+        private void RightMouseButtonEvent()
+        {
+            int toolDataCount = GameDataModel.Singleton.ToolDataCount;
+            int currentToolIndex = GameDataModel.Singleton.currentToolIndex;
+            if (toolDataCount > 0)
+            {
+                // 툴 데이터가 존재할 경우 툴 장착
+                if (currentToolIndex >= toolDataCount)
+                {
+                    // 툴 데이터가 모두 장착된 경우, 다시 처음으로 돌아감
+                    linkedCharacter.EquipTool(null);
+                    GameDataModel.Singleton.currentToolIndex = 0;
+                }
+                else
+                {
+                    linkedCharacter.EquipTool(GameDataModel.Singleton.toolOrder[GameDataModel.Singleton.currentToolIndex]);
+                    GameDataModel.Singleton.currentToolIndex = GameDataModel.Singleton.currentToolIndex + 1;
+                }
+
+
+            }
+
         }
     }
 }

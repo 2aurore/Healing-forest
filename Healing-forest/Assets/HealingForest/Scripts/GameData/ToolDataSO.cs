@@ -8,11 +8,10 @@ namespace HF
     public class ToolDataSO : ScriptableObject
     {
 
-        public string toolId;
-        public string toolType;
-        public string toolName;
-        public GameObject visualPrefab; // 툴 프리팹
-
+        public string Tool_ID;
+        public string Tool_Type;
+        public string Tool_Name;
+        public GameObject Visual_Prefab; // 툴 프리팹
 
     }
 }

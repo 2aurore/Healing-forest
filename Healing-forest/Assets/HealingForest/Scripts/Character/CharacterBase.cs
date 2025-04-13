@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace HF
 {
@@ -11,16 +12,18 @@ namespace HF
         public bool IsCrouching { get; set; }
         public bool IsProgressingAction { get; set; }
         public bool IsGrounded { get; set; }
+        public ToolDataDTO toolDataDTO { get; private set; } = new ToolDataDTO(); // 툴 데이터 DTO
+        public GameObject equippedTool { get; private set; } // 장착된 툴 데이터;
 
 
         public Animator animator;
         public float moveSpeed = 2f;    // 이동 속도
         public float rotationSpeed = 10f; // 회전 속도
 
-        public GameObject toolPosition; // 툴을 장착할 위치
 
+        [SerializeField] private GameObject toolPosition; // 툴을 장착할 위치
         [SerializeField] private Transform groundCheckPoint; // 바닥 체크를 위한 위치
-        [SerializeField] private float rayDistance = 0.2f; // 레이 길이
+        [SerializeField] private float rayDistance = 0.2f; // 바닥 체크 레이 길이
         [SerializeField] private LayerMask groundLayer; // Ground 레이어 마스크
 
         private float animationParameterSpeed;
@@ -98,6 +101,39 @@ namespace HF
                 }
             }
 
+        }
+
+
+        public void EquipTool(string toolID)
+        {
+            // toolId가 null인 경우에는 툴을 제거하고 애니메이터의 ToolType을 0으로 설정
+            if (toolID == null)
+            {
+                Destroy(equippedTool);
+
+                equippedTool = null;
+                animator.SetInteger("ToolType", 0);
+                return;
+            }
+
+            // 툴 데이터 설정
+            if (equippedTool != null)
+            {
+                // 기존 툴 제거
+                Destroy(equippedTool);
+            }
+
+            ToolDataSO toolData = GameDataModel.Singleton.GetToolData(toolID);
+            animator.SetInteger("ToolType", toolData.Tool_Type == "PropA" ? 1 : 2);
+            equippedTool = Instantiate(toolData.Visual_Prefab, toolPosition.transform);
+            equippedTool.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            equippedTool.transform.SetParent(toolPosition.transform); // 툴을 툴 포지션의 자식으로 설정
+        }
+
+        public void SetToolDataDTO(ToolDataDTO toolDataDTO)
+        {
+            // 툴 데이터 DTO 설정
+            this.toolDataDTO = toolDataDTO;
         }
 
         public void Action(float yAxis)
