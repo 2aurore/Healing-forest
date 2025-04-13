@@ -7,7 +7,7 @@ namespace HF
     public class CharacterController : MonoBehaviour
     {
         public CharacterBase linkedCharacter;
-        public LayerMask groundLayer;
+        [SerializeField] private LayerMask groundLayer;
 
         private void Awake()
         {

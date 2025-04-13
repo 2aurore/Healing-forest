@@ -12,10 +12,19 @@ namespace HF
         public bool IsRunning { get; set; }
         public bool IsCrouching { get; set; }
         public bool IsProgressingAction { get; set; }
+        public bool IsGrounded { get; set; }
+
 
         public Animator animator;
         public float moveSpeed = 2f;    // 이동 속도
         public float rotationSpeed = 10f; // 회전 속도
+
+        public GameObject toolPosition; // 툴을 장착할 위치
+
+        [SerializeField] private Transform groundCheckPoint; // 바닥 체크를 위한 위치
+        [SerializeField] private float rayDistance = 0.2f; // 레이 길이
+        [SerializeField] private LayerMask groundLayer; // Ground 레이어 마스크
+
         private float animationParameterSpeed;
         private float animationParameterHorizontal;
         private float animationParameterVertical;
@@ -27,11 +36,33 @@ namespace HF
 
         void Update()
         {
+            // 매 프레임마다 지면 체크
+            IsGrounded = CheckGround();
+
+            // 디버그 용도로 레이 그리기
+            Debug.DrawRay(groundCheckPoint.position, Vector3.down * rayDistance, IsGrounded ? Color.green : Color.red);
+
             animator.SetFloat("Speed", animationParameterSpeed);
             animator.SetFloat("Horizontal", animationParameterHorizontal);
             animator.SetFloat("Vertical", animationParameterVertical);
             animator.SetBool("IsRunning", IsRunning);
 
+        }
+
+
+        // 지면 체크 메소드
+        public bool CheckGround()
+        {
+            // groundCheckPoint에서 아래 방향으로 레이 발사
+            RaycastHit hit;
+
+            // 레이캐스트를 발사하고 Ground 레이어와 충돌했는지 확인
+            if (Physics.Raycast(groundCheckPoint.position, Vector3.down, out hit, rayDistance, groundLayer))
+            {
+                return true; // Ground 레이어와 충돌함
+            }
+
+            return false; // 충돌하지 않음
         }
 
         public void Move(Vector2 input)
@@ -42,12 +73,14 @@ namespace HF
                 return;
             }
 
+
             animationParameterSpeed = input.sqrMagnitude > 0f ? IsRunning ? 3f : 0.5f : 0f;
             animationParameterHorizontal = input.x;
             animationParameterVertical = input.y;
 
             // 캐릭터가 달리는 중일 때 속도를 높이게 하고, 자세를 숙인 상태에서 이동속도 절반으로 줄임
             float dynamicMoveSpeed = IsRunning ? moveSpeed * 2 : IsCrouching ? moveSpeed / 2 : moveSpeed;
+
 
             // 이동 입력이 있는 경우에만 처리
             if (input.sqrMagnitude > 0.1f)
@@ -59,8 +92,12 @@ namespace HF
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-                // 현재 바라보는 방향(전방)으로 이동
-                transform.position += transform.forward * dynamicMoveSpeed * Time.deltaTime;
+                // 캐릭터가 Grounded 상태일 때만 이동
+                if (IsGrounded)
+                {
+                    // 현재 바라보는 방향(전방)으로 이동
+                    transform.position += transform.forward * dynamicMoveSpeed * Time.deltaTime;
+                }
             }
 
         }
