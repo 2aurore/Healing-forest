@@ -7,8 +7,6 @@ namespace HF
     public class CharacterBase : MonoBehaviour
     {
 
-
-
         public bool IsRunning { get; set; }
         public bool IsCrouching { get; set; }
         public bool IsProgressingAction { get; set; }
@@ -109,6 +107,10 @@ namespace HF
                 // 이미 액션을 진행 중인 경우에는 아무것도 하지 않음
                 return;
             }
+
+            // 애니메이터의 Upper Body Layer의 Weight를 0으로 설정
+            int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
+            animator.SetLayerWeight(upperBodyLayerIndex, 0f);
 
             IsProgressingAction = true;
             // TODO: 들고있는 도구에 따라 다른 애니메이터 실행하도록 구현 필요
