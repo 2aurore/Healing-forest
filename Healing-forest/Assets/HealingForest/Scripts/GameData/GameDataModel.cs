@@ -15,12 +15,6 @@ namespace HF
         public List<string> toolOrder = new List<string>(); // 도구 순서 관리용 리스트
 
 
-        protected override void Awake()
-        {
-            Initialize();
-            InitializeToolOrder();
-        }
-
         public void Initialize()
         {
             ToolDataSO[] loadedDatas = Resources.LoadAll<ToolDataSO>("Tools/Data/");
@@ -43,6 +37,8 @@ namespace HF
                     Debug.LogError($"Duplicate Tool ID found: {toolID}");
                 }
             }
+
+            InitializeToolOrder();
         }
 
         public void InitializeToolOrder()

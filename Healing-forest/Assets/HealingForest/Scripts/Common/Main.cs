@@ -22,6 +22,7 @@ namespace HF
                 return;
             // 게임에 필요한 필수 시스템 초기화
             UIManager.Singleton.Initalize();
+            GameDataModel.Singleton.Initialize();
 
             isIniaialized = true;
         }
