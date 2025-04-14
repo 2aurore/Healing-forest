@@ -134,7 +134,7 @@ namespace HF
 
 
 
-        public void Action(float yAxis)
+        public void Action(Vector3 targetPoint)
         {
             if (IsProgressingAction)
             {
@@ -156,7 +156,9 @@ namespace HF
             animator.SetLayerWeight(upperBodyLayerIndex, 0f);
 
             IsProgressingAction = true;
-            transform.rotation = Quaternion.Euler(0f, yAxis, 0f);
+            targetPoint.y = transform.position.y; // y축을 현재 캐릭터의 y축으로 설정
+            transform.LookAt(targetPoint); // 타겟 포인트를 바라보도록 회전
+            // transform.rotation = Quaternion.Euler(0f, yAxis, 0f);
 
             if (currentToolData.Tool_Name == "FishingRod")
             {
@@ -165,13 +167,48 @@ namespace HF
                     // 앞이 Ground가 아닌 상태에서만 낚시대를 던질 수 있음
                     // TODO: 낚시대 던지는 애니메이션 재생
                     Debug.Log("Can use Fishing Rod while not grounded.");
-                    return;
                 }
+                else
+                {
+                    IsProgressingAction = false;
+                }
+                return;
             }
             else
             {
                 animator.Play($"Action {currentToolData.Tool_Name}");
+
+                // TODO: 현재 들고 있는 도구에 따라 다른 로직을 적용
+                DetectActionCast();
             }
         }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawSphere(transform.position + new Vector3(0f, 0.3f, 0f), 0.5f);
+
+            // Grid grid;
+            // Vector3Int cellPosition = grid.WorldToCell(transform.position)
+        }
+
+        private void DetectActionCast()
+        {
+            // 레이어 마스크 확인
+            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+            // Vecter3.up * 0.3f
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + new Vector3(0f, 0.3f, 0f) + transform.forward, 0.5f, layerMask);
+            foreach (Collider collider in overlapped)
+            {
+                Debug.Log($"<color=blue>{collider.name}</color>와 겹쳤습니다.");
+                if (collider.TryGetComponent(out IChop chopInterface))
+                {
+                    Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
+                    chopInterface.OnDamaged(this);
+                }
+            }
+        }
+
     }
 }

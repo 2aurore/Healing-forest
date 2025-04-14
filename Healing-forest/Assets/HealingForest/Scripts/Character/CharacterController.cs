@@ -46,9 +46,7 @@ namespace HF
             if (Physics.Raycast(mouseRay, out RaycastHit hitInfo, 1000F, groundLayer, QueryTriggerInteraction.Ignore))
             {
                 // 캐릭터가 클릭한 위치를 바라보도록 회전
-                Vector3 direction = (hitInfo.point - linkedCharacter.transform.position).normalized;
-                float yAxisAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-                linkedCharacter.Action(yAxisAngle);
+                linkedCharacter.Action(hitInfo.point);
             }
         }
 
