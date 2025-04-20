@@ -219,8 +219,6 @@ namespace HF
                 {
                     // 나무 베기 인터페이스가 있는 경우
                     transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
-                    animator.Play($"Action {currentToolData.Tool_Name}");
                     chopInterface.OnDamaged(this);
                     return;
                 }
