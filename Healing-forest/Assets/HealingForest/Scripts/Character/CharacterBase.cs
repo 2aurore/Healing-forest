@@ -222,6 +222,13 @@ namespace HF
                     chopInterface.OnDamaged(this);
                     return;
                 }
+                if (collider.TryGetComponent(out IHit hitInterface))
+                {
+                    // 바위 때리기 인터페이스가 있는 경우
+                    transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                    hitInterface.OnDamaged(this);
+                    return;
+                }
 
 
             }

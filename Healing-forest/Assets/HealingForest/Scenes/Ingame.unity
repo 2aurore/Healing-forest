@@ -5054,6 +5054,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 518095703}
     m_Modifications:
+    - target: {fileID: 6152142698987779693, guid: e7101a69a982e764fb87764134999d3b, type: 3}
+      propertyPath: stonePrefabs.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6152142698987779693, guid: e7101a69a982e764fb87764134999d3b, type: 3}
+      propertyPath: stonePrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 8387255882088781066, guid: 5cc08660e891c3c42b28cdacdefd0b53, type: 3}
+    - target: {fileID: 6152142698987779693, guid: e7101a69a982e764fb87764134999d3b, type: 3}
+      propertyPath: stonePrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 7191811501138783578, guid: 0f0412b0a6d36bd448ebd567e9081f59, type: 3}
+    - target: {fileID: 6152142698987779693, guid: e7101a69a982e764fb87764134999d3b, type: 3}
+      propertyPath: stonePrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 7587794588661835050, guid: ff0b489afe2240b4bb2e4cf7de961d42, type: 3}
     - target: {fileID: 7478809041358511791, guid: e7101a69a982e764fb87764134999d3b, type: 3}
       propertyPath: m_Name
       value: Rock_01
