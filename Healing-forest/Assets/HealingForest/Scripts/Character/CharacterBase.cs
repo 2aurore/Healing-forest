@@ -169,8 +169,6 @@ namespace HF
             }
             else
             {
-                animator.Play($"Action {currentToolData.Tool_Name}");
-
                 // TODO: 현재 들고 있는 도구에 따라 다른 로직을 적용
                 DetectActionCast();
             }
@@ -206,15 +204,34 @@ namespace HF
             foreach (Collider collider in overlapped)
             {
 
+                // TODO: item이면서, IInteractable 인터페이스가 있는 경우
+                // if (collider.TryGetComponent(out Item item) && collider.TryGetComponent(out IInteractable interactableInterface))
+                // {
+                //     // 아이템 인터페이스가 있는 경우
+                //     SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                //     Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
+                //     animator.Play($"Action {currentToolData.Tool_Name}");
+                //     interactableInterface.Interact(this);
+                //     return;
+                // }
+
                 if (collider.TryGetComponent(out IChop chopInterface))
                 {
                     // 나무 베기 인터페이스가 있는 경우
                     transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
                     Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
+                    animator.Play($"Action {currentToolData.Tool_Name}");
                     chopInterface.OnDamaged(this);
                     return;
                 }
+
+
             }
+
+
+            // 충돌한 오브젝트가 없는 경우
+            animator.Play($"Action {currentToolData.Tool_Name} Failed");
+
         }
 
         private void DetectInteractableCast()
