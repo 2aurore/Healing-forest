@@ -12,7 +12,6 @@ namespace HF
 
         public void OnDamaged(CharacterBase actor)
         {
-            Debug.Log("Rock has been damaged by " + actor.name);
             Vector3Int pivot = TileMapManager.Instance.GetWorldToCell(transform.position);
 
             Vector3Int emptyCellPosition = TileMapManager.Instance.GetClockwiseEmptyCellFromObjectMap(pivot, usedPositions);

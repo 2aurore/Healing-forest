@@ -253,7 +253,6 @@ namespace HF
                     // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
                     SetActionLookAt(collider.transform.position);
                     animator.Play("Tree Shake");
-                    Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
                     interactableInterface.Interact(this);
                     return;
                 }
