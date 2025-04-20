@@ -37,9 +37,8 @@ namespace HF
             return grid.GetCellCenterWorld(cellPosition);
         }
 
-        public Vector3Int GetClockwiseEmptyCellFromObjectMap(Vector3Int pivot)
+        public Vector3Int GetClockwiseEmptyCellFromObjectMap(Vector3Int pivot, HashSet<Vector3Int> used)
         {
-            // 시계 방향으로 빈 셀을 찾는 메소드
             Vector3Int[] directions = new Vector3Int[]
             {
                 new Vector3Int(0, 1, 0),    // 12시 방향
@@ -55,13 +54,14 @@ namespace HF
             foreach (var direction in directions)
             {
                 Vector3Int targetCell = pivot + direction;
-                if (!objectMap.HasTile(targetCell))
+                if (!objectMap.HasTile(targetCell) && !used.Contains(targetCell))
                 {
-                    return targetCell; // 빈 셀을 찾으면 반환
+                    return targetCell;
                 }
             }
 
-            return pivot; // 빈 셀이 없으면 원래 위치 반환
+            return pivot; // 못 찾으면 pivot 반환
         }
+
     }
 }

@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fruits: []
+  fruitPrefab: {fileID: 4433673180914591881, guid: 3a8f68d3e6575c54896d6dc301c89114, type: 3}
 --- !u!1001 &4371040937984882479
 PrefabInstance:
   m_ObjectHideFlags: 0
