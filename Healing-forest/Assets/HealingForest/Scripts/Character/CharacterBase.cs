@@ -147,18 +147,11 @@ namespace HF
                 // 툴이 장착되어 있지 않은 경우에는 아무것도 하지 않음
                 Debug.Log("Tool is not equipped.");
                 // TODO: 앞에 나무가 있는지 체크하고 나무인 경우 액션과 아이템, 잡초인 경우 액션 다르게 설정
+                DetectInteractableCast();
                 return;
             }
 
-
-            // 애니메이터의 Upper Body Layer의 Weight를 0으로 설정
-            int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
-            animator.SetLayerWeight(upperBodyLayerIndex, 0f);
-
-            IsProgressingAction = true;
-            targetPoint.y = transform.position.y; // y축을 현재 캐릭터의 y축으로 설정
-            transform.LookAt(targetPoint); // 타겟 포인트를 바라보도록 회전
-            // transform.rotation = Quaternion.Euler(0f, yAxis, 0f);
+            SetActionLookAt(targetPoint);
 
             if (currentToolData.Tool_Name == "FishingRod")
             {
@@ -183,10 +176,21 @@ namespace HF
             }
         }
 
+        private void SetActionLookAt(Vector3 targetPoint)
+        {
+            // 애니메이터의 Upper Body Layer의 Weight를 0으로 설정
+            int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
+            animator.SetLayerWeight(upperBodyLayerIndex, 0f);
+
+            IsProgressingAction = true;
+            targetPoint.y = transform.position.y; // y축을 현재 캐릭터의 y축으로 설정
+            transform.LookAt(targetPoint); // 타겟 포인트를 바라보도록 회전
+        }
+
         private void OnDrawGizmos()
         {
             Gizmos.color = new Color(1, 0, 0, 0.5f);
-            Gizmos.DrawSphere(transform.position + new Vector3(0f, 0.3f, 0f), 0.5f);
+            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f);
 
             // Grid grid;
             // Vector3Int cellPosition = grid.WorldToCell(transform.position)
@@ -198,17 +202,44 @@ namespace HF
             int layerMask = 1 << LayerMask.NameToLayer("Interactable");
 
             // Vecter3.up * 0.3f
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + new Vector3(0f, 0.3f, 0f) + transform.forward, 0.5f, layerMask);
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask);
             foreach (Collider collider in overlapped)
             {
-                Debug.Log($"<color=blue>{collider.name}</color>와 겹쳤습니다.");
+
                 if (collider.TryGetComponent(out IChop chopInterface))
                 {
+                    // 나무 베기 인터페이스가 있는 경우
+                    transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
                     Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
                     chopInterface.OnDamaged(this);
+                    return;
                 }
             }
         }
+
+        private void DetectInteractableCast()
+        {
+            // 레이어 마스크 확인
+            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+            // Vecter3.up * 0.3f
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask);
+            foreach (Collider collider in overlapped)
+            {
+                if (collider.TryGetComponent(out Tree tree) && collider.TryGetComponent(out IInteractable interactableInterface))
+                {
+                    // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
+                    SetActionLookAt(collider.transform.position);
+                    animator.Play("Tree Shake");
+                    Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
+                    interactableInterface.Interact(this);
+                    return;
+                }
+
+
+            }
+        }
+
 
     }
 }
