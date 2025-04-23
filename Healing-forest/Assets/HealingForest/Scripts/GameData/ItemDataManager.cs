@@ -37,7 +37,7 @@ namespace HF
         }
 
         // 아이템 데이터 가져오기
-        public ItemData GetItemData(int itemID)
+        public ItemData GetItemData(string itemID)
         {
             return itemDataList.Find(item => item.ItemID == itemID);
         }
@@ -51,7 +51,7 @@ namespace HF
         }
 
         // 아이템 데이터 삭제하기
-        public void RemoveItemData(int itemID)
+        public void RemoveItemData(string itemID)
         {
             ItemData itemToRemove = GetItemData(itemID);
             if (itemToRemove != null)

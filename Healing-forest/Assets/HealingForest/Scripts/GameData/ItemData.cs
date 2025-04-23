@@ -16,7 +16,7 @@ namespace HF
     [System.Serializable]
     public class ItemData
     {
-        [SerializeField] private int itemID;             // 아이템 고유 ID
+        [SerializeField] private string itemID;             // 아이템 고유 ID
         [SerializeField] private string itemName;        // 아이템 이름
         [SerializeField] private ItemCategory category;  // 아이템 카테고리
         [SerializeField] private int maxStack;           // 최대 중첩 개수
@@ -25,7 +25,7 @@ namespace HF
         [SerializeField] private Sprite icon;            // 아이템 아이콘
 
         // 속성(Properties)
-        public int ItemID => itemID;
+        public string ItemID => itemID;
         public string ItemName => itemName;
         public ItemCategory Category => category;
         public int MaxStack => maxStack;
@@ -34,7 +34,7 @@ namespace HF
         public Sprite Icon => icon;
 
         // 생성자
-        public ItemData(int id, string name, ItemCategory cat, int stack, float durability, GameObject prefab, Sprite itemIcon)
+        public ItemData(string id, string name, ItemCategory cat, int stack, float durability, GameObject prefab, Sprite itemIcon)
         {
             itemID = id;
             itemName = name;
