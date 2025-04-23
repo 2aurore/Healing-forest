@@ -142,17 +142,19 @@ namespace HF
                 return;
             }
 
+
             if (currentToolData == null)
             {
                 // 툴이 장착되어 있지 않은 경우에는 아무것도 하지 않음
                 Debug.Log("Tool is not equipped.");
                 // TODO: 앞에 나무가 있는지 체크하고 나무인 경우 액션과 아이템, 잡초인 경우 액션 다르게 설정
+                SetActionLookAt(targetPoint);
                 DetectInteractableCast();
                 return;
             }
 
-            SetActionLookAt(targetPoint);
 
+            SetActionLookAt(targetPoint);
             if (currentToolData.Tool_Name == "FishingRod")
             {
                 if (!IsGrounded)
@@ -205,15 +207,14 @@ namespace HF
             {
 
                 // TODO: item이면서, IInteractable 인터페이스가 있는 경우
-                // if (collider.TryGetComponent(out Item item) && collider.TryGetComponent(out IInteractable interactableInterface))
-                // {
-                //     // 아이템 인터페이스가 있는 경우
-                //     SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                //     Debug.Log($"<color=red>{collider.name}에 충돌했습니다.</color>");
-                //     animator.Play($"Action {currentToolData.Tool_Name}");
-                //     interactableInterface.Interact(this);
-                //     return;
-                // }
+                if (collider.TryGetComponent(out DropItem item) && collider.TryGetComponent(out IInteractable interactableInterface))
+                {
+                    // 아이템 인터페이스가 있는 경우
+                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                    animator.Play("PickInPocket");
+                    interactableInterface.Interact(this);
+                    return;
+                }
 
                 if (collider.TryGetComponent(out IChop chopInterface))
                 {
@@ -248,17 +249,32 @@ namespace HF
             Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask);
             foreach (Collider collider in overlapped)
             {
-                if (collider.TryGetComponent(out Tree tree) && collider.TryGetComponent(out IInteractable interactableInterface))
+                Debug.Log(collider.name);
+                if (collider.TryGetComponent(out IInteractable interactableInterface))
                 {
-                    // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
-                    SetActionLookAt(collider.transform.position);
-                    animator.Play("Tree Shake");
-                    interactableInterface.Interact(this);
-                    return;
+                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                    if (collider.TryGetComponent(out DropItem item))
+                    {
+                        // 아이템 인터페이스가 있는 경우
+                        animator.Play("PickInPocket");
+                        interactableInterface.Interact(this);
+                        return;
+                    }
+
+                    if (collider.TryGetComponent(out Tree tree))
+                    {
+                        // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
+                        animator.Play("Tree Shake");
+                        interactableInterface.Interact(this);
+                        return;
+                    }
+
                 }
 
-
             }
+
+            IsProgressingAction = true;
+
         }
 
 
