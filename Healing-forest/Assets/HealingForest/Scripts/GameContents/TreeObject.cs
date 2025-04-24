@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 namespace HF
 {
-    public class Tree : MonoBehaviour, IChop, IInteractable
+    public class TreeObject : MonoBehaviour, IChop, IInteractable
     {
         public List<GameObject> fruits = new List<GameObject>(); // 과일들을 담을 리스트
         public GameObject fruitPrefab; // 열매 프리팹

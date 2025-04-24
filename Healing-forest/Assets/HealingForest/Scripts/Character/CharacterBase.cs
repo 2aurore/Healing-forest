@@ -145,8 +145,6 @@ namespace HF
 
             if (currentToolData == null)
             {
-                // 툴이 장착되어 있지 않은 경우에는 아무것도 하지 않음
-                Debug.Log("Tool is not equipped.");
                 // TODO: 앞에 나무가 있는지 체크하고 나무인 경우 액션과 아이템, 잡초인 경우 액션 다르게 설정
                 SetActionLookAt(targetPoint);
                 DetectInteractableCast();
@@ -261,7 +259,7 @@ namespace HF
                         return;
                     }
 
-                    if (collider.TryGetComponent(out Tree tree))
+                    if (collider.TryGetComponent(out TreeObject tree))
                     {
                         // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
                         animator.Play("Tree Shake");
