@@ -150,7 +150,7 @@ MonoBehaviour:
     itemID: im_apple
     itemName: apple
     category: 0
-    maxStack: 0
+    maxStack: 99
     defaultDurability: 0
     visualPrefab: {fileID: 0}
     icon: {fileID: 0}
