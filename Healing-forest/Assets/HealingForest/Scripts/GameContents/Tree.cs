@@ -38,6 +38,12 @@ namespace HF
         {
             int fruitCount = fruits.Count;
 
+            if (fruitCount == 0) // 과일이 없는 경우
+            {
+                return;
+            }
+
+
             // 나무에서 열매가 떨어지도록 처리
             foreach (GameObject fruit in fruits)
             {
