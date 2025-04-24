@@ -51,6 +51,8 @@ namespace HF
                 Destroy(fruit, 1f); // 열매 파괴
             }
 
+            fruits.Clear(); // 과일 리스트 초기화
+
             StartCoroutine(DropFruits(fruitCount));
         }
 
