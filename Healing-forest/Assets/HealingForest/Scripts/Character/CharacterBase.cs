@@ -280,7 +280,7 @@ namespace HF
         private void ResetAnimatorLayer()
         {
             int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
-            animator.SetLayerWeight(upperBodyLayerIndex, 0f);
+            animator.SetLayerWeight(upperBodyLayerIndex, 1f);
 
             IsProgressingAction = false;
         }
