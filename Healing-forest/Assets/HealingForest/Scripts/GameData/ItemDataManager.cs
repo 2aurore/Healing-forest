@@ -9,7 +9,7 @@ namespace HF
         // 아이템 데이터 리스트
         [SerializeField] private List<ItemData> itemDataList = new List<ItemData>();
 
-        private string FILE_PATH = "Assets/Resources/Data/item.txt"; // 아이템 데이터 파일 경로
+        private string FILE_PATH = "Assets\\HealingForest\\Resources\\GameData\\Item.json"; // 아이템 데이터 파일 경로
 
 
         public void Initialize()
