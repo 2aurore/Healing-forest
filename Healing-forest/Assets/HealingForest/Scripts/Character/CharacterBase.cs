@@ -271,10 +271,18 @@ namespace HF
 
             }
 
-            IsProgressingAction = true;
+            // 충돌한 오브젝트가 없는 경우
+            ResetAnimatorLayer();
 
         }
 
 
+        private void ResetAnimatorLayer()
+        {
+            int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
+            animator.SetLayerWeight(upperBodyLayerIndex, 0f);
+
+            IsProgressingAction = false;
+        }
     }
 }
