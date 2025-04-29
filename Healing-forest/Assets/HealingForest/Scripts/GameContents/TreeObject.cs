@@ -90,10 +90,10 @@ namespace HF
 
             if (emptyCellPosition == pivot) // 유효한 위치를 찾지 못한 경우
             {
-                actor.animator.Play($"Action {actor.currentToolData.Tool_Name} Failed");
+                actor.animator.Play($"Action {actor.currentToolData.ToolName} Failed");
                 return;
             }
-            actor.animator.Play($"Action {actor.currentToolData.Tool_Name}");
+            actor.animator.Play($"Action {actor.currentToolData.ToolName}");
 
             usedPositions.Add(emptyCellPosition);
 

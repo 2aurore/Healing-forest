@@ -16,7 +16,7 @@ namespace HF
 
             Vector3Int emptyCellPosition = TileMapManager.Instance.GetClockwiseEmptyCellFromObjectMap(pivot, usedPositions);
 
-            actor.animator.Play($"Action {actor.currentToolData.Tool_Name} Failed");
+            actor.animator.Play($"Action {actor.currentToolData.ToolName} Failed");
             if (emptyCellPosition == pivot) // 유효한 위치를 찾지 못한 경우
             {
                 return;
