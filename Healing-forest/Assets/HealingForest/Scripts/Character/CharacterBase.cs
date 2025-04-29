@@ -200,7 +200,7 @@ namespace HF
             int layerMask = 1 << LayerMask.NameToLayer("Interactable");
 
             // Vecter3.up * 0.3f
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask);
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
 
@@ -244,7 +244,7 @@ namespace HF
             int layerMask = 1 << LayerMask.NameToLayer("Interactable");
 
             // Vecter3.up * 0.3f
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask);
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
                 Debug.Log(collider.name);
