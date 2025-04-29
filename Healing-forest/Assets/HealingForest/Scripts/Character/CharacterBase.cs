@@ -126,8 +126,8 @@ namespace HF
             }
 
             currentToolData = GameDataModel.Singleton.GetToolData(toolID);
-            animator.SetInteger("ToolType", currentToolData.Tool_Type == "PropA" ? 1 : 2);
-            equippedTool = Instantiate(currentToolData.Visual_Prefab, toolPosition.transform);
+            animator.SetInteger("ToolType", currentToolData.ToolAnimatorKey == "PropA" ? 1 : 2);
+            equippedTool = Instantiate(currentToolData.VisualPrefab, toolPosition.transform);
             equippedTool.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             equippedTool.transform.SetParent(toolPosition.transform); // 툴을 툴 포지션의 자식으로 설정
         }
@@ -153,7 +153,7 @@ namespace HF
 
 
             SetActionLookAt(targetPoint);
-            if (currentToolData.Tool_Name == "FishingRod")
+            if (currentToolData.ToolName == "FishingRod")
             {
                 if (!IsGrounded)
                 {
@@ -234,7 +234,7 @@ namespace HF
 
 
             // 충돌한 오브젝트가 없는 경우
-            animator.Play($"Action {currentToolData.Tool_Name} Failed");
+            animator.Play($"Action {currentToolData.ToolName} Failed");
 
         }
 
