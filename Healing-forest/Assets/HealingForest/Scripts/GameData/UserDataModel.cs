@@ -1,0 +1,154 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace HF
+{
+    public class UserDataModel : SingletonBase<UserDataModel>
+    {
+        [field: SerializeField] public InventoryDTO InventoryData { get; private set; } = new InventoryDTO();
+
+        public event Action<UserItemDataDTO> OnInventoryDataChanged;
+
+        public void Initialize()
+        {
+            InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
+
+            // TODO: 기존에 save된 UserData가 있다면 불러오기
+
+            // Default Tool Add To Inventory
+            foreach (var toolDataFair in GameDataModel.Singleton.ToolDataDTO.toolDatas)
+            {
+                // if (GameDataModel.Singleton.ToolDataDTO.toolDatas.ContainsKey("Axe"))
+                // {
+                AddItemToInventory(toolDataFair.Value.ToolId, 1, 100, out int failedCount); // 도끼 아이템 추가
+                // }
+            }
+        }
+
+        public bool IsExistTool(ToolType toolType, out UserItemDataDTO toolItemData)
+        {
+            for (int i = 0; i < InventoryData.InventoryItems.Count; i++)
+            {
+                string itemID = InventoryData.InventoryItems[i].itemID;
+
+                List<ToolDataSO> targetToolData = new List<ToolDataSO>(GameDataModel.Singleton.ToolDataDTO.toolDatas.Values)
+                    .FindAll(tool => tool.ToolType == toolType); // 도구 타입에 맞는 도구 데이터 가져오기
+
+                if (targetToolData.Exists(tool => tool.ToolId == itemID)) // 도구 데이터가 존재하는지 확인
+                {
+                    toolItemData = InventoryData.InventoryItems[i]; // 해당 아이템 데이터 가져오기
+                    return true; // 도구가 존재함
+                }
+            }
+            toolItemData = null; // 도구 데이터가 존재하지 않음
+            return false;
+        }
+
+
+        public bool AddItemToInventory(string itemID, int quantity, float currentDurability, out int failedCount)
+        {
+            bool isItemAddSuccess = false; // 아이템 추가 성공 여부
+            failedCount = 0; // 실패한 개수 초기화
+
+            if (false == GameDataModel.Singleton.ItemDataDTO.itemDatas.ContainsKey(itemID))
+            {
+                failedCount = quantity; // 아이템이 존재하지 않으면 실패한 개수는 추가하려는 수량
+                return isItemAddSuccess; // 아이템 추가 실패
+            }
+
+            ItemDataSO itemGameData = GameDataModel.Singleton.GetItemData(itemID); // 아이템 데이터 가져오기
+            var isStackable = itemGameData != null ? itemGameData.MaxStack > 1 : false; // 스택 가능 여부 확인
+
+            // TODO: 인벤토리 추가 가능할때 add 하도록 추가
+            if (isStackable)
+            {
+                int index = InventoryData.InventoryItems.FindIndex(item => item.itemID.Equals(itemID));
+                bool isExistSameItem = index >= 0; // 같은 아이템이 존재하는지 확인
+                if (isExistSameItem)
+                {
+
+                    // TODO: UI에서 아이템 stack 수량에 따라 적용하도록 수정
+                    int afterCount = InventoryData.InventoryItems[index].itemCount + quantity; // 수량 추가
+                    int quotient = afterCount / itemGameData.MaxStack;
+                    int remainder = afterCount % itemGameData.MaxStack;
+
+                    if (quotient > 0)
+                    {
+                        for (int i = 0; i < quotient; i++)
+                        {
+                            UserItemDataDTO newItem = new UserItemDataDTO
+                            {
+                                uniqueID = InventoryData.InventoryItems.Count.ToString(),
+                                itemID = itemID,
+                                itemCount = itemGameData.MaxStack,
+                                itemDurability = currentDurability
+                            };
+                            InventoryData.InventoryItems.Add(newItem); // 새로운 아이템 추가
+                        }
+
+                    }
+                    if (remainder > 0)
+                    {
+                        UserItemDataDTO item = InventoryData.InventoryItems[index]; // 같은 아이템이 존재하면 해당 아이템을 가져옴
+                        item.itemCount = remainder; // 수량 업데이트
+                        item.itemDurability = currentDurability; // 내구도 업데이트
+
+                        InventoryData.InventoryItems[index] = item; // 업데이트된 아이템으로 교체
+                    }
+                    isItemAddSuccess = true; // 아이템 추가 성공
+                }
+                else
+                {
+                    int afterCount = quantity; // 수량 추가
+                    int quotient = afterCount / itemGameData.MaxStack;
+                    int remainder = afterCount % itemGameData.MaxStack;
+
+                    if (quotient > 0)
+                    {
+                        for (int i = 0; i < quotient; i++)
+                        {
+                            UserItemDataDTO newItem = new UserItemDataDTO
+                            {
+                                uniqueID = InventoryData.InventoryItems.Count.ToString(),
+                                itemID = itemID,
+                                itemCount = itemGameData.MaxStack,
+                                itemDurability = currentDurability
+                            };
+                            InventoryData.InventoryItems.Add(newItem); // 새로운 아이템 추가
+                        }
+
+                    }
+                    if (remainder > 0)
+                    {
+                        UserItemDataDTO item = InventoryData.InventoryItems[index]; // 같은 아이템이 존재하면 해당 아이템을 가져옴
+                        item.itemCount = remainder; // 수량 업데이트
+                        item.itemDurability = currentDurability; // 내구도 업데이트
+
+                        InventoryData.InventoryItems[index] = item; // 업데이트된 아이템으로 교체
+                    }
+                    isItemAddSuccess = true; // 아이템 추가 성공
+                }
+                OnInventoryDataChanged?.Invoke(InventoryData.InventoryItems[index]); // 인벤토리 데이터 변경 이벤트 호출
+
+            }
+            else
+            {
+                UserItemDataDTO item = new UserItemDataDTO();
+
+                item.uniqueID = InventoryData.InventoryItems.Count.ToString();
+                item.itemID = itemID;
+                item.itemCount = quantity;
+                item.itemDurability = currentDurability;
+
+                InventoryData.InventoryItems.Add(item);
+
+                isItemAddSuccess = true; // 아이템 추가 성공
+                OnInventoryDataChanged?.Invoke(item); // 인벤토리 데이터 변경 이벤트 호출
+            }
+
+            return isItemAddSuccess;
+        }
+    }
+}
