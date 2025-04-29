@@ -50,26 +50,23 @@ namespace HF
             }
         }
 
+        [SerializeField] private ToolType currentToolType = ToolType.None;
+
         private void RightMouseButtonEvent()
         {
-            int toolDataCount = GameDataModel.Singleton.ToolDataCount;
-            int currentToolIndex = GameDataModel.Singleton.currentToolIndex;
-            if (toolDataCount > 0)
+            currentToolType++;
+            if (currentToolType >= ToolType.End)
             {
-                // 툴 데이터가 존재할 경우 툴 장착
-                if (currentToolIndex >= toolDataCount)
+                currentToolType = ToolType.None;
+                linkedCharacter.EquipTool(null);
+            }
+            else
+            {
+                if (UserDataModel.Singleton.IsExistTool(currentToolType, out UserItemDataDTO existTooluserData))
                 {
-                    // 툴 데이터가 모두 장착된 경우, 다시 처음으로 돌아감
-                    linkedCharacter.EquipTool(null);
-                    GameDataModel.Singleton.currentToolIndex = 0;
+                    string toolId = existTooluserData.itemID;
+                    linkedCharacter.EquipTool(toolId);
                 }
-                else
-                {
-                    linkedCharacter.EquipTool(GameDataModel.Singleton.toolOrder[GameDataModel.Singleton.currentToolIndex]);
-                    GameDataModel.Singleton.currentToolIndex = GameDataModel.Singleton.currentToolIndex + 1;
-                }
-
-
             }
 
         }

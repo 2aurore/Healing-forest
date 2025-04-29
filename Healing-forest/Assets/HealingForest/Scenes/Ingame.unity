@@ -5347,6 +5347,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  currentToolType: 0
 --- !u!114 &651307118
 MonoBehaviour:
   m_ObjectHideFlags: 0
