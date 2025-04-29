@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,45 +10,28 @@ namespace HF
     {
 
         [field: SerializeField] public ToolDataDTO ToolDataDTO { get; private set; } = new ToolDataDTO();
-
-        public int ToolDataCount => ToolDataDTO.toolDatas.Count;
-        public int currentToolIndex = 0; // 툴 데이터 인덱스
-        public List<string> toolOrder = new List<string>(); // 도구 순서 관리용 리스트
-
+        [field: SerializeField] public GameItemDataDTO ItemDataDTO { get; private set; } = new GameItemDataDTO();
 
         public void Initialize()
         {
-            ToolDataSO[] loadedDatas = Resources.LoadAll<ToolDataSO>("Tools/Data/");
+            ToolDataSO[] loadedToolDatas = Resources.LoadAll<ToolDataSO>("Tools/Data/");
+            ItemDataSO[] loadedItemDatas = Resources.LoadAll<ItemDataSO>("Items/Data/");
 
-            for (int i = 0; i < loadedDatas.Length; i++)
+            for (int i = 0; i < loadedToolDatas.Length; i++)
             {
-                string toolID = loadedDatas[i].Tool_ID;
-                if (string.IsNullOrEmpty(toolID))
+                if (!ToolDataDTO.toolDatas.ContainsKey(loadedToolDatas[i].ToolId))
                 {
-                    Debug.LogError($"Tool ID is null or empty for ToolDataSO at index {i}, {loadedDatas[i]}");
-                    continue;
+                    ToolDataDTO.toolDatas.Add(loadedToolDatas[i].ToolId, loadedToolDatas[i]);
                 }
-
-                if (!ToolDataDTO.toolDatas.ContainsKey(toolID))
+            }
+            for (int i = 0; i < loadedItemDatas.Length; i++)
+            {
+                if (!ItemDataDTO.itemDatas.ContainsKey(loadedItemDatas[i].ItemID))
                 {
-                    ToolDataDTO.toolDatas.Add(toolID, loadedDatas[i]);
-                }
-                else
-                {
-                    Debug.LogError($"Duplicate Tool ID found: {toolID}");
+                    ItemDataDTO.itemDatas.Add(loadedItemDatas[i].ItemID, loadedItemDatas[i]);
                 }
             }
 
-            InitializeToolOrder();
-        }
-
-        public void InitializeToolOrder()
-        {
-            toolOrder.Clear();
-            foreach (var toolData in ToolDataDTO.toolDatas)
-            {
-                toolOrder.Add(toolData.Key);
-            }
         }
 
         public ToolDataSO GetToolData(string toolID)
@@ -63,6 +47,17 @@ namespace HF
             }
         }
 
-
+        public ItemDataSO GetItemData(string itemID)
+        {
+            if (ItemDataDTO.itemDatas.TryGetValue(itemID, out ItemDataSO itemData))
+            {
+                return itemData;
+            }
+            else
+            {
+                Debug.LogError($"Item ID not found: {itemID}");
+                return null;
+            }
+        }
     }
 }
