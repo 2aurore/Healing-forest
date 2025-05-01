@@ -18,19 +18,39 @@ namespace HF
                 yield return null;
             }
 
-            // ONE.InputSystem.Singleton.OnEscapeInput += OnEscapeExecute;
+            // InputSystem.Singleton.OnTab += OnInventoryUI;
         }
         public override IEnumerator OnEnd()
         {
             yield return null;
 
-            // ONE.InputSystem.Singleton.OnEscapeInput -= OnEscapeExecute;
+            // InputSystem.Singleton.OnTab -= OnInventoryUI;
         }
 
         void OnEscapeExecute()
         {
             // Time.timeScale = 0f;
             // UIManager.Show<PausePopupUI>(UIList.PausePopupUI);
+        }
+        void OnInventoryUI()
+        {
+            Debug.Log("test");
+            var inventory = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
+            Debug.Log(inventory.name);
+            if (inventory != null)
+            {
+                if (inventory.gameObject.activeSelf)
+                {
+                    UIManager.Hide<InventoryUI>(UIList.InventoryUI);
+                    return;
+                }
+
+                else
+                {
+                    UIManager.Show<InventoryUI>(UIList.InventoryUI);
+                }
+            }
+
         }
     }
 }

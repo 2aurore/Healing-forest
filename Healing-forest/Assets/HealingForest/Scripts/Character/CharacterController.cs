@@ -18,6 +18,8 @@ namespace HF
         {
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
+            InputSystem.Singleton.OnTab += OnInventoryUI;
+
         }
 
         private void Update()
@@ -66,6 +68,27 @@ namespace HF
                 {
                     string toolId = existTooluserData.itemID;
                     linkedCharacter.EquipTool(toolId);
+                }
+            }
+
+        }
+
+
+        void OnInventoryUI()
+        {
+            var inventory = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
+            Debug.Log("test", inventory);
+            if (inventory != null)
+            {
+                if (inventory.gameObject.activeSelf)
+                {
+                    UIManager.Hide<InventoryUI>(UIList.InventoryUI);
+                    return;
+                }
+
+                else
+                {
+                    UIManager.Show<InventoryUI>(UIList.InventoryUI);
                 }
             }
 
