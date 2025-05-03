@@ -12,6 +12,10 @@ namespace HF
         public Tilemap groundMap;
         public Tilemap objectMap;
 
+        // TODO: HashSet<Vector3Int> used manager에서 관리하도록 변경
+        private HashSet<Vector3Int> usedPositions = new HashSet<Vector3Int>();
+
+
         private void Awake()
         {
             Instance = this; // 싱글톤 인스턴스 설정
@@ -37,7 +41,7 @@ namespace HF
             return grid.GetCellCenterWorld(cellPosition);
         }
 
-        public Vector3Int GetClockwiseEmptyCellFromObjectMap(Vector3Int pivot, HashSet<Vector3Int> used)
+        public Vector3Int GetClockwiseEmptyCellFromObjectMap(Vector3Int pivot)
         {
             Vector3Int[] directions = new Vector3Int[]
             {
@@ -54,14 +58,17 @@ namespace HF
             foreach (var direction in directions)
             {
                 Vector3Int targetCell = pivot + direction;
-                if (!objectMap.HasTile(targetCell) && !used.Contains(targetCell))
+                if (!objectMap.HasTile(targetCell) && !usedPositions.Contains(targetCell))
                 {
+                    usedPositions.Add(targetCell); // 사용된 위치에 추가
                     return targetCell;
                 }
             }
 
             return pivot; // 못 찾으면 pivot 반환
         }
+
+        // TODO: 사용된 위치를 초기화하는 메서드 추가 필요
 
     }
 }

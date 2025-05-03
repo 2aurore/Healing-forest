@@ -8,21 +8,18 @@ namespace HF
     {
         public GameObject[] stonePrefabs; // 돌 프리팹들
 
-        private HashSet<Vector3Int> usedPositions = new HashSet<Vector3Int>(); // 사용된 위치를 저장하는 해시셋
 
         public void OnDamaged(CharacterBase actor)
         {
             Vector3Int pivot = TileMapManager.Instance.GetWorldToCell(transform.position);
 
-            Vector3Int emptyCellPosition = TileMapManager.Instance.GetClockwiseEmptyCellFromObjectMap(pivot, usedPositions);
+            Vector3Int emptyCellPosition = TileMapManager.Instance.GetClockwiseEmptyCellFromObjectMap(pivot);
 
             actor.animator.Play($"Action {actor.currentToolData.ToolName} Failed");
             if (emptyCellPosition == pivot) // 유효한 위치를 찾지 못한 경우
             {
                 return;
             }
-
-            usedPositions.Add(emptyCellPosition);
 
             // 랜덤하게 프리팹 선택
             int randomIndex = Random.Range(0, stonePrefabs.Length);
