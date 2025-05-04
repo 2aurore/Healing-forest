@@ -21,6 +21,11 @@ namespace HF
             bool isAddAllItem = UserDataModel.Singleton.AddItemToInventory(itemId, quantity, currentDurability, out int failedCount);
             if (isAddAllItem) // 아이템을 모두 추가했을 경우
             {
+                // 아이템을 줍고 나면 해당 셀을 사용 가능 상태로 변경합니다.
+                Vector3 position = gameObject.transform.position;
+                Vector3Int cellPosition = TileMapManager.Instance.GetWorldToCell(position);
+                TileMapManager.Instance.ResetUsedPositions(cellPosition);
+
                 Debug.Log($"아이템 {gameObject.name}을(를) 인벤토리에 추가했습니다.");
                 Destroy(gameObject); // 아이템을 줍고 나면 오브젝트를 파괴합니다.
 
