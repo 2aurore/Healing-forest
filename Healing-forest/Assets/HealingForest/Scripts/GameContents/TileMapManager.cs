@@ -68,7 +68,9 @@ namespace HF
             return pivot; // 못 찾으면 pivot 반환
         }
 
-        // TODO: 사용된 위치를 초기화하는 메서드 추가 필요
-
+        public void ResetUsedPositions(Vector3Int pivot)
+        {
+            usedPositions.Remove(pivot); // 특정 pivot 위치 제거
+        }
     }
 }
