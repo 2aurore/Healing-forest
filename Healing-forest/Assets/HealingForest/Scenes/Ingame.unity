@@ -5371,6 +5371,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
+  interactRadius: 0.6
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
