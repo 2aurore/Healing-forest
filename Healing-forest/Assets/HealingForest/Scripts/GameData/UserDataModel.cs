@@ -66,9 +66,9 @@ namespace HF
             {
                 int index = InventoryData.InventoryItems.FindIndex(item => item.itemID.Equals(itemID));
                 bool isExistSameItem = index >= 0; // 같은 아이템이 존재하는지 확인
+
                 if (isExistSameItem)
                 {
-
                     // TODO: UI에서 아이템 stack 수량에 따라 적용하도록 수정
                     int afterCount = InventoryData.InventoryItems[index].itemCount + quantity; // 수량 추가
                     int quotient = afterCount / itemGameData.MaxStack;
@@ -87,19 +87,18 @@ namespace HF
                             };
                             InventoryData.InventoryItems.Add(newItem); // 새로운 아이템 추가
                         }
-
                     }
-                    if (remainder > 0)
-                    {
-                        UserItemDataDTO item = InventoryData.InventoryItems[index]; // 같은 아이템이 존재하면 해당 아이템을 가져옴
-                        item.itemCount = remainder; // 수량 업데이트
-                        item.itemDurability = currentDurability; // 내구도 업데이트
 
-                        InventoryData.InventoryItems[index] = item; // 업데이트된 아이템으로 교체
-                    }
+                    // 나머지 아이템 수량 업데이트
+                    UserItemDataDTO existingItem = InventoryData.InventoryItems[index]; // 같은 아이템이 존재하면 해당 아이템을 가져옴
+                    existingItem.itemCount = remainder; // 수량 업데이트
+                    existingItem.itemDurability = currentDurability; // 내구도 업데이트
+                    InventoryData.InventoryItems[index] = existingItem; // 업데이트된 아이템으로 교체
+
                     isItemAddSuccess = true; // 아이템 추가 성공
+                    OnInventoryDataChanged?.Invoke(existingItem); // 인벤토리 데이터 변경 이벤트 호출
                 }
-                else
+                else // 같은 아이템이 존재하지 않는 경우
                 {
                     int afterCount = quantity; // 수량 추가
                     int quotient = afterCount / itemGameData.MaxStack;
@@ -118,29 +117,33 @@ namespace HF
                             };
                             InventoryData.InventoryItems.Add(newItem); // 새로운 아이템 추가
                         }
-
                     }
+
                     if (remainder > 0)
                     {
-                        UserItemDataDTO item = InventoryData.InventoryItems[index]; // 같은 아이템이 존재하면 해당 아이템을 가져옴
-                        item.itemCount = remainder; // 수량 업데이트
-                        item.itemDurability = currentDurability; // 내구도 업데이트
-
-                        InventoryData.InventoryItems[index] = item; // 업데이트된 아이템으로 교체
+                        UserItemDataDTO newItem = new UserItemDataDTO
+                        {
+                            uniqueID = InventoryData.InventoryItems.Count.ToString(),
+                            itemID = itemID,
+                            itemCount = remainder,
+                            itemDurability = currentDurability
+                        };
+                        InventoryData.InventoryItems.Add(newItem); // 나머지 수량의 아이템 추가
+                        OnInventoryDataChanged?.Invoke(newItem); // 인벤토리 데이터 변경 이벤트 호출
                     }
+
                     isItemAddSuccess = true; // 아이템 추가 성공
                 }
-                OnInventoryDataChanged?.Invoke(InventoryData.InventoryItems[index]); // 인벤토리 데이터 변경 이벤트 호출
-
             }
-            else
+            else // 스택 불가능한 아이템의 경우
             {
-                UserItemDataDTO item = new UserItemDataDTO();
-
-                item.uniqueID = InventoryData.InventoryItems.Count.ToString();
-                item.itemID = itemID;
-                item.itemCount = quantity;
-                item.itemDurability = currentDurability;
+                UserItemDataDTO item = new UserItemDataDTO
+                {
+                    uniqueID = InventoryData.InventoryItems.Count.ToString(),
+                    itemID = itemID,
+                    itemCount = quantity,
+                    itemDurability = currentDurability
+                };
 
                 InventoryData.InventoryItems.Add(item);
 
