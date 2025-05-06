@@ -26,6 +26,9 @@ namespace HF
         [SerializeField] private float rayDistance = 0.2f; // 바닥 체크 레이 길이
         [SerializeField] private LayerMask groundLayer; // Ground 레이어 마스크
 
+        [SerializeField] private float interactRadius = 0.6f; // 상호작용 반경
+
+
         private float animationParameterSpeed;
         private float animationParameterHorizontal;
         private float animationParameterVertical;
@@ -47,11 +50,9 @@ namespace HF
             animator.SetFloat("Horizontal", animationParameterHorizontal);
             animator.SetFloat("Vertical", animationParameterVertical);
             animator.SetBool("IsRunning", IsRunning);
-
         }
 
-
-        // 지면 체크 메소드
+        /// <summary> 바닥 체크 메소드 </summary>
         public bool CheckGround()
         {
             // groundCheckPoint에서 아래 방향으로 레이 발사
@@ -66,6 +67,7 @@ namespace HF
             return false; // 충돌하지 않음
         }
 
+        /// <summary> 캐릭터 이동 메소드 </summary>
         public void Move(Vector2 input)
         {
             if (IsProgressingAction)
@@ -74,14 +76,12 @@ namespace HF
                 return;
             }
 
-
             animationParameterSpeed = input.sqrMagnitude > 0f ? IsRunning ? 3f : 0.5f : 0f;
             animationParameterHorizontal = input.x;
             animationParameterVertical = input.y;
 
             // 캐릭터가 달리는 중일 때 속도를 높이게 하고, 자세를 숙인 상태에서 이동속도 절반으로 줄임
             float dynamicMoveSpeed = IsRunning ? moveSpeed * 2 : IsCrouching ? moveSpeed / 2 : moveSpeed;
-
 
             // 이동 입력이 있는 경우에만 처리
             if (input.sqrMagnitude > 0.1f)
@@ -103,17 +103,15 @@ namespace HF
 
         }
 
-
+        /// <summary> 툴 장착 메소드 </summary>
         public void EquipTool(string toolID)
         {
-
             // toolId가 null인 경우에는 툴을 제거하고 애니메이터의 ToolType을 0으로 설정
             if (toolID == null)
             {
                 Destroy(equippedTool);
 
-                this.currentToolData = null;
-                equippedTool = null;
+                currentToolData = null;
                 animator.SetInteger("ToolType", 0);
                 return;
             }
@@ -142,10 +140,8 @@ namespace HF
                 return;
             }
 
-
             if (currentToolData == null)
             {
-                // TODO: 앞에 나무가 있는지 체크하고 나무인 경우 액션과 아이템, 잡초인 경우 액션 다르게 설정
                 SetActionLookAt(targetPoint);
                 DetectInteractableCast();
                 return;
@@ -188,7 +184,7 @@ namespace HF
         private void OnDrawGizmos()
         {
             Gizmos.color = new Color(1, 0, 0, 0.5f);
-            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f);
+            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
 
             // Grid grid;
             // Vector3Int cellPosition = grid.WorldToCell(transform.position)
@@ -199,43 +195,53 @@ namespace HF
             // 레이어 마스크 확인
             int layerMask = 1 << LayerMask.NameToLayer("Interactable");
 
-            // Vecter3.up * 0.3f
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask, QueryTriggerInteraction.Collide);
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
 
-                // TODO: item이면서, IInteractable 인터페이스가 있는 경우
-                if (collider.TryGetComponent(out DropItem item) && collider.TryGetComponent(out IInteractable interactableInterface))
+                // 1. 드롭 아이템인 경우 - 도구에 상관없이 상호작용
+                if (collider.TryGetComponent(out DropItem itemInterface))
                 {
                     // 아이템 인터페이스가 있는 경우
                     SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
                     animator.Play("PickInPocket");
-                    interactableInterface.Interact(this);
+                    itemInterface.Interact(this);
                     return;
                 }
 
-                if (collider.TryGetComponent(out IChop chopInterface))
+                // 2. 도구별 인터페이스 처리
+                bool interactionHandled = HandleToolSpecificInteraction(collider);
+                if (interactionHandled)
                 {
-                    // 나무 베기 인터페이스가 있는 경우
-                    transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    chopInterface.OnDamaged(this);
                     return;
                 }
-                if (collider.TryGetComponent(out IHit hitInterface))
-                {
-                    // 바위 때리기 인터페이스가 있는 경우
-                    transform.LookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    hitInterface.OnDamaged(this);
-                    return;
-                }
-
-
             }
-
 
             // 충돌한 오브젝트가 없는 경우
             animator.Play($"Action {currentToolData.ToolName} Failed");
+        }
 
+        private bool HandleToolSpecificInteraction(Collider collider)
+        {
+            // 도구별 인터페이스 처리
+            if (currentToolData.CanInteractWith<IChop>() && collider.TryGetComponent(out IChop chopInterface))
+            {
+                SetActionLookAt(collider.transform.position);
+                chopInterface.OnDamaged(this);
+                return true;
+            }
+
+            if (currentToolData.CanInteractWith<IHit>() && collider.TryGetComponent(out IHit hitInterface))
+            {
+                SetActionLookAt(collider.transform.position);
+                hitInterface.OnDamaged(this);
+                return true;
+            }
+
+            // 추가적인 인터페이스 처리 확장 가능
+            // if (currentToolData.CanInteractWith<IDig>() && collider.TryGetComponent(out IDig digInterface)) { ... }
+
+            return false;
         }
 
         private void DetectInteractableCast()
@@ -243,8 +249,7 @@ namespace HF
             // 레이어 마스크 확인
             int layerMask = 1 << LayerMask.NameToLayer("Interactable");
 
-            // Vecter3.up * 0.3f
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, 0.8f, layerMask, QueryTriggerInteraction.Collide);
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
                 Debug.Log(collider.name);
@@ -273,10 +278,9 @@ namespace HF
 
             // 충돌한 오브젝트가 없는 경우
             ResetAnimatorLayer();
-
         }
 
-
+        /// <summary> 애니메이터 레이어를 초기화하는 메소드 </summary>
         private void ResetAnimatorLayer()
         {
             int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
