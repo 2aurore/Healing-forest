@@ -27,4 +27,12 @@ namespace HF
 
         End,
     }
+
+    public enum InteractionType
+    {
+        Chop,
+        Hit,
+        Dig,
+        Fish
+    }
 }
