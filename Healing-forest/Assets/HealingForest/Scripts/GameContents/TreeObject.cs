@@ -73,6 +73,7 @@ namespace HF
                     dropPosition.y += fruitPrefab.transform.localScale.y + 0.3f; // 과일이 떨어질 위치 조정
 
                     GameObject fruit = Instantiate(fruitPrefab, dropPosition, Quaternion.identity, TileMapManager.Instance.objectMap.transform);
+                    fruit.GetComponent<BoxCollider>().enabled = true;
                 }
             }
         }
