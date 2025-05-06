@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HF
 {
-    public interface IHit
+    public interface IHit : IToolInteraction
     {
         public void OnDamaged(CharacterBase actor);
 

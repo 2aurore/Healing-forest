@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace HF
 {
-    public class IToolInteraction : MonoBehaviour
+    public interface IToolInteraction
     {
-
+        // public void OnInteract(CharacterBase actor);
     }
 }
