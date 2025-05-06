@@ -12,7 +12,7 @@ namespace HF
         public Tilemap groundMap;
         public Tilemap objectMap;
 
-        // TODO: HashSet<Vector3Int> used manager에서 관리하도록 변경
+        // manager에서 드롭 아이템에 사용한 위치값 관리
         private HashSet<Vector3Int> usedPositions = new HashSet<Vector3Int>();
 
 
