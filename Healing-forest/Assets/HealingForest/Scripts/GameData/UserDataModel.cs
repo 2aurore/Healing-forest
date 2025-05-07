@@ -8,6 +8,7 @@ namespace HF
     public class UserDataModel : SingletonBase<UserDataModel>
     {
         [field: SerializeField] public InventoryDTO InventoryData { get; private set; } = new InventoryDTO();
+        [field: SerializeField] public int MaxInventorySlots = 40;  // 인벤토리 최대 슬롯 수
 
         public event Action<UserItemDataDTO> OnInventoryDataChanged;
 
@@ -20,10 +21,7 @@ namespace HF
             // Default Tool Add To Inventory
             foreach (var toolDataFair in GameDataModel.Singleton.ToolDataDTO.toolDatas)
             {
-                // if (GameDataModel.Singleton.ToolDataDTO.toolDatas.ContainsKey("Axe"))
-                // {
-                AddItemToInventory(toolDataFair.Value.ToolId, 1, 100, out int failedCount); // 도끼 아이템 추가
-                // }
+                AddItemToInventory(toolDataFair.Value.ToolId, 1, 100, out int failedCount); // tool 아이템 추가
             }
         }
 
