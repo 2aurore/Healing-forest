@@ -7,50 +7,42 @@ namespace HF
     public class IngameScene : SceneBase
     {
 
+        bool isLoadLevelComplete = false;
+
         public override IEnumerator OnStart()
         {
             // Ingame 씬을 비동기로 로드한다.
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Ingame", LoadSceneMode.Single);
+            AsyncOperation asyncLoadGame = SceneManager.LoadSceneAsync("Ingame", LoadSceneMode.Single);
 
             // 로드가 완료될 때 까지 yield return null 을 하면서 기다린다
-            while (!asyncLoad.isDone)
+            while (!asyncLoadGame.isDone)
             {
                 yield return null;
             }
 
-            // InputSystem.Singleton.OnTab += OnInventoryUI;
-        }
-        public override IEnumerator OnEnd()
-        {
+            // 1 Frame 대기 후, Ingame Scene안에 있는 GameObject의 Awake()를 한번 수행시키기 위해서서
             yield return null;
 
-            // InputSystem.Singleton.OnTab -= OnInventoryUI;
-        }
-
-        void OnEscapeExecute()
-        {
-            // Time.timeScale = 0f;
-            // UIManager.Show<PausePopupUI>(UIList.PausePopupUI);
-        }
-        void OnInventoryUI()
-        {
-            Debug.Log("test");
-            var inventory = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
-            Debug.Log(inventory.name);
-            if (inventory != null)
+            LevelLoader.Instance.OnLevelLoadComplete += OnLevelLoadCompleted;
+            if (isLoadLevelComplete)
             {
-                if (inventory.gameObject.activeSelf)
-                {
-                    UIManager.Hide<InventoryUI>(UIList.InventoryUI);
-                    return;
-                }
-
-                else
-                {
-                    UIManager.Show<InventoryUI>(UIList.InventoryUI);
-                }
+                yield return new WaitUntil(() => isLoadLevelComplete);
             }
+        }
+
+        private void OnLevelLoadCompleted()
+        {
+            isLoadLevelComplete = true;
+        }
+
+        public override IEnumerator OnEnd()
+        {
+            LevelLoader.Instance.OnLevelLoadComplete -= OnLevelLoadCompleted;
+
+            yield return null;
 
         }
+
+
     }
 }
