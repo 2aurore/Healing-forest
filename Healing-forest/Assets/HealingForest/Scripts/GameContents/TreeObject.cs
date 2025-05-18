@@ -11,7 +11,9 @@ namespace HF
         public List<GameObject> fruits = new List<GameObject>(); // 과일들을 담을 리스트
         public GameObject fruitPrefab; // 열매 프리팹
         public GameObject branchPrefab; // 나뭇가지 프리팹
+        public GameObject stumpPrefab; // 그루터기 프리팹
 
+        private int branchCount = 5; // 나뭇가지 최대 개수
 
         private void Start()
         {
@@ -93,10 +95,25 @@ namespace HF
             }
             actor.animator.Play($"Action {actor.currentToolData.ToolName}");
 
+            if (branchCount <= 0 && fruits.Count <= 0)
+            {
+                // 나뭇가지를 다 떨어뜨리고, 과일도 없는 경우
+                Destroy(gameObject);
 
-            Vector3 dropPosition = TileMapManager.Instance.GetCellToWorld(emptyCellPosition);
-            dropPosition.y += branchPrefab.transform.localScale.y; // 나뭇가지가 떨어질 위치 조정
-            GameObject branch = Instantiate(branchPrefab, dropPosition, Quaternion.identity, TileMapManager.Instance.objectMap.transform);
+                // TODO: 그루터기 프리팹으로 교체
+                return;
+            }
+
+            if (branchCount > 0)
+            {
+                // 나무에서 나뭇가지가 떨어지도록 처리
+                Vector3 dropPosition = TileMapManager.Instance.GetCellToWorld(emptyCellPosition);
+                dropPosition.y += branchPrefab.transform.localScale.y; // 나뭇가지가 떨어질 위치 조정
+                GameObject branch = Instantiate(branchPrefab, dropPosition, Quaternion.identity, TileMapManager.Instance.objectMap.transform);
+
+                branchCount--;
+            }
+
         }
     }
 }
