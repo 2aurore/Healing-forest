@@ -8,6 +8,7 @@ namespace HF
     {
         public GameObject[] stonePrefabs; // 돌 프리팹들
 
+        private int stoneCount = 5; // 돌 최대 개수
 
         public void OnDamaged(CharacterBase actor)
         {
@@ -27,8 +28,14 @@ namespace HF
 
             Vector3 dropPosition = TileMapManager.Instance.GetCellToWorld(emptyCellPosition);
             dropPosition.y += selectedStone.transform.localScale.y; // 바위가 떨어질 위치 조정
-
             GameObject stone = Instantiate(selectedStone, dropPosition, Quaternion.identity, TileMapManager.Instance.objectMap.transform);
+
+            stoneCount--;
+            if (stoneCount <= 0) // 바위를 다 떨어뜨린 경우
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
 
 
