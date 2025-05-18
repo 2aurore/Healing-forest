@@ -48,7 +48,7 @@ namespace HF
             foreach (GameObject fruit in fruits)
             {
                 fruit.GetComponent<Rigidbody>().useGravity = true; // 중력 사용
-                Destroy(fruit, 1f); // 열매 파괴
+                Destroy(fruit, 0.5f); // 열매 파괴
             }
 
             fruits.Clear(); // 과일 리스트 초기화
@@ -97,10 +97,14 @@ namespace HF
 
             if (branchCount <= 0 && fruits.Count <= 0)
             {
+                // 그루터리 생성을 위한 위치 좌표 저장
+                Vector3 treePosition = transform.position;
+
                 // 나뭇가지를 다 떨어뜨리고, 과일도 없는 경우
                 Destroy(gameObject);
 
-                // TODO: 그루터기 프리팹으로 교체
+                // 그루터기 프리팹으로 교체
+                Instantiate(stumpPrefab, treePosition, Quaternion.identity, TileMapManager.Instance.objectMap.transform);
                 return;
             }
 
