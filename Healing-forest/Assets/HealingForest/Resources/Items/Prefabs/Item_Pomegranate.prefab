@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 5690640464713074889}
   - component: {fileID: 8743436102362253164}
   - component: {fileID: 6823546650438415270}
-  - component: {fileID: 5791848759600823548}
-  - component: {fileID: -1101871277592203149}
+  - component: {fileID: 602418247001340428}
+  - component: {fileID: 1760153905928803272}
   m_Layer: 0
-  m_Name: Pomegranate
-  m_TagString: Untagged
+  m_Name: Item_Pomegranate
+  m_TagString: Fruit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -85,8 +85,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5791848759600823548
-SphereCollider:
+--- !u!65 &602418247001340428
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -100,36 +100,24 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.15777105
-  m_Center: {x: -0.00000035762787, y: -0.13924569, z: -0.00000008940697}
---- !u!54 &-1101871277592203149
-Rigidbody:
+  m_Size: {x: 0.32023877, y: 0.38523167, z: 0.32023883}
+  m_Center: {x: -0.0000003501773, y: -0.111997955, z: -0.00000008195639}
+--- !u!114 &1760153905928803272
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5022331581056914035}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a98c4555f785bc49be3687c43cc4568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: Item_Pomegranate
+  quantity: 1
+  currentDurability: 0

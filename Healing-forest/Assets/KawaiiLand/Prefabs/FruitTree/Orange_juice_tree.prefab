@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4628019753864428893}
   - component: {fileID: 7484683770294208919}
   - component: {fileID: 4537507351199304858}
+  - component: {fileID: 3927134536551807621}
   m_Layer: 0
   m_Name: Orange_juice_tree
   m_TagString: Untagged
@@ -26,16 +27,17 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8997642626059151426}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 281315039222522868}
   - {fileID: 7876279511826956064}
   - {fileID: 7640017578707190558}
   - {fileID: 9195693466881861440}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4628019753864428893
 MeshFilter:
@@ -56,6 +58,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -95,17 +98,42 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8997642626059151426}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -7561070456997400500, guid: 0ae1ccf9040748c45a3de2a0b75bd2a5, type: 3}
+--- !u!114 &3927134536551807621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8997642626059151426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50101e91d5d85f64b950b0024cc3cb49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fruits: []
+  fruitPrefab: {fileID: 7964392289491849746, guid: f2cfd25b355408945b4bdd6112f2a7a3, type: 3}
+  branchPrefab: {fileID: 8551928907943490973, guid: 09bfb31cab268164580d28d36bca5cf5, type: 3}
+  stumpPrefab: {fileID: 4789330849309193299, guid: 689e0e395ec9cb243b15de84f377e7c5, type: 3}
 --- !u!1001 &613279307364841352
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8617036348426777336}
     m_Modifications:
     - target: {fileID: 7335488837444290728, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
@@ -157,6 +185,9 @@ PrefabInstance:
       value: Orange_juice
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
 --- !u!4 &7876279511826956064 stripped
 Transform:
@@ -168,6 +199,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8617036348426777336}
     m_Modifications:
     - target: {fileID: 7335488837444290728, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
@@ -219,6 +251,9 @@ PrefabInstance:
       value: Orange_juice
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
 --- !u!4 &7640017578707190558 stripped
 Transform:
@@ -230,6 +265,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8617036348426777336}
     m_Modifications:
     - target: {fileID: 7335488837444290728, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
@@ -281,6 +317,9 @@ PrefabInstance:
       value: Orange_juice
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
 --- !u!4 &9195693466881861440 stripped
 Transform:
@@ -292,6 +331,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8617036348426777336}
     m_Modifications:
     - target: {fileID: 7335488837444290728, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
@@ -343,6 +383,9 @@ PrefabInstance:
       value: Orange_juice
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41cd87fec3f12b04399cf9018d0474dd, type: 3}
 --- !u!4 &281315039222522868 stripped
 Transform:
