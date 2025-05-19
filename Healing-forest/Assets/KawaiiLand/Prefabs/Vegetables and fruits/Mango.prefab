@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -1670451035660509433}
   m_Layer: 0
   m_Name: Mango
-  m_TagString: Untagged
+  m_TagString: Fruit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

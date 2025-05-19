@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1669473398721555340}
   - component: {fileID: 683284790666556763}
   - component: {fileID: 5216418948763739491}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Avocado_tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7561070456997400500, guid: 0ae1ccf9040748c45a3de2a0b75bd2a5, type: 3}
 --- !u!114 &5216418948763739491

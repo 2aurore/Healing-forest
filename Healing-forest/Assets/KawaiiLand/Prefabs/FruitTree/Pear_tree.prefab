@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5090860508702364891}
   - component: {fileID: -8016721260368753731}
   - component: {fileID: 535991455392193699}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Pear_tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7561070456997400500, guid: 0ae1ccf9040748c45a3de2a0b75bd2a5, type: 3}
 --- !u!114 &535991455392193699

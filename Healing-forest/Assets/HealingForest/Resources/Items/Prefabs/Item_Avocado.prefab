@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1417299490463594969}
   - component: {fileID: 71864507988653857}
   - component: {fileID: -9124342699394247536}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Item_Avocado
   m_TagString: Fruit
   m_Icon: {fileID: 0}

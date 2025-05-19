@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3238871737656026938}
   - component: {fileID: 3705657131838649490}
   - component: {fileID: -431275924914931502}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Item_GreenPear
   m_TagString: Fruit
   m_Icon: {fileID: 0}
