@@ -9,6 +9,7 @@ namespace HF
     {
         [field: SerializeField] public InventoryDTO InventoryData { get; private set; } = new InventoryDTO();
         [field: SerializeField] public int MaxInventorySlots = 40;  // 인벤토리 최대 슬롯 수
+        [field: SerializeField] public string CurrentEquipItemID { get; private set; } = string.Empty; // 현재 장착된 아이템 ID
 
         public event Action<UserItemDataDTO> OnInventoryDataChanged;
 
@@ -44,6 +45,10 @@ namespace HF
             return false;
         }
 
+        public void SetCurrentEquipItem(string itemID)
+        {
+            CurrentEquipItemID = itemID; // 현재 장착된 아이템 ID 설정
+        }
 
         public bool AddItemToInventory(string itemID, int quantity, float currentDurability, out int failedCount)
         {
@@ -67,7 +72,6 @@ namespace HF
 
                 if (isExistSameItem)
                 {
-                    // TODO: UI에서 아이템 stack 수량에 따라 적용하도록 수정
                     int afterCount = InventoryData.InventoryItems[index].itemCount + quantity; // 수량 추가
                     int quotient = afterCount / itemGameData.MaxStack;
                     int remainder = afterCount % itemGameData.MaxStack;

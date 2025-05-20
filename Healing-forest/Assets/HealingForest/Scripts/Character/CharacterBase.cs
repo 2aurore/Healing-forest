@@ -124,6 +124,8 @@ namespace HF
             }
 
             currentToolData = GameDataModel.Singleton.GetToolData(toolID);
+            UserDataModel.Singleton.SetCurrentEquipItem(toolID); // 현재 장착된 아이템 ID 설정
+
             animator.SetInteger("ToolType", currentToolData.ToolAnimatorKey == "PropA" ? 1 : 2);
             equippedTool = Instantiate(currentToolData.VisualPrefab, toolPosition.transform);
             equippedTool.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);

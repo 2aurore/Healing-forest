@@ -14,6 +14,7 @@ namespace HF
         public string itemID;   // GameData - ID
         public int itemCount;
         public float itemDurability;   // 아이템 내구도
+        public ItemCategory itemCategory; // 아이템 카테고리
     }
 
     [System.Serializable]
