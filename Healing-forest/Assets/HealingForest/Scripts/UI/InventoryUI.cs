@@ -39,16 +39,25 @@ namespace HF
                 Inventory_Item inventoryItem = itemUI.GetComponent<Inventory_Item>();
 
                 ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(itemData.itemID);
-                inventoryItem.Initialize(itemDataSO.Icon, itemData.itemCount);
+                inventoryItem.Initialize(itemData.itemID, itemData.itemCount, itemDataSO.Icon);
             }
-
-
         }
 
         private void UpdateItemUI(UserItemDataDTO itemData)
         {
             // 인벤토리 UI 업데이트 로직
 
+            Inventory_Item[] inventory_Items = inventoryItemsParent.GetComponentsInChildren<Inventory_Item>();
+            foreach (var inventoryItem in inventory_Items)
+            {
+                // 인벤토리 아이템 UI에서 아이템 ID와 일치하는 아이템을 찾습니다.
+                if (inventoryItem.ItemID == itemData.itemID)
+                {
+                    // 아이템 수량 업데이트
+                    inventoryItem.UpdateItemCount(itemData.itemCount);
+                    break;
+                }
+            }
         }
     }
 }
