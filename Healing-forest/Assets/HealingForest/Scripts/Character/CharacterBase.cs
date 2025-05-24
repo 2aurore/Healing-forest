@@ -50,6 +50,9 @@ namespace HF
             animator.SetFloat("Horizontal", animationParameterHorizontal);
             animator.SetFloat("Vertical", animationParameterVertical);
             animator.SetBool("IsRunning", IsRunning);
+
+            UserDataModel.Singleton.SetCharacterPosition(transform.position); // 캐릭터 위치 저장
+
         }
 
         /// <summary> 바닥 체크 메소드 </summary>
@@ -187,9 +190,6 @@ namespace HF
         {
             Gizmos.color = new Color(1, 0, 0, 0.5f);
             Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
-
-            // Grid grid;
-            // Vector3Int cellPosition = grid.WorldToCell(transform.position)
         }
 
         private void DetectActionCast()
@@ -200,7 +200,6 @@ namespace HF
             Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
-
                 // 1. 드롭 아이템인 경우 - 도구에 상관없이 상호작용
                 if (collider.TryGetComponent(out DropItem itemInterface))
                 {

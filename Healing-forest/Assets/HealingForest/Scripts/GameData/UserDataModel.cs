@@ -13,6 +13,9 @@ namespace HF
 
         public event Action<UserItemDataDTO> OnInventoryDataChanged;
 
+        // TODO: home <-> field 전환 시 캐릭터 Vector3 위치 저장
+        public Vector3 CharacterPosition { get; private set; } = Vector3.zero; // 캐릭터 위치
+
         public void Initialize()
         {
             InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
@@ -24,6 +27,13 @@ namespace HF
             {
                 AddItemToInventory(toolDataFair.Value.ToolId, 1, 100, out int failedCount); // tool 아이템 추가
             }
+        }
+
+        public void SetCharacterPosition(Vector3 position)
+        {
+            // 캐릭터 위치 설정
+            // Y 좌표는 1.05로 고정하여 캐릭터가 땅 위에 서 있도록 설정
+            CharacterPosition = new Vector3(position.x, 1.05f, position.z);
         }
 
         public bool IsExistTool(ToolType toolType, out UserItemDataDTO toolItemData)
