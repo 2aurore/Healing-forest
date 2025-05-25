@@ -19,7 +19,7 @@ namespace HF
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
             InputSystem.Singleton.OnTab += OnInventoryUI;
-
+            InputSystem.Singleton.OnCraftButtonDown += OnCraftingUI;
         }
 
         private void Update()
@@ -73,11 +73,9 @@ namespace HF
 
         }
 
-
-        void OnInventoryUI()
+        private void OnInventoryUI()
         {
             var inventory = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
-            Debug.Log("test", inventory);
             if (inventory != null)
             {
                 if (inventory.gameObject.activeSelf)
@@ -92,6 +90,23 @@ namespace HF
                 }
             }
 
+        }
+
+        private void OnCraftingUI()
+        {
+            var craftingUI = UIManager.Singleton.GetUI<CraftingUI>(UIList.CraftingUI);
+            if (craftingUI != null)
+            {
+                if (craftingUI.gameObject.activeSelf)
+                {
+                    UIManager.Hide<CraftingUI>(UIList.CraftingUI);
+                    return;
+                }
+                else
+                {
+                    UIManager.Show<CraftingUI>(UIList.CraftingUI);
+                }
+            }
         }
     }
 }

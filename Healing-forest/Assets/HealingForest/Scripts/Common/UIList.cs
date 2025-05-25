@@ -7,6 +7,7 @@ namespace HF
         TitleUI,
         IngameUI,
         InventoryUI,
+        CraftingUI,
         LogUI,
 
 
