@@ -82,4 +82,5 @@ crashlytics-build.properties
 # Healing-foreast/Assets/Plugins/Sirenix/Demos/Custom Attribute Processors.unitypackage.meta
 # Healing-foreast/Assets/Plugins/Sirenix/Demos/Custom Drawers.unitypackage.meta
 # Healing-foreast/Assets/Plugins/Sirenix/Demos/Editor Windows.unitypackage.meta
-# Healing-foreast/Assets/Plugins/Sirenix/Demos/Sample - RPG Editor.unitypackage.meta
+Healing-foreast/[Aa]ssets/VSCode/*
+Healing-foreast/[Aa]ssets/VSCode.meta

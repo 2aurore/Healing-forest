@@ -73,6 +73,8 @@ crashlytics-build.properties
 
 /[Aa]ssets/SimpleRuleTiles/*
 /[Aa]ssets/SimpleRuleTiles.meta
+/[Aa]ssets/VSCode/*
+/[Aa]ssets/VSCode.meta
 
 
 
