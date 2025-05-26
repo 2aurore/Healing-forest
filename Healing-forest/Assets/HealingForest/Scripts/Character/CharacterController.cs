@@ -94,19 +94,7 @@ namespace HF
 
         private void OnCraftingUI()
         {
-            var craftingUI = UIManager.Singleton.GetUI<CraftingUI>(UIList.CraftingUI);
-            if (craftingUI != null)
-            {
-                if (craftingUI.gameObject.activeSelf)
-                {
-                    UIManager.Hide<CraftingUI>(UIList.CraftingUI);
-                    return;
-                }
-                else
-                {
-                    UIManager.Show<CraftingUI>(UIList.CraftingUI);
-                }
-            }
+            linkedCharacter.DetectCraftingTable();
         }
     }
 }

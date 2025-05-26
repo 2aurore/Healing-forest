@@ -289,5 +289,22 @@ namespace HF
 
             IsProgressingAction = false;
         }
+
+        public void DetectCraftingTable()
+        {
+            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
+            foreach (Collider collider in overlapped)
+            {
+                if (collider.TryGetComponent(out CraftingTable craftingTable))
+                {
+                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                    UIManager.Show<CraftingUI>(UIList.CraftingUI);
+                }
+
+            }
+
+        }
     }
 }
