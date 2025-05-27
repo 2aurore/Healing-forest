@@ -33,7 +33,7 @@ namespace HF
         private float animationParameterHorizontal;
         private float animationParameterVertical;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             animator = GetComponent<Animator>();
         }
@@ -210,6 +210,14 @@ namespace HF
                     return;
                 }
 
+                if (collider.TryGetComponent(out NPCInteract npcInteract))
+                {
+                    // NPC와 상호작용
+                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+                    npcInteract.Interact(this);
+                    return;
+                }
+
                 // 2. 도구별 인터페이스 처리
                 bool interactionHandled = HandleToolSpecificInteraction(collider);
                 if (interactionHandled)
@@ -273,10 +281,13 @@ namespace HF
                         return;
                     }
 
+                    if (collider.TryGetComponent(out NPCInteract npcInteract))
+                    {
+                        // NPC와 상호작용
+                        npcInteract.Interact(this);
+                    }
                 }
-
             }
-
             // 충돌한 오브젝트가 없는 경우
             ResetAnimatorLayer();
         }
@@ -302,9 +313,7 @@ namespace HF
                     SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
                     UIManager.Show<CraftingUI>(UIList.CraftingUI);
                 }
-
             }
-
         }
     }
 }
