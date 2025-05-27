@@ -200,6 +200,23 @@ namespace HF
             Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
+                if (collider.TryGetComponent(out NPCInteract npcInteract))
+                {
+                    // NPC와 상호작용
+                    SetActionLookAt(collider.transform.position);
+                    npcInteract.Interact(this);
+                    return;
+                }
+
+                if (collider.TryGetComponent(out CraftingInteract craftingInteract))
+                {
+                    // 아이템 제작대와 상호작용
+                    // SetActionLookAt(collider.transform.position);
+                    craftingInteract.Interact(this);
+                    return;
+                }
+
+
                 // 1. 드롭 아이템인 경우 - 도구에 상관없이 상호작용
                 if (collider.TryGetComponent(out DropItem itemInterface))
                 {
@@ -210,13 +227,6 @@ namespace HF
                     return;
                 }
 
-                if (collider.TryGetComponent(out NPCInteract npcInteract))
-                {
-                    // NPC와 상호작용
-                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    npcInteract.Interact(this);
-                    return;
-                }
 
                 // 2. 도구별 인터페이스 처리
                 bool interactionHandled = HandleToolSpecificInteraction(collider);
@@ -308,7 +318,7 @@ namespace HF
             Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
             foreach (Collider collider in overlapped)
             {
-                if (collider.TryGetComponent(out CraftingTable craftingTable))
+                if (collider.TryGetComponent(out CraftingInteract craftingTable))
                 {
                     SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
                     UIManager.Show<CraftingUI>(UIList.CraftingUI);
