@@ -59,5 +59,11 @@ namespace HF
                 }
             }
         }
+
+        public void CloseInventory()
+        {
+            // 인벤토리 UI 닫기
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -8,15 +8,15 @@ namespace HF
     {
         private void OnEnable()
         {
-            InputSystem.Singleton.OnEscapeInput += OnEscapteInput;
+            InputSystem.Singleton.OnEscapeInput += CloseCrafting;
         }
         private void OnDisable()
         {
-            InputSystem.Singleton.OnEscapeInput -= OnEscapteInput;
+            InputSystem.Singleton.OnEscapeInput -= CloseCrafting;
         }
 
 
-        private void OnEscapteInput()
+        public void CloseCrafting()
         {
             UIManager.Hide<CraftingUI>(UIList.CraftingUI);
         }
