@@ -41,6 +41,13 @@ namespace HF
         {
             Main.Singleton.Initialize();
 
+            // EventSystem이 이미 존재하지 않으면 생성하고 DontDestroyOnLoad로 유지
+            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            {
+                var eventSystemGO = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
+                DontDestroyOnLoad(eventSystemGO);
+            }
+
             // TODO : Custom Order After System Load
             //     UIManager.Show<IngameUI>(UIList.IngameUI);
             //     UIManager.Show<LogUI>(UIList.LogUI);
