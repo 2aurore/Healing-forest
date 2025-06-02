@@ -42,5 +42,13 @@ namespace HF
         {
             itemCount.text = count.ToString();
         }
+
+        public void InitializeEmpty()
+        {
+            // itemImage.sprite = defaultImage; // 빈 슬롯은 기본 이미지 사용
+            itemCount.text = "";    // 빈 슬롯은 아이템 개수 표시 안함
+            ItemID = string.Empty; // 빈 슬롯은 아이템 ID가 없음
+            eqquippedImage.gameObject.SetActive(false); // 빈 슬롯은 장착 이미지도 비활성화
+        }
     }
 }

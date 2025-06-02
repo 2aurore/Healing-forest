@@ -33,13 +33,31 @@ namespace HF
         private void InitializeInventoryUI()
         {
             // 인벤토리 UI 초기화 로직
-            foreach (var itemData in UserDataModel.Singleton.InventoryData.InventoryItems)
+            // 기존 자식 오브젝트 모두 제거
+            foreach (Transform child in inventoryItemsParent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            int slotCount = UserDataModel.Singleton.MaxInventorySlots;
+            var inventoryItems = UserDataModel.Singleton.InventoryData.InventoryItems;
+
+            // 아이템이 들어있는 슬롯 먼저 생성
+            foreach (var itemData in inventoryItems)
             {
                 GameObject itemUI = Instantiate(inventoryItemPrefab, inventoryItemsParent);
                 Inventory_Item inventoryItem = itemUI.GetComponent<Inventory_Item>();
-
                 ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(itemData.itemID);
                 inventoryItem.Initialize(itemData.itemID, itemData.itemCount, itemDataSO.Icon);
+            }
+
+            // 남은 빈 슬롯 생성
+            int emptySlotCount = slotCount - inventoryItems.Count;
+            for (int i = 0; i < emptySlotCount; i++)
+            {
+                GameObject itemUI = Instantiate(inventoryItemPrefab, inventoryItemsParent);
+                Inventory_Item inventoryItem = itemUI.GetComponent<Inventory_Item>();
+                inventoryItem.InitializeEmpty(); // 빈 슬롯으로 초기화
             }
         }
 
