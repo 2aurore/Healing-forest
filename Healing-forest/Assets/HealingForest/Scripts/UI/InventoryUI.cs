@@ -1,87 +1,87 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HF
 {
     public class InventoryUI : UIBase
     {
+        public static InventoryUI Instance => UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
 
-        [SerializeField] private Transform inventoryItemsParent; // UI 항목들의 부모 요소
-        [SerializeField] private GameObject inventoryItemPrefab; // 인벤토리 아이템 UI 프리팹
+        [SerializeField] private Transform inventoryItemsParent;
+        [SerializeField] private GameObject inventoryItemPrefab;
 
-        private void OnEnable()
+        [SerializeField] private List<Inventory_Item> inventorySlots = new List<Inventory_Item>();
+
+        /// <summary>
+        /// 인벤토리 슬롯들을 생성하고 리스트로 반환
+        /// </summary>
+        public List<Inventory_Item> CreateInventorySlots(int slotCount)
         {
-            // 이벤트 구독
-            UserDataModel.Singleton.OnInventoryDataChanged += UpdateItemUI;
+            // 기존 슬롯들 정리
+            ClearAllSlots();
+
+            // 새로운 슬롯들 생성
+            for (int i = 0; i < slotCount; i++)
+            {
+                GameObject slotObject = Instantiate(inventoryItemPrefab, inventoryItemsParent);
+                Inventory_Item inventorySlot = slotObject.GetComponent<Inventory_Item>();
+                inventorySlots.Add(inventorySlot);
+            }
+
+            return inventorySlots;
         }
 
-        private void OnDisable()
+        /// <summary>
+        /// 특정 아이템 ID를 가진 슬롯을 찾기
+        /// </summary>
+        public Inventory_Item FindSlotByItemID(string itemID)
         {
-            // 이벤트 구독 해제
-
-            UserDataModel.Singleton.OnInventoryDataChanged -= UpdateItemUI;
+            return inventorySlots.Find(slot => slot.ItemID == itemID);
         }
 
-        private void Start()
+        /// <summary>
+        /// 빈 슬롯 찾기
+        /// </summary>
+        public Inventory_Item FindEmptySlot()
         {
-            // 인벤토리 UI 초기화
-            InitializeInventoryUI();
+            return inventorySlots.Find(slot => string.IsNullOrEmpty(slot.ItemID));
         }
 
-        private void InitializeInventoryUI()
+        /// <summary>
+        /// 모든 슬롯 정리
+        /// </summary>
+        private void ClearAllSlots()
         {
-            // 인벤토리 UI 초기화 로직
-            // 기존 자식 오브젝트 모두 제거
             foreach (Transform child in inventoryItemsParent)
             {
                 Destroy(child.gameObject);
             }
-
-            int slotCount = UserDataModel.Singleton.MaxInventorySlots;
-            var inventoryItems = UserDataModel.Singleton.InventoryData.InventoryItems;
-
-            // 아이템이 들어있는 슬롯 먼저 생성
-            foreach (var itemData in inventoryItems)
-            {
-                GameObject itemUI = Instantiate(inventoryItemPrefab, inventoryItemsParent);
-                Inventory_Item inventoryItem = itemUI.GetComponent<Inventory_Item>();
-                ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(itemData.itemID);
-                inventoryItem.Initialize(itemData.itemID, itemData.itemCount, itemDataSO.Icon);
-            }
-
-            // 남은 빈 슬롯 생성
-            int emptySlotCount = slotCount - inventoryItems.Count;
-            for (int i = 0; i < emptySlotCount; i++)
-            {
-                GameObject itemUI = Instantiate(inventoryItemPrefab, inventoryItemsParent);
-                Inventory_Item inventoryItem = itemUI.GetComponent<Inventory_Item>();
-                inventoryItem.InitializeEmpty(); // 빈 슬롯으로 초기화
-            }
+            inventorySlots.Clear();
         }
 
-        private void UpdateItemUI(UserItemDataDTO itemData)
-        {
-            // 인벤토리 UI 업데이트 로직
-
-            Inventory_Item[] inventory_Items = inventoryItemsParent.GetComponentsInChildren<Inventory_Item>();
-            foreach (var inventoryItem in inventory_Items)
-            {
-                // 인벤토리 아이템 UI에서 아이템 ID와 일치하는 아이템을 찾습니다.
-                if (inventoryItem.ItemID == itemData.itemID)
-                {
-                    // 아이템 수량 업데이트
-                    inventoryItem.UpdateItemCount(itemData.itemCount);
-                    break;
-                }
-            }
-        }
-
+        /// <summary>
+        /// 인벤토리 닫기
+        /// </summary>
         public void CloseInventory()
         {
-            // 인벤토리 UI 닫기
             gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 모든 슬롯의 장착 상태 업데이트 (장착 아이템이 변경되었을 때)
+        /// </summary>
+        public void UpdateAllEquipmentStatus()
+        {
+            foreach (var slot in inventorySlots)
+            {
+                if (!string.IsNullOrEmpty(slot.ItemID))
+                {
+                    slot.UpdateEqquippedImage(slot.ItemID);
+                }
+            }
         }
     }
 }
