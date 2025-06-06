@@ -10958,9 +10958,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 756a65186a282f7409d35c168cdc3327, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  m_TileSpriteArray:
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  m_TileSpriteArray: []
   m_TileMatrixArray:
   - m_RefCount: 1042
     m_Data:
@@ -12021,7 +12019,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5548282569211697360, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5548282569211697360, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_LocalRotation.y
@@ -12029,7 +12027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5548282569211697360, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5548282569211697360, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -12041,6 +12039,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5548282569211697360, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634540065397297732, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7914343901933708845, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7914343901933708845, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
+      propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
