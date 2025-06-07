@@ -16,7 +16,7 @@ namespace HF
             // 낚시대는 특별한 조건에서만 사용 가능
             if (character.currentToolData.ToolName == "FishingRod")
             {
-                return !character.IsGrounded; // 땅에 서 있지 않을 때만 사용 가능
+                return !character.IsGrounded; // 캐릭터 앞 영역이 땅이 아닌 경우만 사용 가능
             }
 
             // 다른 도구들은 상호작용 가능한 오브젝트가 있을 때만
@@ -53,7 +53,7 @@ namespace HF
             {
                 Debug.Log("Can use Fishing Rod while not grounded.");
                 // TODO: 낚시대 던지는 애니메이션 재생
-                character.animator.Play("Action FishingRod Cast"); // 예시 애니메이션 이름
+                // character.animator.Play("Action FishingRod Cast"); // 예시 애니메이션 이름
             }
             else
             {
