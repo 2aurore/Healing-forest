@@ -15,9 +15,6 @@ namespace HF
         public System.Action OnTab;
         public System.Action<float> OnScrollWheel;
 
-        private void Start()
-        {
-        }
 
         private void Update()
         {
