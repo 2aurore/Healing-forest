@@ -27,6 +27,7 @@ namespace HF
         [SerializeField] private LayerMask groundLayer; // Ground 레이어 마스크
 
         [SerializeField] private float interactRadius = 0.6f; // 상호작용 반경
+        [SerializeField] private List<IInteractionHandler> interactionHandlers;  // 상호작용 핸들러 목록
 
 
         private float animationParameterSpeed;
@@ -76,6 +77,9 @@ namespace HF
             if (IsProgressingAction)
             {
                 // 액션 진행 중에는 이동을 하지 않음
+                animationParameterSpeed = 0f;
+                animationParameterHorizontal = 0f;
+                animationParameterVertical = 0f;
                 return;
             }
 
@@ -135,6 +139,20 @@ namespace HF
             equippedTool.transform.SetParent(toolPosition.transform); // 툴을 툴 포지션의 자식으로 설정
         }
 
+        protected virtual void InitializeInteractionHandlers()
+        {
+            interactionHandlers = new List<IInteractionHandler>
+            {
+                new DropItemHandler(),
+                new NPCInteractionHandler(),
+                new CraftingTableHandler(),
+                new TreeShakeHandler(),
+                new ToolSpecificHandler()
+            };
+
+            // 우선순위에 따라 정렬
+            interactionHandlers.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+        }
 
 
         public void Action(Vector3 targetPoint)
@@ -145,37 +163,32 @@ namespace HF
                 return;
             }
 
-            if (currentToolData == null)
-            {
-                SetActionLookAt(targetPoint);
-                DetectInteractableCast();
-                return;
-            }
+            SetActionLookAt(targetPoint);   // 타겟 포인트를 바라보도록 설정
+            DetectionMode mode = DetermineDetectionMode();  // 현재 바라보는 방향을 기준으로 상호작용 모드 결정
 
-
-            SetActionLookAt(targetPoint);
-            if (currentToolData.ToolName == "FishingRod")
-            {
-                if (!IsGrounded)
-                {
-                    // 앞이 Ground가 아닌 상태에서만 낚시대를 던질 수 있음
-                    // TODO: 낚시대 던지는 애니메이션 재생
-                    Debug.Log("Can use Fishing Rod while not grounded.");
-                }
-                else
-                {
-                    IsProgressingAction = false;
-                }
-                return;
-            }
-            else
-            {
-                // TODO: 현재 들고 있는 도구에 따라 다른 로직을 적용
-                DetectActionCast();
-            }
+            DetectInteraction(mode, targetPoint);
         }
 
-        private void SetActionLookAt(Vector3 targetPoint)
+        /// <summary> 상호작용 감지 모드를 결정하는 메소드 </summary>
+        private DetectionMode DetermineDetectionMode()
+        {
+            // 미리 주변을 탐지해서 제작대가 있는지 확인
+            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+            Vector3 detectionCenter = transform.position + Vector3.up * 0.3f + transform.forward * 0.5f;
+            Collider[] overlapped = Physics.OverlapSphere(detectionCenter, interactRadius, layerMask);
+
+            foreach (var collider in overlapped)
+            {
+                if (collider.TryGetComponent(out CraftingInteract _))
+                {
+                    return DetectionMode.CraftingTable;
+                }
+            }
+
+            return currentToolData == null ? DetectionMode.Default : DetectionMode.ToolAction;
+        }
+
+        public void SetActionLookAt(Vector3 targetPoint)
         {
             // 애니메이터의 Upper Body Layer의 Weight를 0으로 설정
             int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
@@ -184,122 +197,6 @@ namespace HF
             IsProgressingAction = true;
             targetPoint.y = transform.position.y; // y축을 현재 캐릭터의 y축으로 설정
             transform.LookAt(targetPoint); // 타겟 포인트를 바라보도록 회전
-        }
-
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = new Color(1, 0, 0, 0.5f);
-            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
-        }
-
-        private void DetectActionCast()
-        {
-            // 레이어 마스크 확인
-            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
-
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
-            foreach (Collider collider in overlapped)
-            {
-                if (collider.TryGetComponent(out NPCInteract npcInteract))
-                {
-                    // NPC와 상호작용
-                    SetActionLookAt(collider.transform.position);
-                    npcInteract.Interact(this);
-                    return;
-                }
-
-                if (collider.TryGetComponent(out CraftingInteract craftingInteract))
-                {
-                    // 아이템 제작대와 상호작용
-                    // SetActionLookAt(collider.transform.position);
-                    craftingInteract.Interact(this);
-                    return;
-                }
-
-
-                // 1. 드롭 아이템인 경우 - 도구에 상관없이 상호작용
-                if (collider.TryGetComponent(out DropItem itemInterface))
-                {
-                    // 아이템 인터페이스가 있는 경우
-                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    animator.Play("PickInPocket");
-                    itemInterface.Interact(this);
-                    return;
-                }
-
-
-                // 2. 도구별 인터페이스 처리
-                bool interactionHandled = HandleToolSpecificInteraction(collider);
-                if (interactionHandled)
-                {
-                    return;
-                }
-            }
-
-            // 충돌한 오브젝트가 없는 경우
-            animator.Play($"Action {currentToolData.ToolName} Failed");
-        }
-
-        private bool HandleToolSpecificInteraction(Collider collider)
-        {
-            // 도구별 인터페이스 처리
-            if (currentToolData.CanInteractWith<IChop>() && collider.TryGetComponent(out IChop chopInterface))
-            {
-                SetActionLookAt(collider.transform.position);
-                chopInterface.OnDamaged(this);
-                return true;
-            }
-
-            if (currentToolData.CanInteractWith<IHit>() && collider.TryGetComponent(out IHit hitInterface))
-            {
-                SetActionLookAt(collider.transform.position);
-                hitInterface.OnDamaged(this);
-                return true;
-            }
-
-            // 추가적인 인터페이스 처리 확장 가능
-            // if (currentToolData.CanInteractWith<IDig>() && collider.TryGetComponent(out IDig digInterface)) { ... }
-
-            return false;
-        }
-
-        private void DetectInteractableCast()
-        {
-            // 레이어 마스크 확인
-            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
-
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
-            foreach (Collider collider in overlapped)
-            {
-                Debug.Log(collider.name);
-                if (collider.TryGetComponent(out IInteractable interactableInterface))
-                {
-                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    if (collider.TryGetComponent(out DropItem item))
-                    {
-                        // 아이템 인터페이스가 있는 경우
-                        animator.Play("PickInPocket");
-                        interactableInterface.Interact(this);
-                        return;
-                    }
-
-                    if (collider.TryGetComponent(out TreeObject tree))
-                    {
-                        // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
-                        animator.Play("Tree Shake");
-                        interactableInterface.Interact(this);
-                        return;
-                    }
-
-                    if (collider.TryGetComponent(out NPCInteract npcInteract))
-                    {
-                        // NPC와 상호작용
-                        npcInteract.Interact(this);
-                    }
-                }
-            }
-            // 충돌한 오브젝트가 없는 경우
-            ResetAnimatorLayer();
         }
 
         /// <summary> 애니메이터 레이어를 초기화하는 메소드 </summary>
@@ -311,19 +208,240 @@ namespace HF
             IsProgressingAction = false;
         }
 
-        public void DetectCraftingTable()
+        private void OnDrawGizmos()
         {
-            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
+        }
 
-            Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
-            foreach (Collider collider in overlapped)
+
+        /// <summary> 통합된 상호작용 감지 메소드 </summary>
+        /// <param name="detectionMode">상호작용 타입</param>
+        public void DetectInteraction(DetectionMode detectionMode, Vector3? targetPoint = null)
+        {
+            if (interactionHandlers == null)
             {
-                if (collider.TryGetComponent(out CraftingInteract craftingTable))
+                InitializeInteractionHandlers();
+            }
+
+            // 낚시대는 특별 처리 (충돌 감지 없이 바로 처리)
+            if (detectionMode == DetectionMode.ToolAction &&
+                currentToolData != null &&
+                currentToolData.ToolName == "FishingRod")
+            {
+                var toolHandler = interactionHandlers.Find(h => h is ToolSpecificHandler);
+                if (toolHandler != null && toolHandler.CanHandle(null, this))
                 {
-                    SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
-                    UIManager.Show<CraftingUI>(UIList.CraftingUI);
+                    toolHandler.Handle(null, this);
+                    return;
                 }
             }
+
+            // 일반적인 충돌 감지
+            int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+            Vector3 detectionCenter = transform.position + Vector3.up * 0.3f + transform.forward * 0.5f;
+            Collider[] overlapped = Physics.OverlapSphere(detectionCenter, interactRadius, layerMask, QueryTriggerInteraction.Collide);
+
+            foreach (Collider collider in overlapped)
+            {
+                // 상호작용 타입별 필터링
+                if (!ShouldProcessCollider(collider, detectionMode))
+                {
+                    continue;
+                }
+
+                // 핸들러를 통한 상호작용 처리
+                foreach (var handler in interactionHandlers)
+                {
+                    if (handler.CanHandle(collider, this))
+                    {
+                        handler.Handle(collider, this);
+                        return;
+                    }
+                }
+            }
+
+            // 상호작용을 처리하지 못한 경우
+            HandleNoInteraction(detectionMode);
         }
+
+        private bool ShouldProcessCollider(Collider collider, DetectionMode detectionMode)
+        {
+            switch (detectionMode)
+            {
+                case DetectionMode.CraftingTable:
+                    return collider.TryGetComponent(out CraftingInteract _);
+                case DetectionMode.ToolAction:
+                    // 도구 액션 시에는 제작대 제외
+                    return !collider.TryGetComponent(out CraftingInteract _);
+                case DetectionMode.Default:
+                    // 기본 상호작용 시에는 제작대 제외
+                    return !collider.TryGetComponent(out CraftingInteract _);
+                default:
+                    return true;
+            }
+        }
+
+        private void HandleNoInteraction(DetectionMode detectionMode)
+        {
+            switch (detectionMode)
+            {
+                case DetectionMode.ToolAction:
+                    if (currentToolData != null)
+                    {
+                        // 낚시대의 경우 지면에 서 있으면 액션을 종료
+                        if (currentToolData.ToolName == "FishingRod" && IsGrounded)
+                        {
+                            IsProgressingAction = false;
+                        }
+                        else
+                        {
+                            animator.Play($"Action {currentToolData.ToolName} Failed");
+                        }
+                    }
+                    break;
+                case DetectionMode.Default:
+                case DetectionMode.CraftingTable:
+                    ResetAnimatorLayer();
+                    break;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        // private void DetectActionCast()
+        // {
+        //     // 레이어 마스크 확인
+        //     int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+        //     Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
+        //     foreach (Collider collider in overlapped)
+        //     {
+        //         if (collider.TryGetComponent(out NPCInteract npcInteract))
+        //         {
+        //             // NPC와 상호작용
+        //             SetActionLookAt(collider.transform.position);
+        //             npcInteract.Interact(this);
+        //             return;
+        //         }
+
+        //         if (collider.TryGetComponent(out CraftingInteract craftingInteract))
+        //         {
+        //             // 아이템 제작대와 상호작용
+        //             // SetActionLookAt(collider.transform.position);
+        //             craftingInteract.Interact(this);
+        //             return;
+        //         }
+
+
+        //         // 1. 드롭 아이템인 경우 - 도구에 상관없이 상호작용
+        //         if (collider.TryGetComponent(out DropItem itemInterface))
+        //         {
+        //             // 아이템 인터페이스가 있는 경우
+        //             SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+        //             animator.Play("PickInPocket");
+        //             itemInterface.Interact(this);
+        //             return;
+        //         }
+
+
+        //         // 2. 도구별 인터페이스 처리
+        //         bool interactionHandled = HandleToolSpecificInteraction(collider);
+        //         if (interactionHandled)
+        //         {
+        //             return;
+        //         }
+        //     }
+
+        //     // 충돌한 오브젝트가 없는 경우
+        //     animator.Play($"Action {currentToolData.ToolName} Failed");
+        // }
+
+        // private bool HandleToolSpecificInteraction(Collider collider)
+        // {
+        //     // 도구별 인터페이스 처리
+        //     if (currentToolData.CanInteractWith<IChop>() && collider.TryGetComponent(out IChop chopInterface))
+        //     {
+        //         SetActionLookAt(collider.transform.position);
+        //         chopInterface.OnDamaged(this);
+        //         return true;
+        //     }
+
+        //     if (currentToolData.CanInteractWith<IHit>() && collider.TryGetComponent(out IHit hitInterface))
+        //     {
+        //         SetActionLookAt(collider.transform.position);
+        //         hitInterface.OnDamaged(this);
+        //         return true;
+        //     }
+
+        //     // 추가적인 인터페이스 처리 확장 가능
+        //     // if (currentToolData.CanInteractWith<IDig>() && collider.TryGetComponent(out IDig digInterface)) { ... }
+
+        //     return false;
+        // }
+
+        // private void DetectInteractableCast()
+        // {
+        //     // 레이어 마스크 확인
+        //     int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+        //     Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
+        //     foreach (Collider collider in overlapped)
+        //     {
+        //         Debug.Log(collider.name);
+        //         if (collider.TryGetComponent(out IInteractable interactableInterface))
+        //         {
+        //             SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+        //             if (collider.TryGetComponent(out DropItem item))
+        //             {
+        //                 // 아이템 인터페이스가 있는 경우
+        //                 animator.Play("PickInPocket");
+        //                 interactableInterface.Interact(this);
+        //                 return;
+        //             }
+
+        //             if (collider.TryGetComponent(out TreeObject tree))
+        //             {
+        //                 // 나무 앞에서 나무 흔들기 인터페이스가 있는 경우
+        //                 animator.Play("Tree Shake");
+        //                 interactableInterface.Interact(this);
+        //                 return;
+        //             }
+
+        //             if (collider.TryGetComponent(out NPCInteract npcInteract))
+        //             {
+        //                 // NPC와 상호작용
+        //                 npcInteract.Interact(this);
+        //             }
+        //         }
+        //     }
+        //     // 충돌한 오브젝트가 없는 경우
+        //     ResetAnimatorLayer();
+        // }
+
+
+
+        // public void DetectCraftingTable()
+        // {
+        //     int layerMask = 1 << LayerMask.NameToLayer("Interactable");
+
+        //     Collider[] overlapped = Physics.OverlapSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius, layerMask, QueryTriggerInteraction.Collide);
+        //     foreach (Collider collider in overlapped)
+        //     {
+        //         if (collider.TryGetComponent(out CraftingInteract craftingTable))
+        //         {
+        //             SetActionLookAt(collider.transform.position); // 충돌한 오브젝트를 바라보도록 회전
+        //             UIManager.Show<CraftingUI>(UIList.CraftingUI);
+        //         }
+        //     }
+        // }
     }
 }
