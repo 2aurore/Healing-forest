@@ -7,7 +7,7 @@ namespace HF
     /// <summary> 나무 흔들기 상호작용 처리 핸들러 </summary>
     public class TreeShakeHandler : IInteractionHandler
     {
-        public int Priority => 4;
+        public int Priority => 5;
 
         public bool CanHandle(Collider collider, CharacterBase character)
         {

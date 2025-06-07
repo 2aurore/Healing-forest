@@ -7,7 +7,7 @@ namespace HF
     /// <summary> 도구별 상호작용 처리 핸들러 </summary>
     public class ToolSpecificHandler : IInteractionHandler
     {
-        public int Priority => 5;
+        public int Priority => 4;
 
         public bool CanHandle(Collider collider, CharacterBase character)
         {
