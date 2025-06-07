@@ -4,25 +4,95 @@ using UnityEngine;
 
 namespace HF
 {
-    // InventoryController.cs
     public class InventoryController : MonoBehaviour
     {
+        private InventoryUI inventoryUI;
+        private bool isInitialized = false;
+
+        private void Start()
+        {
+            InputSystem.Singleton.OnTab += OnInventoryUI;
+        }
 
         private void OnEnable()
         {
-            // UserDataModel의 변경사항을 구독
             UserDataModel.Singleton.OnInventoryDataChanged += OnInventoryDataChanged;
+            UserDataModel.Singleton.OnEquipmentChanged += OnEquipmentChanged;
+
         }
 
         private void OnDisable()
         {
-            UserDataModel.Singleton.OnInventoryDataChanged -= OnInventoryDataChanged;
+            if (UserDataModel.Singleton != null)
+            {
+                UserDataModel.Singleton.OnInventoryDataChanged -= OnInventoryDataChanged;
+                UserDataModel.Singleton.OnEquipmentChanged -= OnEquipmentChanged;
+            }
         }
 
-        public void Initialize()
+        private void OnInventoryUI()
         {
-            Debug.Log("InventoryController Start");
-            InitializeInventory();
+            EnsureInitialized();
+
+            if (inventoryUI != null)
+            {
+                if (inventoryUI.gameObject.activeSelf)
+                {
+                    HideInventory();
+                }
+                else
+                {
+                    ShowInventory();
+                }
+            }
+
+        }
+
+        /// <summary> 장착 아이템이 변경되는 경우 (UserDataModel 이벤트로 호출) </summary>
+        private void OnEquipmentChanged(string previousItemID, string newItemID)
+        {
+            if (isInitialized && inventoryUI != null)
+            {
+                Debug.Log($"InventoryController: Equipment changed from {previousItemID} to {newItemID}");
+                inventoryUI.UpdateAllEquipmentStatus();
+            }
+        }
+
+        /// <summary> 인벤토리 UI가 필요할 때 초기화 (Lazy Initialization) </summary>
+        public void EnsureInitialized()
+        {
+            if (isInitialized) return;
+
+            // UI가 아직 생성되지 않았다면 생성
+            if (inventoryUI == null)
+            {
+                inventoryUI = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI); // UIList에 맞게 수정
+            }
+
+            if (inventoryUI != null)
+            {
+                Debug.Log("InventoryController Initialize");
+                InitializeInventory();
+                isInitialized = true;
+            }
+        }
+
+        public void ShowInventory()
+        {
+
+            if (inventoryUI != null)
+            {
+                inventoryUI.Show();
+                RefreshInventoryUI(); // 최신 데이터로 갱신
+            }
+        }
+
+        public void HideInventory()
+        {
+            if (inventoryUI != null)
+            {
+                inventoryUI.Hide();
+            }
         }
 
         private void InitializeInventory()
@@ -31,7 +101,7 @@ namespace HF
             int maxSlots = UserDataModel.Singleton.MaxInventorySlots;
 
             // InventoryUI에게 슬롯 생성 요청
-            List<Inventory_Item> inventorySlots = InventoryUI.Instance.CreateInventorySlots(maxSlots);
+            List<Inventory_Item> inventorySlots = inventoryUI.CreateInventorySlots(maxSlots);
 
             // 각 슬롯에 데이터 설정
             int slotIndex = 0;
@@ -58,11 +128,26 @@ namespace HF
             }
         }
 
+        /// <summary>
+        /// UI 데이터 새로고침 (슬롯 재생성 없이)
+        /// </summary>
+        private void RefreshInventoryUI()
+        {
+            if (!isInitialized || inventoryUI == null) return;
+
+            InventoryDTO inventoryData = UserDataModel.Singleton.InventoryData;
+
+            // 모든 슬롯의 장착 상태 업데이트
+            inventoryUI.UpdateAllEquipmentStatus();
+        }
+
         // UserDataModel에서 데이터가 변경되면 호출됨
         private void OnInventoryDataChanged(UserItemDataDTO changedItem)
         {
+            if (!isInitialized || inventoryUI == null) return;
+
             // UI에서 해당 아이템 ID를 가진 슬롯 찾기
-            Inventory_Item targetSlot = InventoryUI.Instance.FindSlotByItemID(changedItem.itemID);
+            Inventory_Item targetSlot = inventoryUI.FindSlotByItemID(changedItem.itemID);
 
             if (targetSlot != null)
             {
@@ -75,7 +160,7 @@ namespace HF
             else
             {
                 // 새로운 아이템이 추가된 경우 - 빈 슬롯을 찾아서 설정
-                Inventory_Item emptySlot = InventoryUI.Instance.FindEmptySlot();
+                Inventory_Item emptySlot = inventoryUI.FindEmptySlot();
                 if (emptySlot != null)
                 {
                     var itemDataSO = GameDataModel.Singleton.GetItemData(changedItem.itemID);
@@ -85,10 +170,13 @@ namespace HF
             }
         }
 
-        //  장착 아이템이 변경되는 경우
+        // 장착 아이템이 변경되는 경우
         private void OnEquipmentChanged(string newEquipItemID)
         {
-            InventoryUI.Instance.UpdateAllEquipmentStatus();
+            if (isInitialized && inventoryUI != null)
+            {
+                inventoryUI.UpdateAllEquipmentStatus();
+            }
         }
     }
 }

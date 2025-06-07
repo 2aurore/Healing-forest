@@ -1,19 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HF
 {
     public class InventoryUI : UIBase
     {
-        public static InventoryUI Instance => UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
-
         [SerializeField] private Transform inventoryItemsParent;
         [SerializeField] private GameObject inventoryItemPrefab;
 
         [SerializeField] private List<Inventory_Item> inventorySlots = new List<Inventory_Item>();
+
 
         /// <summary>
         /// 인벤토리 슬롯들을 생성하고 리스트로 반환
@@ -60,14 +58,6 @@ namespace HF
                 Destroy(child.gameObject);
             }
             inventorySlots.Clear();
-        }
-
-        /// <summary>
-        /// 인벤토리 닫기
-        /// </summary>
-        public void CloseInventory()
-        {
-            gameObject.SetActive(false);
         }
 
         /// <summary>

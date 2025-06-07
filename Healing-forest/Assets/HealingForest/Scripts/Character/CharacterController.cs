@@ -18,7 +18,6 @@ namespace HF
         {
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
-            InputSystem.Singleton.OnTab += OnInventoryUI;
         }
 
         private void Update()
@@ -57,36 +56,29 @@ namespace HF
             if (currentToolType >= ToolType.End)
             {
                 currentToolType = ToolType.None;
-                linkedCharacter.EquipTool(null);
+                EquipTool(null);
             }
             else
             {
                 if (UserDataModel.Singleton.IsExistTool(currentToolType, out UserItemDataDTO existTooluserData))
                 {
                     string toolId = existTooluserData.itemID;
-                    linkedCharacter.EquipTool(toolId);
+                    EquipTool(toolId);
                 }
             }
 
         }
 
-        private void OnInventoryUI()
+        /// <summary>
+        /// 도구 장착
+        /// </summary>
+        private void EquipTool(string toolId)
         {
-            var inventory = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
-            if (inventory != null)
-            {
-                if (inventory.gameObject.activeSelf)
-                {
-                    UIManager.Hide<InventoryUI>(UIList.InventoryUI);
-                    return;
-                }
+            // 캐릭터에 장비 적용
+            linkedCharacter.EquipTool(toolId);
 
-                else
-                {
-                    UIManager.Show<InventoryUI>(UIList.InventoryUI);
-                }
-            }
-
+            // UserDataModel을 통해 장비 변경 관리
+            UserDataModel.Singleton.ChangeEquipment(toolId);
         }
 
     }

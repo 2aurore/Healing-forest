@@ -12,12 +12,15 @@ namespace HF
         [field: SerializeField] public string CurrentEquipItemID { get; private set; } = string.Empty; // 현재 장착된 아이템 ID
 
         public event Action<UserItemDataDTO> OnInventoryDataChanged;
+        public event Action<string, string> OnEquipmentChanged; // 장비 변경 이벤트 (previous, current)
+
 
         // TODO: home <-> field 전환 시 캐릭터 Vector3 위치 저장
         public Vector3 CharacterPosition { get; private set; } = Vector3.zero; // 캐릭터 위치
 
         public void Initialize()
         {
+            Debug.Log("UserDataModel Initialize");
             InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
 
             // TODO: 기존에 save된 UserData가 있다면 불러오기
@@ -53,6 +56,18 @@ namespace HF
             }
             toolItemData = null; // 도구 데이터가 존재하지 않음
             return false;
+        }
+
+        public void ChangeEquipment(string newItemID)
+        {
+            string previousItemID = CurrentEquipItemID;
+            CurrentEquipItemID = newItemID ?? "";
+
+            if (previousItemID != CurrentEquipItemID)
+            {
+                // 장비 변경 이벤트 발생
+                OnEquipmentChanged?.Invoke(previousItemID, CurrentEquipItemID);
+            }
         }
 
         public void SetCurrentEquipItem(string itemID)
