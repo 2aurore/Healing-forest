@@ -29,6 +29,9 @@ namespace HF
             // 예: 대화 시작, 퀘스트 수락 등
             // SetSmileActionTrigger();
             Debug.Log($"{player.gameObject.name} interacts with NPC: {this.NpcID}");
+
+            // TODO: 상호작용이 종료된 다음 애니메이션 레이어를 초기화
+            player.ResetAnimatorLayer();
         }
 
         // <summary> NPC가 상호작용을 시작할 때 호출되는 메서드 </summary>
