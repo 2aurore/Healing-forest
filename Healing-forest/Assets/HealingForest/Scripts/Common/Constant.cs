@@ -35,4 +35,11 @@ namespace HF
         Dig,
         Fish
     }
+
+    public enum DetectionMode
+    {
+        Default,        // 기본 상호작용 (맨손)
+        ToolAction,     // 도구 사용
+        CraftingTable   // 제작대 감지
+    }
 }
