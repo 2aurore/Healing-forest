@@ -185,6 +185,10 @@ PrefabInstance:
       value: Apple
       objectReference: {fileID: 0}
     - target: {fileID: 4433673180914591881, guid: 5c934ce0306124c47a8982b83cd9868a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4433673180914591881, guid: 5c934ce0306124c47a8982b83cd9868a, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
