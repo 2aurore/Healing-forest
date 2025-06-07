@@ -120,6 +120,9 @@ namespace HF
 
                 currentToolData = null;
                 animator.SetInteger("ToolType", 0);
+
+                // UserDataModel을 통해 장비 해제
+                UserDataModel.Singleton.ChangeEquipment(toolID);
                 return;
             }
 
@@ -131,7 +134,7 @@ namespace HF
             }
 
             currentToolData = GameDataModel.Singleton.GetToolData(toolID);
-            UserDataModel.Singleton.SetCurrentEquipItem(toolID); // 현재 장착된 아이템 ID 설정
+            UserDataModel.Singleton.ChangeEquipment(toolID);
 
             animator.SetInteger("ToolType", currentToolData.ToolAnimatorKey == "PropA" ? 1 : 2);
             equippedTool = Instantiate(currentToolData.VisualPrefab, toolPosition.transform);
@@ -200,7 +203,7 @@ namespace HF
         }
 
         /// <summary> 애니메이터 레이어를 초기화하는 메소드 </summary>
-        private void ResetAnimatorLayer()
+        public void ResetAnimatorLayer()
         {
             int upperBodyLayerIndex = animator.GetLayerIndex("Upper Body Layer");
             animator.SetLayerWeight(upperBodyLayerIndex, 1f);
@@ -208,11 +211,7 @@ namespace HF
             IsProgressingAction = false;
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = new Color(1, 0, 0, 0.5f);
-            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
-        }
+
 
 
         /// <summary> 통합된 상호작용 감지 메소드 </summary>
@@ -312,7 +311,11 @@ namespace HF
 
 
 
-
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
+        }
 
 
 

@@ -70,11 +70,6 @@ namespace HF
             }
         }
 
-        public void SetCurrentEquipItem(string itemID)
-        {
-            CurrentEquipItemID = itemID; // 현재 장착된 아이템 ID 설정
-        }
-
         public bool AddItemToInventory(string itemID, int quantity, float currentDurability, out int failedCount)
         {
             bool isItemAddSuccess = false; // 아이템 추가 성공 여부

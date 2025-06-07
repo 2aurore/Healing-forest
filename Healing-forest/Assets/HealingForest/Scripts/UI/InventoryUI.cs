@@ -73,5 +73,11 @@ namespace HF
                 }
             }
         }
+
+        public void OnClickCloseButton()
+        {
+            // 인벤토리 UI 닫기
+            Hide();
+        }
     }
 }

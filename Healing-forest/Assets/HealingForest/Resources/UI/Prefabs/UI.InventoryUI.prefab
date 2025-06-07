@@ -499,6 +499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryItemsParent: {fileID: 2487312441550751738}
   inventoryItemPrefab: {fileID: 7571162398282163826, guid: 91a4048a21d11ca4ebbfe8a080def899, type: 3}
+  inventorySlots: []
 --- !u!1 &7549083077630588753
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,7 +684,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: -6276763568202100949}
         m_TargetAssemblyTypeName: HF.InventoryUI, Assembly-CSharp
-        m_MethodName: CloseInventory
+        m_MethodName: OnClickCloseButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

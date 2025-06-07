@@ -38,6 +38,13 @@ namespace HF
 
         private void LeftMouseButtonEvent()
         {
+            InventoryUI inventoryUI = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI);
+            if (inventoryUI != null && inventoryUI.gameObject.activeSelf)
+            {
+                // 인벤토리가 열려있으면 클릭 이벤트 무시
+                return;
+            }
+
             // 마우스 포인터 방향으로 액션 수행하도록 적용
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             // 마우스 클릭한 위치에 Raycast를 쏘아서 충돌한 오브젝트의 정보를 가져옴
@@ -76,9 +83,6 @@ namespace HF
         {
             // 캐릭터에 장비 적용
             linkedCharacter.EquipTool(toolId);
-
-            // UserDataModel을 통해 장비 변경 관리
-            UserDataModel.Singleton.ChangeEquipment(toolId);
         }
 
     }
