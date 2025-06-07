@@ -19,7 +19,6 @@ namespace HF
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
             InputSystem.Singleton.OnTab += OnInventoryUI;
-            InputSystem.Singleton.OnCraftButtonDown += OnCraftingUI;
         }
 
         private void Update()
@@ -29,7 +28,6 @@ namespace HF
                 return;
             }
 
-            // float mouseX = Input.GetAxis("Mouse X");
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
 
@@ -37,7 +35,6 @@ namespace HF
 
             Vector2 input = new Vector2(horizontal, vertical);
             linkedCharacter.Move(input);
-            // linkedCharacter.Rotate(mouseX);
         }
 
         private void LeftMouseButtonEvent()
@@ -92,9 +89,5 @@ namespace HF
 
         }
 
-        private void OnCraftingUI()
-        {
-            linkedCharacter.DetectCraftingTable();
-        }
     }
 }

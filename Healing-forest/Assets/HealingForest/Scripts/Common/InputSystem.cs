@@ -13,7 +13,6 @@ namespace HF
         public System.Action OnRightMouseButtonDown;
         public System.Action OnEscapeInput;
         public System.Action OnTab;
-        public System.Action OnCraftButtonDown;
         public System.Action<float> OnScrollWheel;
 
         private void Start()
@@ -34,12 +33,7 @@ namespace HF
             {
                 OnTab?.Invoke();
             }
-            if (Input.GetKeyUp(KeyCode.C))
-            {
-                OnCraftButtonDown?.Invoke();
-            }
 
-            // Debug.Log("mouseScrollDelta Y : " + Input.mouseScrollDelta.y);
             if (Input.mouseScrollDelta.y > 0)
             {
                 OnScrollWheel?.Invoke(Input.mouseScrollDelta.y);
