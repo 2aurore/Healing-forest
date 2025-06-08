@@ -17,7 +17,6 @@ namespace HF
         public void Handle(Collider collider, CharacterBase character)
         {
             var craftingTable = collider.GetComponent<CraftingInteract>();
-            // TODO: 카메라 전환 로직 위치?
             craftingTable.Interact(character);
         }
     }

@@ -13,8 +13,12 @@ namespace HF
 
         public void Interact(CharacterBase actor)
         {
+            // TODO: 카메라 전환 로직 위치?
+            EventSystem.OnCameraSwitch?.Invoke("Craft");
+
             UIManager.Show<CraftingUI>(UIList.CraftingUI);
             StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));
+
         }
 
         private IEnumerator MoveToPositionSmooth(CharacterBase actor, Vector3 targetPosition)
