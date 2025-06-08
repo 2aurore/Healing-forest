@@ -27,4 +27,9 @@ namespace HF
         public SerializableDictionary<string, NPCDataSO> npcDatas = new SerializableDictionary<string, NPCDataSO>();
     }
 
+    [System.Serializable]
+    public class ReciptDataDTO : GameDataDTO
+    {
+        public SerializableDictionary<string, ReciptDataSO> reciptDatas = new SerializableDictionary<string, ReciptDataSO>();
+    }
 }

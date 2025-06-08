@@ -12,6 +12,7 @@ namespace HF
         [field: SerializeField] public ToolDataDTO ToolDataDTO { get; private set; } = new ToolDataDTO();
         [field: SerializeField] public GameItemDataDTO ItemDataDTO { get; private set; } = new GameItemDataDTO();
         [field: SerializeField] public NPCDataDTO NPCDataDTO { get; private set; } = new NPCDataDTO();
+        [field: SerializeField] public ReciptDataDTO ReciptDataDTO { get; private set; } = new ReciptDataDTO();
 
 
         public void Initialize()
@@ -19,6 +20,7 @@ namespace HF
             ToolDataSO[] loadedToolDatas = Resources.LoadAll<ToolDataSO>("Tools/Data/");
             ItemDataSO[] loadedItemDatas = Resources.LoadAll<ItemDataSO>("Items/Data/");
             NPCDataSO[] loadedNPCDatas = Resources.LoadAll<NPCDataSO>("NPCs/Data/");
+            ReciptDataSO[] loadedReciptDatas = Resources.LoadAll<ReciptDataSO>("Recipts/");
 
             for (int i = 0; i < loadedToolDatas.Length; i++)
             {
@@ -39,6 +41,13 @@ namespace HF
                 if (!NPCDataDTO.npcDatas.ContainsKey(loadedNPCDatas[i].NpcID))
                 {
                     NPCDataDTO.npcDatas.Add(loadedNPCDatas[i].NpcID, loadedNPCDatas[i]);
+                }
+            }
+            for (int i = 0; i < loadedReciptDatas.Length; i++)
+            {
+                if (!ReciptDataDTO.reciptDatas.ContainsKey(loadedReciptDatas[i].ReciptID))
+                {
+                    ReciptDataDTO.reciptDatas.Add(loadedReciptDatas[i].ReciptID, loadedReciptDatas[i]);
                 }
             }
 

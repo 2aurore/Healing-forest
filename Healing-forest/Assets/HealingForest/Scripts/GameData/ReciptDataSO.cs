@@ -31,7 +31,7 @@ namespace HF
         [SerializeField] private string resultItemId; // 결과 아이템 ID
         [SerializeField] private int craftingTime; // 제작 시간 (초 단위)
 
-        public string ReciptId => reciptId;
+        public string ReciptID => reciptId;
         public string ReciptName => reciptName;
         public RequiredItem[] RequiredItems => requiredItems;
         public string ResultItemId => resultItemId;
