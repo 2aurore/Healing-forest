@@ -56,6 +56,15 @@ namespace HF
 
         }
 
+        private void OnEnable()
+        {
+            EventSystem.OnPlayerConnected += ResetAnimatorLayer;
+        }
+        private void OnDisable()
+        {
+            EventSystem.OnPlayerConnected -= ResetAnimatorLayer;
+        }
+
         /// <summary> 바닥 체크 메소드 </summary>
         public bool CheckGround()
         {

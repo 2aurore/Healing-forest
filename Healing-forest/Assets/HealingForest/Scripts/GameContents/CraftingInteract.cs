@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,12 +14,14 @@ namespace HF
 
         public void Interact(CharacterBase actor)
         {
-            // TODO: 카메라 전환 로직 위치?
+            // 카메라 전환
             EventSystem.OnCameraSwitch?.Invoke("Craft");
-
             UIManager.Show<CraftingUI>(UIList.CraftingUI);
-            StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));
 
+            // 캐릭터를 제작대 앞으로 이동
+            StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));
+            // 캐릭터가 도구를 들고 있다면 해제함
+            EventSystem.ReleaseTool?.Invoke();
         }
 
         private IEnumerator MoveToPositionSmooth(CharacterBase actor, Vector3 targetPosition)
@@ -56,7 +59,7 @@ namespace HF
         }
 
 
-        // TODO : NavMesh를 사용해서 장애물을 피하고 부드럽게 이동 - 이동 후 캐릭터가 움직이지 않는 문제 있음음
+        // TODO : NavMesh를 사용해서 장애물을 피하고 부드럽게 이동 - 이동 후 캐릭터가 움직이지 않는 문제 있음
         private IEnumerator SmoothNavMeshMovement(CharacterBase actor, Vector3 targetPosition)
         {
             // NavMesh로 경로 계산

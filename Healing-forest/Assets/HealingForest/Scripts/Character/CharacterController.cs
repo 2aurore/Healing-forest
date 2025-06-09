@@ -18,6 +18,7 @@ namespace HF
         {
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
+            EventSystem.ReleaseTool += UnEqqipTool;
         }
 
         private void Update()
@@ -76,14 +77,22 @@ namespace HF
 
         }
 
-        /// <summary>
-        /// 도구 장착
-        /// </summary>
+        /// <summary> 도구 장착 </summary>
         private void EquipTool(string toolId)
         {
             // 캐릭터에 장비 적용
             linkedCharacter.EquipTool(toolId);
         }
 
+        /// <summary> 도구 해제 </summary>
+        private void UnEqqipTool()
+        {
+            // 캐릭터가 도구를 들고 있다면 해제함
+            if (linkedCharacter.equippedTool != null)
+            {
+                currentToolType = ToolType.None;
+                EquipTool(null);
+            }
+        }
     }
 }
