@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HF
 {
     public class Crafting_Recipt_Material : MonoBehaviour
     {
-        [SerializeField] private Sprite icon; // 아이콘을 설정할 수 있는 필드
+        [SerializeField] private Image icon; // 아이콘을 설정할 수 있는 필드
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI amountText;
         [SerializeField] private TextMeshProUGUI requiredCountText;
@@ -17,7 +18,7 @@ namespace HF
             ItemDataSO itemData = GameDataModel.Singleton.GetItemData(itemID);
             if (itemData != null)
             {
-                icon = itemData.Icon;
+                icon.sprite = itemData.Icon;
                 nameText.text = itemData.ItemName;
                 amountText.text = amount.ToString();
                 requiredCountText.text = requiredCount.ToString();
@@ -25,12 +26,12 @@ namespace HF
                 if (amount >= requiredCount)
                 {
                     // 재료가 충분할 때의 처리
-                    amountText.color = Color.green; // 예시로 초록색으로 변경
+                    amountText.color = Color.white; // 기본 색상으로 설정 (예: 흰색)
                 }
                 else
                 {
                     // 재료가 부족할 때의 처리
-                    amountText.color = Color.red; // 예시로 빨간색으로 변경
+                    amountText.color = Color.red; // 빨간색으로 변경
                 }
             }
         }

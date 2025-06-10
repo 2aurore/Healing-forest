@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HF
 {
     public class Crafting_Recipt : MonoBehaviour
     {
-        [SerializeField] private Sprite itemIcon; // 레시피 아이콘을 설정할 수 있는 필드
+        [SerializeField] private Image itemIcon; // 레시피 아이콘을 설정할 수 있는 필드
         [SerializeField] private TextMeshProUGUI reciptNameText; // 레시피 이름을 표시할 텍스트
         [SerializeField] private GameObject materialItemsParent; // 레시피 재료 아이템들을 담을 부모 오브젝트
         private List<Crafting_Recipt_Material> materialSlots = new List<Crafting_Recipt_Material>();
@@ -19,7 +20,7 @@ namespace HF
             {
                 // 레시피 아이콘과 이름 설정
                 ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(reciptData.ResultItemId);
-                itemIcon = itemDataSO.Icon;
+                itemIcon.sprite = itemDataSO.Icon;
                 reciptNameText.text = reciptData.ReciptName;
 
                 // 재료 슬롯 초기화
