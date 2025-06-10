@@ -91,5 +91,18 @@ namespace HF
                 return null;
             }
         }
+
+        public ReciptDataSO GetReciptData(string reciptID)
+        {
+            if (ReciptDataDTO.reciptDatas.TryGetValue(reciptID, out ReciptDataSO reciptData))
+            {
+                return reciptData;
+            }
+            else
+            {
+                Debug.LogError($"Recipt ID not found: {reciptID}");
+                return null;
+            }
+        }
     }
 }

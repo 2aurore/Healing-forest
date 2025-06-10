@@ -175,5 +175,23 @@ namespace HF
 
             return isItemAddSuccess;
         }
+
+        public void GetInventoryItemData(string itemID, out UserItemDataDTO itemData)
+        {
+            itemData = InventoryData.InventoryItems.Find(item => item.itemID.Equals(itemID));
+            if (itemData == null)
+            {
+                // 아이템이 인벤토리에 존재하지 않는 경우
+                itemData = new UserItemDataDTO
+                {
+                    uniqueID = string.Empty,
+                    itemID = itemID,
+                    itemCount = 0,
+                    itemDurability = 0f
+                };
+
+                Debug.LogError($"Item ID not found in inventory: {itemID}");
+            }
+        }
     }
 }
