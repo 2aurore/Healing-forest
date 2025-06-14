@@ -64,22 +64,20 @@ namespace HF
             if (isInitialized) return;
 
             // UI가 아직 생성되지 않았다면 생성
+            inventoryUI = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI); // UIList에 맞게 수정
             if (inventoryUI == null)
             {
-                inventoryUI = UIManager.Singleton.GetUI<InventoryUI>(UIList.InventoryUI); // UIList에 맞게 수정
+                Debug.LogError("InventoryController: InventoryUI is not initialized.");
+                return;
             }
 
-            if (inventoryUI != null)
-            {
-                Debug.Log("InventoryController Initialize");
-                InitializeInventory();
-                isInitialized = true;
-            }
+            InitializeInventory();
+            isInitialized = true;
+
         }
 
-        public void ShowInventory()
+        private void ShowInventory()
         {
-
             if (inventoryUI != null)
             {
                 inventoryUI.Show();
@@ -87,7 +85,7 @@ namespace HF
             }
         }
 
-        public void HideInventory()
+        private void HideInventory()
         {
             if (inventoryUI != null)
             {
