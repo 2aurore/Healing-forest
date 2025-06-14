@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +39,39 @@ namespace HF
             isInitialized = true;
         }
 
+        public void OnCraftingUI()
+        {
+            EnsureInitialized();
+
+            if (craftingUI != null)
+            {
+                if (craftingUI.gameObject.activeSelf)
+                {
+                    HideCrafting();
+                }
+                else
+                {
+                    ShowCrafting();
+                }
+            }
+        }
+
+        private void ShowCrafting()
+        {
+            if (craftingUI != null)
+            {
+                craftingUI.Show();
+                // craftingUI.UpdateCraftingList();
+            }
+        }
+
+        private void HideCrafting()
+        {
+            if (craftingUI != null)
+            {
+                craftingUI.Hide();
+            }
+        }
 
         private void OnInventoryDataChanged(UserItemDataDTO changedItem)
         {
