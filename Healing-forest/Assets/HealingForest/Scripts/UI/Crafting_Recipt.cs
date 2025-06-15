@@ -13,7 +13,7 @@ namespace HF
         [SerializeField] private GameObject materialItemsParent; // 레시피 재료 아이템들을 담을 부모 오브젝트
         private List<Crafting_Recipt_Material> materialSlots = new List<Crafting_Recipt_Material>();
 
-        public void SetRecipt(string reciptID)
+        public void SetReciptData(string reciptID)
         {
             ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
             if (reciptData != null)
@@ -34,7 +34,7 @@ namespace HF
                 foreach (RequiredItem material in reciptData.RequiredItems)
                 {
                     // 현재 내가 가지고 있는 재료 아이템
-                    UserDataModel.Singleton.GetInventoryItemData(material.ItemId, out UserItemDataDTO userItemData);
+                    UserItemDataDTO userItemData = UserDataModel.Singleton.GetInventoryItemData(material.ItemId);
                     GameObject materialSlotObject = new GameObject("MaterialSlot");
                     Crafting_Recipt_Material materialSlot = materialSlotObject.AddComponent<Crafting_Recipt_Material>();
                     materialSlot.SetMaterialSlot(material.ItemId, userItemData.itemCount, material.Quantity);

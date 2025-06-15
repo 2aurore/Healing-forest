@@ -497,7 +497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   reciptItemsParent: {fileID: 5423288891105442312}
-  reciptItemPrefab: {fileID: 0}
+  reciptItemPrefab: {fileID: 1734397579001721967, guid: 714c0634cbd68584d8f02cf2524f785c, type: 3}
 --- !u!1 &6668801878960749241
 GameObject:
   m_ObjectHideFlags: 0
