@@ -16,7 +16,8 @@ namespace HF
         {
             // 카메라 전환
             EventSystem.OnCameraSwitch?.Invoke("Craft");
-            UIManager.Show<CraftingUI>(UIList.CraftingUI);
+            EventSystem.OnPlayerCrafting?.Invoke();
+            // UIManager.Show<CraftingUI>(UIList.CraftingUI);
 
             // 캐릭터를 제작대 앞으로 이동
             StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));

@@ -10,10 +10,15 @@ namespace HF
         private CraftingUI craftingUI;
         private bool isInitialized = false;
 
+        private void Start()
+        {
+            EventSystem.OnPlayerCrafting += OnCraftingUI;
+        }
+
         private void OnEnable()
         {
             UserDataModel.Singleton.OnInventoryDataChanged += OnInventoryDataChanged;
-
+            InputSystem.Singleton.OnEscapeInput += HideCrafting;
         }
 
         private void OnDisable()
@@ -21,6 +26,7 @@ namespace HF
             if (UserDataModel.Singleton != null)
             {
                 UserDataModel.Singleton.OnInventoryDataChanged -= OnInventoryDataChanged;
+                InputSystem.Singleton.OnEscapeInput -= HideCrafting;
             }
         }
 
@@ -65,11 +71,12 @@ namespace HF
             }
         }
 
-        private void HideCrafting()
+        public void HideCrafting()
         {
             if (craftingUI != null)
             {
-                craftingUI.Hide();
+                craftingUI.CloseCrafting();
+                // craftingUI.Hide();
             }
         }
 

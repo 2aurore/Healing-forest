@@ -12,5 +12,6 @@ namespace HF
         // 캐릭터 동작 관련 이벤트
         public static System.Action OnPlayerConnected;
         public static System.Action ReleaseTool;
+        public static System.Action OnPlayerCrafting;
     }
 }

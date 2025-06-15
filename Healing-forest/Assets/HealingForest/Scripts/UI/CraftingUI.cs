@@ -12,14 +12,6 @@ namespace HF
 
         private List<Crafting_Recipt> reciptSlots = new List<Crafting_Recipt>();
 
-        private void OnEnable()
-        {
-            InputSystem.Singleton.OnEscapeInput += CloseCrafting;
-        }
-        private void OnDisable()
-        {
-            InputSystem.Singleton.OnEscapeInput -= CloseCrafting;
-        }
 
         public void Initialize()
         {
