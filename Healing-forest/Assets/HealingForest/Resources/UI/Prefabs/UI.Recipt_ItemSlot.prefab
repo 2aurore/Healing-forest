@@ -55,6 +55,7 @@ MonoBehaviour:
   itemIcon: {fileID: 9000897781242383183}
   reciptNameText: {fileID: 2325186496215828503}
   materialItemsParent: {fileID: 7571728482600576042}
+  materialSlotPrefab: {fileID: 1275418482569383968, guid: 0c2a1585549977148bd6e1e2877caa5d, type: 3}
 --- !u!1 &2539959269350873781
 GameObject:
   m_ObjectHideFlags: 0

@@ -179,24 +179,9 @@ namespace HF
         public UserItemDataDTO GetInventoryItemData(string itemID)
         {
             UserItemDataDTO itemData = null;
+            // 인벤토리에서 아이템 ID로 아이템 데이터 찾기
             itemData = InventoryData.InventoryItems.Find(item => item.itemID.Equals(itemID));
-            if (itemData == null)
-            {
-                ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(itemID); // 아이템 데이터가 존재하는지 확인
-                // 아이템이 인벤토리에 존재하지 않는 경우
-                itemData = new UserItemDataDTO
-                {
-                    uniqueID = itemDataSO.ItemID,
-                    itemID = itemID,
-                    itemCount = 0,
-                    itemDurability = 0f
-                };
-
-                Debug.LogError($"Item ID not found in inventory: {itemID}");
-
-
-            }
-
+            // 인벤토리에 아이템이 없는 경우 그대로 null 반환
             return itemData;
         }
     }

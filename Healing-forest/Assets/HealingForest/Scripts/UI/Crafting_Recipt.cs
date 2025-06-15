@@ -11,6 +11,7 @@ namespace HF
         [SerializeField] private Image itemIcon; // 레시피 아이콘을 설정할 수 있는 필드
         [SerializeField] private TextMeshProUGUI reciptNameText; // 레시피 이름을 표시할 텍스트
         [SerializeField] private GameObject materialItemsParent; // 레시피 재료 아이템들을 담을 부모 오브젝트
+        [SerializeField] private GameObject materialSlotPrefab; // 재료 슬롯 프리팹
         private List<Crafting_Recipt_Material> materialSlots = new List<Crafting_Recipt_Material>();
 
         public void SetReciptData(string reciptID)
@@ -35,10 +36,9 @@ namespace HF
                 {
                     // 현재 내가 가지고 있는 재료 아이템
                     UserItemDataDTO userItemData = UserDataModel.Singleton.GetInventoryItemData(material.ItemId);
-                    GameObject materialSlotObject = new GameObject("MaterialSlot");
-                    Crafting_Recipt_Material materialSlot = materialSlotObject.AddComponent<Crafting_Recipt_Material>();
-                    materialSlot.SetMaterialSlot(material.ItemId, userItemData.itemCount, material.Quantity);
-                    materialSlot.transform.SetParent(materialItemsParent.transform);
+                    GameObject slotObject = Instantiate(materialSlotPrefab, materialItemsParent.transform);
+                    Crafting_Recipt_Material materialSlot = slotObject.GetComponent<Crafting_Recipt_Material>();
+                    materialSlot.SetMaterialSlot(material.ItemId, userItemData != null ? userItemData.itemCount : 0, material.Quantity);
                     materialSlots.Add(materialSlot);
                 }
             }
