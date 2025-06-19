@@ -73,7 +73,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5548282569211697360}
-  - component: {fileID: 7634540065397297732}
   m_Layer: 10
   m_Name: Bridge
   m_TagString: Untagged
@@ -97,27 +96,6 @@ Transform:
   - {fileID: 4086887248790706642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!65 &7634540065397297732
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2812662972817545807}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.6, y: 0.3, z: 1}
-  m_Center: {x: -0.2, y: -0.1, z: 0}
 --- !u!1 &5106046701361360860
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,8 +193,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7256063953571225426, guid: bb0b23bd8ed80614a977c8d0813515a8, type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_Convex
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7256063953571225426, guid: bb0b23bd8ed80614a977c8d0813515a8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7674317617464386109, guid: bb0b23bd8ed80614a977c8d0813515a8, type: 3}
       propertyPath: m_Name

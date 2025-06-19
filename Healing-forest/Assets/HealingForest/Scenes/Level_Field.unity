@@ -443,6 +443,27 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7818743313641964565, guid: e7101a69a982e764fb87764134999d3b, type: 3}
   m_PrefabInstance: {fileID: 790754713}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &844628568 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2514374165629634157, guid: 1f12d6b1205e0604fb321454850fd3c6, type: 3}
+  m_PrefabInstance: {fileID: 9094531729038942939}
+  m_PrefabAsset: {fileID: 0}
+--- !u!208 &844628571
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844628568}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 0.5, y: 0.25, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1001 &871312388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11484,7 +11505,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 3073
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
@@ -12041,25 +12062,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
-      propertyPath: m_Convex
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7198851541725616962, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
-      propertyPath: m_ProvidesContacts
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7634540065397297732, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7914343901933708845, guid: 6498471463bffcb4fbc327756f65e4e8, type: 3}
       propertyPath: m_Layer
@@ -12126,10 +12131,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crafting Table
       objectReference: {fileID: 0}
+    - target: {fileID: 8336776195114418180, guid: 1f12d6b1205e0604fb321454850fd3c6, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8336776195114418180, guid: 1f12d6b1205e0604fb321454850fd3c6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2514374165629634157, guid: 1f12d6b1205e0604fb321454850fd3c6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 844628571}
   m_SourcePrefab: {fileID: 100100000, guid: 1f12d6b1205e0604fb321454850fd3c6, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
