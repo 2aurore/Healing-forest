@@ -9,20 +9,57 @@ namespace HF
     [RequireComponent(typeof(NavMeshAgent))]
     public class AIBrain : MonoBehaviour
     {
+        public NPCBase Character => character;
+
         private NavMeshAgent navAgent;
-        private CharacterBase character;
+        private NPCBase character;
+
+        private IState currentState;
+        private int damageStackByPlayer = 0;
+        public void ChangeState(IState newState)
+        {
+            currentState?.Exit(this);
+
+            currentState = newState;
+            currentState?.Enter(this);
+        }
 
         private void Awake()
         {
-            character = GetComponent<CharacterBase>();
-
+            character = GetComponent<NPCBase>();
+            character.OnDamaged += OnDamagedByPlayer;
             navAgent = GetComponent<NavMeshAgent>();
             navAgent.updatePosition = false; // NavMeshAgent가 Transform을 직접 업데이트하지 않도록 설정
             navAgent.updateRotation = false; // NavMeshAgent가 회전을 직접 업데이트하지 않도록 설정
         }
+        private void Start()
+        {
+            ChangeState(new DefaultState()); // 초기 상태를 DefaultState로 설정
+        }
+
+        private void OnDamagedByPlayer(CharacterBase attacker)
+        {
+            damageStackByPlayer++;
+            if (damageStackByPlayer >= 3) // 플레이어가 3번 공격하면 상태 변경
+            {
+                ChangeState(new AngryState());
+            }
+        }
+
+        public void ResetDamageStack()
+        {
+            damageStackByPlayer = 0; // 공격 스택 초기화
+        }
 
         private void Update()
         {
+            currentState?.Update(this);
+
+            if (currentState is not DefaultState)
+            {
+                return; // 현재 상태가 DefaultState가 아니면 NPC 이동 로직을 실행하지 않음
+            }
+
             // NavMeshAgent의 위치를 CharacterBase의 위치로 업데이트
             navAgent.nextPosition = transform.position;
 
@@ -72,21 +109,11 @@ namespace HF
             return navAgent.remainingDistance; // 남은 거리 반환
         }
 
-        // Start cycle은 IEnumerator 사용 가능
-        private IEnumerator Start()
-        {
-            yield return new WaitForSeconds(2f); // Wait for NavMesh to be ready
-
-            Vector2 random = Random.insideUnitCircle;
-            SetDestination(transform.position + new Vector3(random.x, 0, random.y) * 10f);
-        }
-
 
 
         public void SetDestination(Vector3 position)
         {
             navAgent.SetDestination(position);
-
         }
     }
 }

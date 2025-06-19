@@ -4,13 +4,15 @@ using UnityEngine;
 
 namespace HF
 {
-    public class NPCBase : CharacterBase
+    public class NPCBase : CharacterBase, IDamage
     {
         public string NpcID => npcId;
 
         [Header("NPC Base Settings")]
         [SerializeField] private string npcId;
         [SerializeField] private Transform visualRoot;
+
+        public event System.Action<CharacterBase> OnDamaged;
 
         protected override void Awake()
         {
@@ -32,6 +34,11 @@ namespace HF
 
             // TODO: 상호작용이 종료된 다음 애니메이션 레이어를 초기화
             player.ResetAnimatorLayer();
+        }
+
+        public void Damage(CharacterBase attacker)
+        {
+            OnDamaged?.Invoke(attacker);
         }
 
         // <summary> NPC가 상호작용을 시작할 때 호출되는 메서드 </summary>
