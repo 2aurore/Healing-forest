@@ -19,12 +19,26 @@ namespace HF
             EventSystem.OnPlayerCrafting?.Invoke();
             // UIManager.Show<CraftingUI>(UIList.CraftingUI);
 
-            // 캐릭터를 제작대 앞으로 이동
-            StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));
+            // 캐릭터를 제작대 앞으로 순간 이동
+            MoveToPosition(actor, standingPoint.position);
+
+            // StartCoroutine(MoveToPositionSmooth(actor, standingPoint.position));
             // 캐릭터가 도구를 들고 있다면 해제함
             EventSystem.ReleaseTool?.Invoke();
         }
 
+        private void MoveToPosition(CharacterBase actor, Vector3 targetPosition)
+        {
+            Vector3 direction = targetPosition - actor.transform.position;
+            direction.y = 0; // 수평 방향으로만 이동
+            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
+            actor.transform.SetLocalPositionAndRotation(targetPosition, targetRotation);
+
+            // actor.transform.position = targetPosition;
+            // actor.transform.LookAt(gameObject.transform.position);
+        }
+
+        /// <summary> 부드러운 이동을 위해 코루틴 사용 </summary>
         private IEnumerator MoveToPositionSmooth(CharacterBase actor, Vector3 targetPosition)
         {
             Vector3 startPosition = actor.transform.position;
