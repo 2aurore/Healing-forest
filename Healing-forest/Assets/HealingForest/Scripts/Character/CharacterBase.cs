@@ -37,6 +37,13 @@ namespace HF
         protected virtual void Awake()
         {
             animator = GetComponent<Animator>();
+
+            // 애니메이터의 StatueMachineBehaviour를 초기화
+            var actionStateBehaviours = animator.GetBehaviours<ActionStateMachineBehaviour>();
+            foreach (var behaviour in actionStateBehaviours)
+            {
+                behaviour.SetCharacterBase(this);
+            }
         }
 
         void Update()
@@ -149,6 +156,12 @@ namespace HF
             equippedTool = Instantiate(currentToolData.VisualPrefab, toolPosition.transform);
             equippedTool.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             equippedTool.transform.SetParent(toolPosition.transform); // 툴을 툴 포지션의 자식으로 설정
+
+            if (currentToolData.ToolType == ToolType.Net)
+            {
+                DamageActor damageActor = equippedTool.GetComponentInChildren<DamageActor>();
+                damageActor.Owner = this; // 툴의 DamageActor에 캐릭터 설정
+            }
         }
 
         protected virtual void InitializeInteractionHandlers()

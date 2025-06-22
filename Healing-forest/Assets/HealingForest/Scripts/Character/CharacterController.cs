@@ -6,11 +6,14 @@ namespace HF
 {
     public class CharacterController : MonoBehaviour
     {
+        public static CharacterController Instance { get; private set; } = null;
+
         public CharacterBase linkedCharacter;
         [SerializeField] private LayerMask groundLayer;
 
         private void Awake()
         {
+            Instance = this;
             linkedCharacter = GetComponent<CharacterBase>();
         }
 
@@ -19,6 +22,11 @@ namespace HF
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
             EventSystem.ReleaseTool += UnEqqipTool;
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
         }
 
         private void Update()
