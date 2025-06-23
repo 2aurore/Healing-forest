@@ -43,5 +43,13 @@ namespace HF
                 }
             }
         }
+
+        public void UpdateReciptData(string reciptID, string itemID)
+        {
+            // 레시피 데이터를 업데이트하는 메서드
+            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+
+
+        }
     }
 }
