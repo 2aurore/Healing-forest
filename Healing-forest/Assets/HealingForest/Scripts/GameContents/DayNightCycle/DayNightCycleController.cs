@@ -7,18 +7,32 @@ namespace HF
 {
     public class DayNightCycleController : MonoBehaviour
     {
+        public static DayNightCycleController Instance { get; private set; }
+
+        public System.Action OnDayChanged;
+        public System.Action OnHourChanged;
+
         public float timeOfDay = 0f; // 0 to 1, where 0.0f is midnight and 1.0f is the next midnight
         public float fullDayLength = 300f; // Length of a full day in seconds
 
         public Light mainLight;
 
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private void Update()
         {
             timeOfDay += (Time.deltaTime / fullDayLength);
+            // TODO: timeOfDay 값을 계산해서 24시간 현실시간을 기준으로 1시간이 바뀌었는지 확인
+            // OnHourChanged?.Invoke(); // Notify - Hour changed event
+
+
             if (timeOfDay >= 1f)
             {
                 timeOfDay -= 1f; // Reset to midnight
+                OnDayChanged?.Invoke(); // Notify - Day changed event
             }
 
             UpdateLighting();
