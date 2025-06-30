@@ -16,6 +16,7 @@ namespace HF
         public float fullDayLength = 300f; // Length of a full day in seconds
 
         public Light mainLight;
+        public Gradient lightGradient;
 
         private void Awake()
         {
@@ -46,14 +47,19 @@ namespace HF
             // Set the rotation of the main light (sun)
             mainLight.transform.localRotation = Quaternion.Euler(sunAngle, 0f, 0f);
 
-            if (timeOfDay < 0.5f)
+            // intensity - light 의 밝기 조절
+            if (timeOfDay < 0.5f)  // Day time
             {
-                mainLight.intensity = Mathf.Lerp(0.5f, 1f, timeOfDay * 2f); // Sunrise to noon
+                mainLight.intensity = Mathf.Lerp(0.5f, 1f, timeOfDay * 2f);
             }
-            else
+            else    // Night time
             {
-                mainLight.intensity = Mathf.Lerp(1f, 0.2f, (timeOfDay - 0.5f) * 2f); // Noon to sunset
+                mainLight.intensity = Mathf.Lerp(1f, 0.2f, (timeOfDay - 0.5f) * 2f);
             }
+
+            // Color - light 의 색상 조절
+            Color color = lightGradient.Evaluate(timeOfDay);
+            mainLight.color = color;
         }
     }
 }
