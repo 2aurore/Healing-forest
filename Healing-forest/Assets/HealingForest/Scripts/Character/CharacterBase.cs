@@ -83,6 +83,10 @@ namespace HF
             {
                 return true; // Ground 레이어와 충돌함
             }
+            else
+            {
+                // TODO: 플레이어 앞이 water 레이어인지 판단
+            }
 
             return false; // 충돌하지 않음
         }
@@ -172,7 +176,8 @@ namespace HF
                 new NPCInteractionHandler(),
                 new CraftingTableHandler(),
                 new TreeShakeHandler(),
-                new ToolSpecificHandler()
+                new ToolSpecificHandler(),
+                new BedInteractionHandler(),
             };
 
             // 우선순위에 따라 정렬
