@@ -68,6 +68,13 @@ namespace HF
 
         private void RightMouseButtonEvent()
         {
+            // 캐릭터가 잠자는 상태인지 확인
+            if (IsCharacterSleeping())
+            {
+                Debug.Log("잠자는 상태에서는 도구를 변경할 수 없습니다.");
+                return; // 잠자는 상태에서는 도구 변경 무시
+            }
+
             currentToolType++;
             if (currentToolType >= ToolType.End)
             {
@@ -83,6 +90,19 @@ namespace HF
                 }
             }
 
+        }
+
+        /// <summary>
+        /// 캐릭터가 현재 잠자는 상태인지 확인하는 메서드
+        /// </summary>
+        /// <returns>잠자는 상태이면 true, 그렇지 않으면 false</returns>
+        private bool IsCharacterSleeping()
+        {
+            if (linkedCharacter == null || linkedCharacter.animator == null)
+                return false;
+
+            // 애니메이터의 IsSleeping 파라미터를 확인
+            return linkedCharacter.animator.GetBool("IsSleeping");
         }
 
         /// <summary> 도구 장착 </summary>
