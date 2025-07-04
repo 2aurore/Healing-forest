@@ -9,12 +9,98 @@ namespace HF
         public Transform enterPoint; // 침대에 눕기 위한 위치
         public Transform exitPoint; // 침대에서 일어나기 위한 위치
 
+        [Header("회전 보정 설정")]
+        [SerializeField]
+        private Vector3 rotationOffset = new Vector3(0, 180, 0); // Y축 180도 보정이 기본값
+
+        private CharacterBase currentCharacter; // 현재 침대를 사용 중인 캐릭터
+        private bool isCharacterSleeping = false; // 캐릭터가 잠들어 있는지 여부
+
         public void Interact(CharacterBase actor)
         {
-            actor.animator.SetTrigger("Sleeping Trigger");
-            actor.animator.SetBool("IsSleeping", true);
-            actor.transform.position = enterPoint.position;
-            // actor.transform.rotation = enterPoint.rotation;
+            if (!isCharacterSleeping)
+            {
+                // 침대에 눕기
+                GoToBed(actor);
+            }
+        }
+
+        private void GoToBed(CharacterBase character)
+        {
+            currentCharacter = character;
+            isCharacterSleeping = true;
+
+            // 잠자는 애니메이션 재생
+            character.animator.SetTrigger("Sleeping Trigger");
+            character.animator.SetBool("IsSleeping", true);
+
+            // 캐릭터를 침대 위치로 이동
+            Vector3 correctedRotation = enterPoint.rotation.eulerAngles + rotationOffset;
+            character.transform.SetPositionAndRotation(enterPoint.position, Quaternion.Euler(correctedRotation));
+
+            // 캐릭터의 움직임을 제한
+            character.IsProgressingAction = true;
+        }
+
+        private void Update()
+        {
+            // 캐릭터가 잠들어 있을 때만 입력 확인
+            if (isCharacterSleeping && currentCharacter != null)
+            {
+                CheckForWakeUpInput();
+            }
+        }
+
+        private void CheckForWakeUpInput()
+        {
+            // Horizontal(A/D 키 또는 좌우 방향키)과 Vertical(W/S 키 또는 상하 방향키) 입력 확인
+            float horizontal = Input.GetAxis("Horizontal");
+            float vertical = Input.GetAxis("Vertical");
+
+            // 입력이 감지되면 (0이 아닌 값이면) 일어나기
+            Vector2 input = new Vector2(horizontal, vertical);
+            if (input.sqrMagnitude > 0.1f) // 0.1f는 입력 감도 임계값
+            {
+                WakeUp();
+            }
+        }
+
+        private void WakeUp()
+        {
+            if (currentCharacter == null) return;
+
+            // 잠자는 애니메이션 해제
+            currentCharacter.animator.SetBool("IsSleeping", false);
+
+            // exitPoint가 설정되어 있으면 해당 위치로, 없으면 현재 위치에서 일어남
+            if (exitPoint != null)
+            {
+                currentCharacter.transform.SetPositionAndRotation(exitPoint.position, exitPoint.rotation);
+            }
+
+            // 캐릭터의 움직임 제한 해제
+            currentCharacter.IsProgressingAction = false;
+
+            // 상태 초기화
+            isCharacterSleeping = false;
+            currentCharacter = null;
+
+            Debug.Log("캐릭터가 침대에서 일어났습니다!");
+        }
+
+        // 외부에서 강제로 일어나게 하는 메서드 (필요시 사용)
+        public void ForceWakeUp()
+        {
+            if (isCharacterSleeping)
+            {
+                WakeUp();
+            }
+        }
+
+        // 현재 누군가 침대를 사용 중인지 확인하는 메서드
+        public bool IsOccupied()
+        {
+            return isCharacterSleeping;
         }
     }
 }
