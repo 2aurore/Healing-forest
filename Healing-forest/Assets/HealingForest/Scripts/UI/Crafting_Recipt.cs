@@ -44,12 +44,31 @@ namespace HF
             }
         }
 
-        public void UpdateReciptData(string reciptID, string itemID)
+        /// <summary>
+        /// 특정 아이템의 수량이 변경되었을 때 해당 재료 슬롯만 업데이트
+        /// </summary>
+        public void UpdateMaterialAmount(string itemID, int newAmount)
         {
-            // 레시피 데이터를 업데이트하는 메서드
-            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
-
-
+            Crafting_Recipt_Material targetSlot = materialSlots.Find(slot => slot.ItemID == itemID);
+            if (targetSlot != null)
+            {
+                targetSlot.UpdateAmount(newAmount);
+            }
         }
+
+        /// <summary>
+        /// 모든 재료 슬롯의 수량을 최신 데이터로 업데이트
+        /// </summary>
+        public void RefreshAllMaterialAmounts()
+        {
+            foreach (var materialSlot in materialSlots)
+            {
+                UserItemDataDTO userItemData = UserDataModel.Singleton.GetInventoryItemData(materialSlot.ItemID);
+                int currentAmount = userItemData != null ? userItemData.itemCount : 0;
+                materialSlot.UpdateAmount(currentAmount);
+            }
+        }
+
+
     }
 }
