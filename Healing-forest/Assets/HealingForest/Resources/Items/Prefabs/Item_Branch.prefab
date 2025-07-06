@@ -141,6 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a98c4555f785bc49be3687c43cc4568, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: ItemData_Branch
+  itemId: Item_Branch
   quantity: 1
   currentDurability: 0
