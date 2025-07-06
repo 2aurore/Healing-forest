@@ -67,7 +67,8 @@ namespace HF
             if (craftingUI != null)
             {
                 craftingUI.Show();
-                // craftingUI.UpdateCraftingList();
+                // 제작 UI가 열릴 때 모든 재료 수량을 최신 데이터로 새로고침
+                craftingUI.RefreshAllMaterialAmounts();
             }
         }
 
@@ -76,15 +77,17 @@ namespace HF
             if (craftingUI != null)
             {
                 craftingUI.CloseCrafting();
-                // craftingUI.Hide();
             }
         }
 
         private void OnInventoryDataChanged(UserItemDataDTO changedItem)
         {
-            // 인벤토리 데이터가 변경되었을 때의 처리
-            // 예를 들어, UI 업데이트나 필요한 로직을 여기에 추가할 수 있습니다.
-            Debug.Log("CraftingController: Inventory data changed");
+            // 인벤토리 데이터가 변경되었을 때 제작 UI가 활성화되어 있다면 해당 아이템의 수량 업데이트
+            if (isInitialized && craftingUI != null && craftingUI.gameObject.activeSelf)
+            {
+                Debug.Log($"CraftingController: Updating material amount for item {changedItem.itemID}, new count: {changedItem.itemCount}");
+                craftingUI.UpdateMaterialAmounts(changedItem.itemID, changedItem.itemCount);
+            }
         }
     }
 }

@@ -37,6 +37,28 @@ namespace HF
             }
         }
 
+        /// <summary>
+        /// 특정 아이템 수량이 변경되었을 때 모든 레시피의 해당 재료 슬롯 업데이트
+        /// </summary>
+        public void UpdateMaterialAmounts(string itemID, int newAmount)
+        {
+            foreach (var reciptSlot in reciptSlots)
+            {
+                reciptSlot.UpdateMaterialAmount(itemID, newAmount);
+            }
+        }
+
+        /// <summary>
+        /// 모든 레시피의 재료 수량을 최신 데이터로 새로고침
+        /// </summary>
+        public void RefreshAllMaterialAmounts()
+        {
+            foreach (var reciptSlot in reciptSlots)
+            {
+                reciptSlot.RefreshAllMaterialAmounts();
+            }
+        }
+
 
         private void ClearAllSlots()
         {
