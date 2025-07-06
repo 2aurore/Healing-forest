@@ -70,6 +70,78 @@ namespace HF
             }
         }
 
+        /// <summary>
+        /// 인벤토리 상태 디버그 출력
+        /// </summary>
+        public void DebugInventoryStatus()
+        {
+            Debug.Log($"=== 인벤토리 상태 디버그 ===");
+            Debug.Log($"전체 슬롯 수: {InventoryData.InventoryItems.Count}/{MaxInventorySlots}");
+
+            for (int i = 0; i < InventoryData.InventoryItems.Count; i++)
+            {
+                var item = InventoryData.InventoryItems[i];
+                Debug.Log($"슬롯[{i}]: {item.itemID} x{item.itemCount} (내구도: {item.itemDurability})");
+            }
+            Debug.Log($"========================");
+        }
+
+        /// <summary>
+        /// 인벤토리에 아이템을 추가할 수 있는지 확인
+        /// </summary>
+        private bool CanAddItemToInventory(string itemID, int quantity)
+        {
+            ItemDataSO itemGameData = GameDataModel.Singleton.GetItemData(itemID);
+            if (itemGameData == null)
+            {
+                Debug.LogError($"CanAddItemToInventory: 아이템 데이터를 찾을 수 없습니다. ItemID: {itemID}");
+                return false;
+            }
+
+            bool isStackable = itemGameData.MaxStack > 1;
+
+            Debug.Log($"CanAddItemToInventory 확인 시작: ItemID={itemID}, Quantity={quantity}, MaxStack={itemGameData.MaxStack}, 현재슬롯수={InventoryData.InventoryItems.Count}");
+
+            if (isStackable)
+            {
+                // 스택 가능한 아이템의 경우
+                int remainingQuantity = quantity;
+
+                // 기존 아이템에 스택 가능한지 확인
+                var existingItems = InventoryData.InventoryItems.FindAll(item => item.itemID.Equals(itemID));
+                Debug.Log($"기존 {itemID} 아이템 개수: {existingItems.Count}");
+
+                foreach (var item in existingItems)
+                {
+                    int canStack = itemGameData.MaxStack - item.itemCount;
+                    Debug.Log($"기존 아이템 - 현재수량: {item.itemCount}, 추가가능: {canStack}");
+                    if (canStack > 0)
+                    {
+                        remainingQuantity -= canStack;
+                        Debug.Log($"스택 후 남은 수량: {remainingQuantity}");
+                        if (remainingQuantity <= 0)
+                        {
+                            Debug.Log("기존 슬롯에 모두 스택 가능!");
+                            return true;
+                        }
+                    }
+                }
+
+                // 남은 수량에 대해 새로운 슬롯이 필요한지 확인
+                int newSlotsNeeded = Mathf.CeilToInt((float)remainingQuantity / itemGameData.MaxStack);
+                bool canAdd = InventoryData.InventoryItems.Count + newSlotsNeeded <= MaxInventorySlots;
+                Debug.Log($"새 슬롯 필요: {newSlotsNeeded}, 현재+필요={InventoryData.InventoryItems.Count + newSlotsNeeded}, 최대={MaxInventorySlots}, 결과={canAdd}");
+                return canAdd;
+            }
+            else
+            {
+                // 스택 불가능한 아이템의 경우
+                bool canAdd = InventoryData.InventoryItems.Count < MaxInventorySlots;
+                Debug.Log($"스택 불가능 아이템 - 현재슬롯: {InventoryData.InventoryItems.Count}, 최대: {MaxInventorySlots}, 결과: {canAdd}");
+                return canAdd;
+            }
+        }
+
         public bool AddItemToInventory(string itemID, int quantity, float currentDurability, out int failedCount)
         {
             bool isItemAddSuccess = false; // 아이템 추가 성공 여부
@@ -84,7 +156,13 @@ namespace HF
             ItemDataSO itemGameData = GameDataModel.Singleton.GetItemData(itemID); // 아이템 데이터 가져오기
             var isStackable = itemGameData != null ? itemGameData.MaxStack > 1 : false; // 스택 가능 여부 확인
 
-            // TODO: 인벤토리 추가 가능할때 add 하도록 추가
+            // 인벤토리에 공간이 있는지 확인
+            if (!CanAddItemToInventory(itemID, quantity))
+            {
+                Debug.Log($"인벤토리에 공간이 부족합니다. 아이템: {itemID}, 수량: {quantity}");
+                failedCount = quantity;
+                return false;
+            }
             if (isStackable)
             {
                 int index = InventoryData.InventoryItems.FindIndex(item => item.itemID.Equals(itemID));

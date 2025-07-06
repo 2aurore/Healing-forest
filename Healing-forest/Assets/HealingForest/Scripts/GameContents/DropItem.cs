@@ -12,14 +12,16 @@ namespace HF
 
         public void Interact(CharacterBase actor)
         {
-            // 아이템을 줍는 로직을 여기에 작성합니다.
-            // 예를 들어, 플레이어의 인벤토리에 아이템을 추가하는 등의 작업을 수행할 수 있습니다.
-            Debug.Log($"아이템 {gameObject.name}을(를) 주웠습니다.");
-            // TODO: 아이템을 인벤토리에 추가하는 로직을 구현합니다.
-            // ItemDataManager.Singleton.AddItemData(item); // 아이템을 인벤토리에 추가합니다.
-
+            Debug.Log($"DropItem Interact 시도: {gameObject.name} (ItemID: {itemId}, Quantity: {quantity})");
+            
+            // 인벤토리 상태 디버그 출력
+            UserDataModel.Singleton.DebugInventoryStatus();
+            
             bool isAddAllItem = UserDataModel.Singleton.AddItemToInventory(itemId, quantity, currentDurability, out int failedCount);
-            if (isAddAllItem) // 아이템을 모두 추가했을 경우
+            
+            Debug.Log($"AddItemToInventory 결과: {isAddAllItem}, 실패 수량: {failedCount}");
+            
+            if (isAddAllItem)
             {
                 // 아이템을 줍고 나면 해당 셀을 사용 가능 상태로 변경합니다.
                 Vector3 position = gameObject.transform.position;
@@ -30,15 +32,11 @@ namespace HF
                 Destroy(gameObject); // 아이템을 줍고 나면 오브젝트를 파괴합니다.
 
             }
-            else // 아이템을 모두 추가하지 못했을 경우
+            else
             {
-                Debug.Log($"아이템 {gameObject.name}을(를) 인벤토리에 추가하지 못했습니다. 남은 수량: {failedCount}");
-                quantity = failedCount; // 남은 수량을 업데이트합니다.
+                Debug.LogWarning($"아이템 {gameObject.name}을(를) 인벤토리에 추가하지 못했습니다. 남은 수량: {failedCount}");
+                quantity = failedCount;
             }
-
-
-
         }
     }
 }
-
