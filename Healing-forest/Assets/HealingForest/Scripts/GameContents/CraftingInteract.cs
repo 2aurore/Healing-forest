@@ -14,6 +14,8 @@ namespace HF
 
         public void Interact(CharacterBase actor)
         {
+            actor.EquipTool(null); // 도구를 해제
+
             // 카메라 전환
             EventSystem.OnCameraSwitch?.Invoke("Craft");
             EventSystem.OnPlayerCrafting?.Invoke();
@@ -29,13 +31,19 @@ namespace HF
 
         private void MoveToPosition(CharacterBase actor, Vector3 targetPosition)
         {
-            Vector3 direction = targetPosition - actor.transform.position;
-            direction.y = 0; // 수평 방향으로만 이동
-            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
-            actor.transform.SetLocalPositionAndRotation(targetPosition, targetRotation);
-
-            // actor.transform.position = targetPosition;
-            // actor.transform.LookAt(gameObject.transform.position);
+            // 위치 이동
+            actor.transform.position = targetPosition;
+            
+            // 테이블을 바라보는 방향 계산
+            Vector3 lookDirection = (gameObject.transform.position - targetPosition).normalized;
+            lookDirection.y = 0; // 수평 방향으로만 회전
+            
+            // 테이블을 바라보도록 회전
+            if (lookDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                actor.transform.rotation = targetRotation;
+            }
         }
 
         /// <summary> 부드러운 이동을 위해 코루틴 사용 </summary>
