@@ -25,21 +25,23 @@ namespace HF
             }
         }
 
-        private void GoToBed(CharacterBase character)
+        private void GoToBed(CharacterBase actor)
         {
-            currentCharacter = character;
+            currentCharacter = actor;
             isCharacterSleeping = true;
 
+            actor.EquipTool(null); // 도구를 해제
+
             // 잠자는 애니메이션 재생
-            character.animator.SetTrigger("Sleeping Trigger");
-            character.animator.SetBool("IsSleeping", true);
+            actor.animator.SetTrigger("Sleeping Trigger");
+            actor.animator.SetBool("IsSleeping", true);
 
             // 캐릭터를 침대 위치로 이동
             Vector3 correctedRotation = enterPoint.rotation.eulerAngles + rotationOffset;
-            character.transform.SetPositionAndRotation(enterPoint.position, Quaternion.Euler(correctedRotation));
+            actor.transform.SetPositionAndRotation(enterPoint.position, Quaternion.Euler(correctedRotation));
 
             // 캐릭터의 움직임을 제한
-            character.IsProgressingAction = true;
+            actor.IsProgressingAction = true;
         }
 
         private void Update()
