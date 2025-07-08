@@ -199,10 +199,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ok!
+  m_text: "\uC81C\uC791\uD560\uB798"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
+  m_sharedMaterial: {fileID: -7690488609374354502, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -417,7 +417,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 100, y: 0}
-  m_SizeDelta: {x: 120, y: 80}
+  m_SizeDelta: {x: 130, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3180095045992682748
 CanvasRenderer:
@@ -500,7 +500,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2871317305186966692}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2169169203692478646}
+        m_TargetAssemblyTypeName: HF.CraftingUI, Assembly-CSharp
+        m_MethodName: OnConfirmOk
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1851614751244795730
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,10 +789,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cancel
+  m_text: "\uADF8\uB9CC\uB458\uB798"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
+  m_sharedMaterial: {fileID: -7690488609374354502, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -964,6 +976,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   reciptItemsParent: {fileID: 5423288891105442312}
   reciptItemPrefab: {fileID: 1734397579001721967, guid: 714c0634cbd68584d8f02cf2524f785c, type: 3}
+  confirmDialog: {fileID: 5662935907967071744}
+  confirmOkButton: {fileID: 7937453229444689636}
+  confirmCancelButton: {fileID: 3105406655492489594}
+  confirmText: {fileID: 1367026834603506826}
 --- !u!1 &5196368868055390655
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,7 +1017,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -100, y: 0}
-  m_SizeDelta: {x: 120, y: 80}
+  m_SizeDelta: {x: 130, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &174627671042952674
 CanvasRenderer:
@@ -1084,7 +1100,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1381441296746554029}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2169169203692478646}
+        m_TargetAssemblyTypeName: HF.CraftingUI, Assembly-CSharp
+        m_MethodName: OnConfirmCancel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5662935907967071744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1100,7 +1128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1992126196107887160
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1421,10 +1449,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Shall we make it?
+  m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
+  m_sharedMaterial: {fileID: -7690488609374354502, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

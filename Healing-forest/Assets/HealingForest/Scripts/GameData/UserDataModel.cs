@@ -262,5 +262,113 @@ namespace HF
             // 인벤토리에 아이템이 없는 경우 그대로 null 반환
             return itemData;
         }
+
+        /// <summary>
+        /// 인벤토리에서 아이템을 제거합니다.
+        /// </summary>
+        /// <param name="itemID">제거할 아이템 ID</param>
+        /// <param name="quantity">제거할 수량</param>
+        /// <returns>성공적으로 제거된 수량</returns>
+        public int RemoveInventoryItem(string itemID, int quantity)
+        {
+            if (quantity <= 0)
+            {
+                Debug.LogWarning($"RemoveInventoryItem: 잘못된 수량입니다. ItemID: {itemID}, Quantity: {quantity}");
+                return 0;
+            }
+
+            int removedCount = 0;
+            int remainingToRemove = quantity;
+
+            // 뒤에서부터 검색하여 제거 (최신 아이템부터 제거)
+            for (int i = InventoryData.InventoryItems.Count - 1; i >= 0 && remainingToRemove > 0; i--)
+            {
+                var item = InventoryData.InventoryItems[i];
+                if (item.itemID.Equals(itemID))
+                {
+                    if (item.itemCount <= remainingToRemove)
+                    {
+                        // 아이템 전체 제거
+                        removedCount += item.itemCount;
+                        remainingToRemove -= item.itemCount;
+                        InventoryData.InventoryItems.RemoveAt(i);
+                        
+                        Debug.Log($"아이템 슬롯 완전 제거: {itemID} x{item.itemCount}");
+                    }
+                    else
+                    {
+                        // 아이템 일부만 제거
+                        item.itemCount -= remainingToRemove;
+                        removedCount += remainingToRemove;
+                        remainingToRemove = 0;
+                        
+                        // 변경된 아이템 데이터로 업데이트
+                        InventoryData.InventoryItems[i] = item;
+                        OnInventoryDataChanged?.Invoke(item);
+                        
+                        Debug.Log($"아이템 수량 감소: {itemID} x{remainingToRemove}, 남은 수량: {item.itemCount}");
+                    }
+                }
+            }
+
+            if (removedCount < quantity)
+            {
+                Debug.LogWarning($"요청한 수량을 모두 제거할 수 없습니다. ItemID: {itemID}, 요청: {quantity}, 제거됨: {removedCount}");
+            }
+
+            return removedCount;
+        }
+
+        /// <summary>
+        /// 특정 아이템이 인벤토리에 충분한지 확인합니다.
+        /// </summary>
+        /// <param name="itemID">확인할 아이템 ID</param>
+        /// <param name="requiredQuantity">필요한 수량</param>
+        /// <returns>충분하면 true, 부족하면 false</returns>
+        public bool HasSufficientItem(string itemID, int requiredQuantity)
+        {
+            int totalCount = 0;
+            
+            foreach (var item in InventoryData.InventoryItems)
+            {
+                if (item.itemID.Equals(itemID))
+                {
+                    totalCount += item.itemCount;
+                }
+            }
+            
+            return totalCount >= requiredQuantity;
+        }
+
+        /// <summary>
+        /// 특정 아이템의 총 보유 수량을 반환합니다.
+        /// </summary>
+        /// <param name="itemID">확인할 아이템 ID</param>
+        /// <returns>총 보유 수량</returns>
+        public int GetTotalItemCount(string itemID)
+        {
+            int totalCount = 0;
+            
+            foreach (var item in InventoryData.InventoryItems)
+            {
+                if (item.itemID.Equals(itemID))
+                {
+                    totalCount += item.itemCount;
+                }
+            }
+            
+            return totalCount;
+        }
+
+        /// <summary>
+        /// 간편한 아이템 추가 메서드 (기본 내구도 100)
+        /// </summary>
+        /// <param name="itemID">추가할 아이템 ID</param>
+        /// <param name="quantity">추가할 수량</param>
+        /// <returns>성공 여부</returns>
+        public bool AddInventoryItem(string itemID, int quantity)
+        {
+            return AddItemToInventory(itemID, quantity, 100f, out int failedCount);
+        }
     }
 }

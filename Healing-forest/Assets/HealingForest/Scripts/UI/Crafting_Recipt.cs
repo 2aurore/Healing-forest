@@ -13,9 +13,11 @@ namespace HF
         [SerializeField] private GameObject materialItemsParent; // 레시피 재료 아이템들을 담을 부모 오브젝트
         [SerializeField] private GameObject materialSlotPrefab; // 재료 슬롯 프리팹
         private List<Crafting_Recipt_Material> materialSlots = new List<Crafting_Recipt_Material>();
+        private string currentReciptID; // 현재 레시피 ID
 
         public void SetReciptData(string reciptID)
         {
+            currentReciptID = reciptID;
             ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
             if (reciptData != null)
             {
@@ -42,6 +44,45 @@ namespace HF
                     materialSlots.Add(materialSlot);
                 }
             }
+        }
+        /// <summary>
+        /// 레시피 아이템 클릭 시 호출되는 메서드
+        /// </summary>
+        public void OnReciptClicked()
+        {
+            // 재료가 충분한지 확인
+            if (CanCraft())
+            {
+                // CraftingUI에 선택된 레시피 정보 전달하고 확인창 활성화
+                CraftingUI craftingUI = GetComponentInParent<CraftingUI>();
+                craftingUI?.ShowConfirmDialog(currentReciptID);
+            }
+            else
+            {
+                Debug.Log("재료가 부족합니다!");
+                // 재료 부족 알림 UI 표시 (필요시)
+            }
+        }
+
+        /// <summary>
+        /// 제작 가능한지 확인
+        /// </summary>
+        public bool CanCraft()
+        {
+            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(currentReciptID);
+            if (reciptData == null) return false;
+
+            foreach (RequiredItem material in reciptData.RequiredItems)
+            {
+                UserItemDataDTO userItemData = UserDataModel.Singleton.GetInventoryItemData(material.ItemId);
+                int currentAmount = userItemData != null ? userItemData.itemCount : 0;
+
+                if (currentAmount < material.Quantity)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>

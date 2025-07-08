@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HF
 {
@@ -10,7 +12,17 @@ namespace HF
         [SerializeField] private Transform reciptItemsParent;
         [SerializeField] private GameObject reciptItemPrefab;
 
+        [Header("Confirm Dialog")]
+        [SerializeField] private GameObject confirmDialog; // 확인 대화상자
+        [SerializeField] private Button confirmOkButton; // OK 버튼
+        [SerializeField] private Button confirmCancelButton; // Cancel 버튼
+        [SerializeField] private TextMeshProUGUI confirmText; // 확인 텍스트
+        // [SerializeField] private Image confirmItemIcon; // 확인창 아이템 아이콘
+        // [SerializeField] private TextMeshProUGUI confirmItemName; // 확인창 아이템 이름
+
         private List<Crafting_Recipt> reciptSlots = new List<Crafting_Recipt>();
+        private string selectedReciptID; // 선택된 레시피 ID
+
 
 
         public void Initialize()
@@ -36,6 +48,84 @@ namespace HF
                 Debug.LogWarning("No recipt data found.");
             }
         }
+        /// <summary>
+        /// 레시피 선택 시 확인 대화상자 표시
+        /// </summary>
+        public void ShowConfirmDialog(string reciptID)
+        {
+            selectedReciptID = reciptID;
+            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+
+            if (reciptData != null && confirmDialog != null)
+            {
+                // 확인창 정보 설정
+                ItemDataSO resultItem = GameDataModel.Singleton.GetItemData(reciptData.ResultItemId);
+                if (resultItem != null)
+                {
+                    // confirmItemIcon.sprite = resultItem.Icon;
+                    // confirmItemName.text = resultItem.ItemName;
+                    confirmText.text = $"{resultItem.ItemName}을(를) 제작하시겠습니까?";
+                }
+
+                // 확인창 활성화
+                confirmDialog.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// 확인 버튼 클릭 시 호출
+        /// </summary>
+        public void OnConfirmOk()
+        {
+            if (!string.IsNullOrEmpty(selectedReciptID))
+            {
+                CraftItem(selectedReciptID);
+            }
+
+            // 확인창 닫기
+            confirmDialog.SetActive(false);
+        }
+
+        /// <summary>
+        /// 취소 버튼 클릭 시 호출
+        /// </summary>
+        public void OnConfirmCancel()
+        {
+            // 확인창 닫기
+            confirmDialog.SetActive(false);
+            selectedReciptID = null;
+        }
+
+        /// <summary>
+        /// 아이템 제작 실행
+        /// </summary>
+        private void CraftItem(string reciptID)
+        {
+            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+            if (reciptData == null)
+            {
+                Debug.LogError($"Recipe data not found for ID: {reciptID}");
+                return;
+            }
+
+            // 재료 소모
+            foreach (RequiredItem material in reciptData.RequiredItems)
+            {
+                UserDataModel.Singleton.RemoveInventoryItem(material.ItemId, material.Quantity);
+            }
+
+            // 결과 아이템 추가
+            UserDataModel.Singleton.AddInventoryItem(reciptData.ResultItemId, 1);
+
+            // UI 업데이트
+            RefreshAllMaterialAmounts();
+
+            Debug.Log($"Successfully crafted: {reciptData.ReciptName}");
+
+            // 인벤토리 UI 업데이트 (필요시)
+            EventSystem.OnInventoryChanged?.Invoke();
+        }
+
 
         /// <summary>
         /// 특정 아이템 수량이 변경되었을 때 모든 레시피의 해당 재료 슬롯 업데이트
