@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace HF
 {
-    public class Crafting_Recipt_Material : MonoBehaviour
+    public class Crafting_Recipe_Material : MonoBehaviour
     {
         [SerializeField] private Image icon; // 아이콘을 설정할 수 있는 필드
         [SerializeField] private TextMeshProUGUI nameText;

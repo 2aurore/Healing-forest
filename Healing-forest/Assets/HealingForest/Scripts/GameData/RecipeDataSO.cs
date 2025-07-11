@@ -22,17 +22,17 @@ namespace HF
     }
 
 
-    [CreateAssetMenu(fileName = "ReciptData", menuName = "ScriptableObjects/ReciptData")]
-    public class ReciptDataSO : ScriptableObject
+    [CreateAssetMenu(fileName = "RecipeData", menuName = "ScriptableObjects/RecipeData")]
+    public class RecipeDataSO : ScriptableObject
     {
-        [SerializeField] private string reciptId; // 레시피 ID
-        [SerializeField] private string reciptName; // 레시피 이름
+        [SerializeField] private string recipeId; // 레시피 ID
+        [SerializeField] private string recipeName; // 레시피 이름
         [SerializeField] private RequiredItem[] requiredItems; // 필요한 아이템 ID 목록
         [SerializeField] private string resultItemId; // 결과 아이템 ID
         [SerializeField] private int craftingTime; // 제작 시간 (초 단위)
 
-        public string ReciptID => reciptId;
-        public string ReciptName => reciptName;
+        public string RecipeID => recipeId;
+        public string RecipeName => recipeName;
         public RequiredItem[] RequiredItems => requiredItems;
         public string ResultItemId => resultItemId;
         public int CraftingTime => craftingTime;

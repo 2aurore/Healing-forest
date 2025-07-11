@@ -20,8 +20,8 @@ namespace HF
         // [SerializeField] private Image confirmItemIcon; // 확인창 아이템 아이콘
         // [SerializeField] private TextMeshProUGUI confirmItemName; // 확인창 아이템 이름
 
-        private List<Crafting_Recipt> reciptSlots = new List<Crafting_Recipt>();
-        private string selectedReciptID; // 선택된 레시피 ID
+        private List<Crafting_Recipe> reciptSlots = new List<Crafting_Recipe>();
+        private string selectedRecipeID; // 선택된 레시피 ID
 
 
 
@@ -32,20 +32,20 @@ namespace HF
 
             ClearAllSlots();
 
-            ReciptDataDTO reciptDataDto = GameDataModel.Singleton.ReciptDataDTO;
+            RecipeDataDTO reciptDataDto = GameDataModel.Singleton.RecipeDataDTO;
             if (reciptDataDto != null && reciptDataDto.reciptDatas != null && reciptDataDto.reciptDatas.Count > 0)
             {
-                foreach (var recipt in reciptDataDto.reciptDatas.Values)
+                foreach (var recipe in reciptDataDto.reciptDatas.Values)
                 {
                     GameObject slotObject = Instantiate(reciptItemPrefab, reciptItemsParent);
-                    Crafting_Recipt reciptSlot = slotObject.GetComponent<Crafting_Recipt>();
-                    reciptSlot.SetReciptData(recipt.ReciptID);
+                    Crafting_Recipe reciptSlot = slotObject.GetComponent<Crafting_Recipe>();
+                    reciptSlot.SetRecipeData(recipe.RecipeID);
                     reciptSlots.Add(reciptSlot);
                 }
             }
             else
             {
-                Debug.LogWarning("No recipt data found.");
+                Debug.LogWarning("No recipe data found.");
             }
         }
         /// <summary>
@@ -53,8 +53,8 @@ namespace HF
         /// </summary>
         public void ShowConfirmDialog(string reciptID)
         {
-            selectedReciptID = reciptID;
-            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+            selectedRecipeID = reciptID;
+            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(reciptID);
 
             if (reciptData != null && confirmDialog != null)
             {
@@ -77,9 +77,9 @@ namespace HF
         /// </summary>
         public void OnConfirmOk()
         {
-            if (!string.IsNullOrEmpty(selectedReciptID))
+            if (!string.IsNullOrEmpty(selectedRecipeID))
             {
-                CraftItem(selectedReciptID);
+                CraftItem(selectedRecipeID);
             }
 
             // 확인창 닫기
@@ -93,7 +93,7 @@ namespace HF
         {
             // 확인창 닫기
             confirmDialog.SetActive(false);
-            selectedReciptID = null;
+            selectedRecipeID = null;
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace HF
         /// </summary>
         private void CraftItem(string reciptID)
         {
-            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(reciptID);
             if (reciptData == null)
             {
                 Debug.LogError($"Recipe data not found for ID: {reciptID}");
@@ -120,7 +120,7 @@ namespace HF
             // UI 업데이트
             RefreshAllMaterialAmounts();
 
-            Debug.Log($"Successfully crafted: {reciptData.ReciptName}");
+            Debug.Log($"Successfully crafted: {reciptData.RecipeName}");
 
             // 인벤토리 UI 업데이트 (필요시)
             EventSystem.OnInventoryChanged?.Invoke();

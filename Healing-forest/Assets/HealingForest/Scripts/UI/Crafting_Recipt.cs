@@ -6,25 +6,25 @@ using UnityEngine.UI;
 
 namespace HF
 {
-    public class Crafting_Recipt : MonoBehaviour
+    public class Crafting_Recipe : MonoBehaviour
     {
         [SerializeField] private Image itemIcon; // 레시피 아이콘을 설정할 수 있는 필드
         [SerializeField] private TextMeshProUGUI reciptNameText; // 레시피 이름을 표시할 텍스트
         [SerializeField] private GameObject materialItemsParent; // 레시피 재료 아이템들을 담을 부모 오브젝트
         [SerializeField] private GameObject materialSlotPrefab; // 재료 슬롯 프리팹
-        private List<Crafting_Recipt_Material> materialSlots = new List<Crafting_Recipt_Material>();
-        private string currentReciptID; // 현재 레시피 ID
+        private List<Crafting_Recipe_Material> materialSlots = new List<Crafting_Recipe_Material>();
+        private string currentRecipeID; // 현재 레시피 ID
 
-        public void SetReciptData(string reciptID)
+        public void SetRecipeData(string reciptID)
         {
-            currentReciptID = reciptID;
-            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(reciptID);
+            currentRecipeID = reciptID;
+            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(reciptID);
             if (reciptData != null)
             {
                 // 레시피 아이콘과 이름 설정
                 ItemDataSO itemDataSO = GameDataModel.Singleton.GetItemData(reciptData.ResultItemId);
                 itemIcon.sprite = itemDataSO.Icon;
-                reciptNameText.text = reciptData.ReciptName;
+                reciptNameText.text = reciptData.RecipeName;
 
                 // 재료 슬롯 초기화
                 foreach (Transform child in materialItemsParent.transform)
@@ -39,7 +39,7 @@ namespace HF
                     // 현재 내가 가지고 있는 재료 아이템
                     UserItemDataDTO userItemData = UserDataModel.Singleton.GetInventoryItemData(material.ItemId);
                     GameObject slotObject = Instantiate(materialSlotPrefab, materialItemsParent.transform);
-                    Crafting_Recipt_Material materialSlot = slotObject.GetComponent<Crafting_Recipt_Material>();
+                    Crafting_Recipe_Material materialSlot = slotObject.GetComponent<Crafting_Recipe_Material>();
                     materialSlot.SetMaterialSlot(material.ItemId, userItemData != null ? userItemData.itemCount : 0, material.Quantity);
                     materialSlots.Add(materialSlot);
                 }
@@ -48,14 +48,14 @@ namespace HF
         /// <summary>
         /// 레시피 아이템 클릭 시 호출되는 메서드
         /// </summary>
-        public void OnReciptClicked()
+        public void OnRecipeClicked()
         {
             // 재료가 충분한지 확인
             if (CanCraft())
             {
                 // CraftingUI에 선택된 레시피 정보 전달하고 확인창 활성화
                 CraftingUI craftingUI = GetComponentInParent<CraftingUI>();
-                craftingUI?.ShowConfirmDialog(currentReciptID);
+                craftingUI?.ShowConfirmDialog(currentRecipeID);
             }
             else
             {
@@ -69,7 +69,7 @@ namespace HF
         /// </summary>
         public bool CanCraft()
         {
-            ReciptDataSO reciptData = GameDataModel.Singleton.GetReciptData(currentReciptID);
+            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(currentRecipeID);
             if (reciptData == null) return false;
 
             foreach (RequiredItem material in reciptData.RequiredItems)
@@ -90,7 +90,7 @@ namespace HF
         /// </summary>
         public void UpdateMaterialAmount(string itemID, int newAmount)
         {
-            Crafting_Recipt_Material targetSlot = materialSlots.Find(slot => slot.ItemID == itemID);
+            Crafting_Recipe_Material targetSlot = materialSlots.Find(slot => slot.ItemID == itemID);
             if (targetSlot != null)
             {
                 targetSlot.UpdateAmount(newAmount);

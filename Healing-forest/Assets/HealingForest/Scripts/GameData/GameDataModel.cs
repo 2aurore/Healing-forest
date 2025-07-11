@@ -12,7 +12,7 @@ namespace HF
         [field: SerializeField] public ToolDataDTO ToolDataDTO { get; private set; } = new ToolDataDTO();
         [field: SerializeField] public GameItemDataDTO ItemDataDTO { get; private set; } = new GameItemDataDTO();
         [field: SerializeField] public NPCDataDTO NPCDataDTO { get; private set; } = new NPCDataDTO();
-        [field: SerializeField] public ReciptDataDTO ReciptDataDTO { get; private set; } = new ReciptDataDTO();
+        [field: SerializeField] public RecipeDataDTO RecipeDataDTO { get; private set; } = new RecipeDataDTO();
 
 
         public void Initialize()
@@ -20,7 +20,7 @@ namespace HF
             ToolDataSO[] loadedToolDatas = Resources.LoadAll<ToolDataSO>("Tools/Data/");
             ItemDataSO[] loadedItemDatas = Resources.LoadAll<ItemDataSO>("Items/Data/");
             NPCDataSO[] loadedNPCDatas = Resources.LoadAll<NPCDataSO>("NPCs/Data/");
-            ReciptDataSO[] loadedReciptDatas = Resources.LoadAll<ReciptDataSO>("Recipts/");
+            RecipeDataSO[] loadedRecipeDatas = Resources.LoadAll<RecipeDataSO>("Recipes/");
 
             for (int i = 0; i < loadedToolDatas.Length; i++)
             {
@@ -43,11 +43,11 @@ namespace HF
                     NPCDataDTO.npcDatas.Add(loadedNPCDatas[i].NpcID, loadedNPCDatas[i]);
                 }
             }
-            for (int i = 0; i < loadedReciptDatas.Length; i++)
+            for (int i = 0; i < loadedRecipeDatas.Length; i++)
             {
-                if (!ReciptDataDTO.reciptDatas.ContainsKey(loadedReciptDatas[i].ReciptID))
+                if (!RecipeDataDTO.reciptDatas.ContainsKey(loadedRecipeDatas[i].RecipeID))
                 {
-                    ReciptDataDTO.reciptDatas.Add(loadedReciptDatas[i].ReciptID, loadedReciptDatas[i]);
+                    RecipeDataDTO.reciptDatas.Add(loadedRecipeDatas[i].RecipeID, loadedRecipeDatas[i]);
                 }
             }
 
@@ -92,15 +92,15 @@ namespace HF
             }
         }
 
-        public ReciptDataSO GetReciptData(string reciptID)
+        public RecipeDataSO GetRecipeData(string reciptID)
         {
-            if (ReciptDataDTO.reciptDatas.TryGetValue(reciptID, out ReciptDataSO reciptData))
+            if (RecipeDataDTO.reciptDatas.TryGetValue(reciptID, out RecipeDataSO reciptData))
             {
                 return reciptData;
             }
             else
             {
-                Debug.LogError($"Recipt ID not found: {reciptID}");
+                Debug.LogError($"recipe ID not found: {reciptID}");
                 return null;
             }
         }

@@ -28,8 +28,8 @@ namespace HF
     }
 
     [System.Serializable]
-    public class ReciptDataDTO : GameDataDTO
+    public class RecipeDataDTO : GameDataDTO
     {
-        public SerializableDictionary<string, ReciptDataSO> reciptDatas = new SerializableDictionary<string, ReciptDataSO>();
+        public SerializableDictionary<string, RecipeDataSO> reciptDatas = new SerializableDictionary<string, RecipeDataSO>();
     }
 }

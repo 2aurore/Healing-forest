@@ -8,7 +8,7 @@ namespace HF
     {
         [SerializeField] private string reciptId; // 레시피 ID
         [SerializeField] private string reciptName; // 레시피 이름
-        [SerializeField] private ReciptDataSO reciptData; // 레시피 데이터
+        [SerializeField] private RecipeDataSO reciptData; // 레시피 데이터
 
 
 
