@@ -393,8 +393,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: item name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
+  m_sharedMaterial: {fileID: -7690488609374354502, guid: 0818c7188b581fb458333c13bb2698c9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -468,6 +468,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1456344068555712155}
     m_Modifications:
+    - target: {fileID: 1101188009291791119, guid: 0c2a1585549977148bd6e1e2877caa5d, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1275418482569383968, guid: 0c2a1585549977148bd6e1e2877caa5d, type: 3}
       propertyPath: m_Name
       value: Material Slot
