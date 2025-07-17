@@ -49,7 +49,7 @@ namespace HF
             }
 
             // TODO : Custom Order After System Load
-            //     UIManager.Show<IngameUI>(UIList.IngameUI);
+            UIManager.Show<IngameUI>(UIList.IngameUI);
             //     UIManager.Show<LogUI>(UIList.LogUI);
 
         }

@@ -28,6 +28,8 @@ namespace HF
             {
                 yield return new WaitUntil(() => isLoadLevelComplete);
             }
+
+            UIManager.Show<IngameUI>(UIList.IngameUI);
         }
 
         private void OnLevelLoadCompleted()
@@ -41,6 +43,7 @@ namespace HF
 
             yield return null;
 
+            UIManager.Hide<IngameUI>(UIList.IngameUI);
         }
 
 
