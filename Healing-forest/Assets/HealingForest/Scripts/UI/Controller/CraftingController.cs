@@ -70,6 +70,8 @@ namespace HF
                 // 제작 UI가 열릴 때 모든 재료 수량을 최신 데이터로 새로고침
                 craftingUI.RefreshAllMaterialAmounts();
             }
+
+            UIManager.Hide<IngameUI>(UIList.IngameUI);
         }
 
         public void HideCrafting()
@@ -78,6 +80,8 @@ namespace HF
             {
                 craftingUI.CloseCrafting();
             }
+
+            UIManager.Show<IngameUI>(UIList.IngameUI);
         }
 
         private void OnInventoryDataChanged(UserItemDataDTO changedItem)

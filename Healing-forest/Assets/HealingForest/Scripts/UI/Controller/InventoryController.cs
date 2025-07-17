@@ -83,6 +83,8 @@ namespace HF
                 inventoryUI.Show();
                 RefreshInventoryUI(); // 최신 데이터로 갱신
             }
+
+            UIManager.Hide<IngameUI>(UIList.IngameUI);
         }
 
         private void HideInventory()
@@ -91,6 +93,8 @@ namespace HF
             {
                 inventoryUI.Hide();
             }
+
+            UIManager.Show<IngameUI>(UIList.IngameUI);
         }
 
         private void InitializeInventory()
