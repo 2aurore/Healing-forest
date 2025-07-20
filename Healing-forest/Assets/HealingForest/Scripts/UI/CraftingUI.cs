@@ -162,6 +162,8 @@ namespace HF
         public void CloseCrafting()
         {
             UIManager.Hide<CraftingUI>(UIList.CraftingUI);
+            UIManager.Show<IngameUI>(UIList.IngameUI);
+
             // 캐릭터가 이동할 수 있도록 설정
             EventSystem.OnCameraSwitch?.Invoke("Player");
             EventSystem.OnPlayerConnected?.Invoke();

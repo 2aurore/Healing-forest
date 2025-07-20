@@ -12,6 +12,10 @@ namespace HF
         [SerializeField] private TextMeshProUGUI timeText;
         [SerializeField] private TextMeshProUGUI dateText;
 
+        [Header("Tool Display")]
+        [SerializeField] private GameObject toolInfo;
+        [SerializeField] private TextMeshProUGUI ToolText;
+
         private string timeFormat = "tt hh:mm";
         private string dateFormat = "MM월 dd일 (dddd)"; // dddd = 전체 요일명, ddd = 축약 요일명
 
@@ -19,6 +23,27 @@ namespace HF
         {
             // 시간 업데이트를 1초마다 실행
             InvokeRepeating(nameof(UpdateTimeDisplay), 0f, 1f);
+        }
+
+        private void Update()
+        {
+            UpdateCurrentToolDisplay();
+        }
+
+        private void UpdateCurrentToolDisplay()
+        {
+            UserDataModel.Singleton.GetCurrentEquipment(out ToolDataSO currentTool);
+
+            if (currentTool != null)
+            {
+                toolInfo.SetActive(true);
+                ToolText.text = currentTool.ToolName;
+            }
+            else
+            {
+                toolInfo.SetActive(false);
+                ToolText.text = string.Empty; // 툴 정보가 없을 경우 빈 문자열
+            }
         }
 
         private void UpdateTimeDisplay()
@@ -36,8 +61,6 @@ namespace HF
             {
                 dateText.text = currentTime.ToString(dateFormat);
             }
-
-
         }
 
         /// <summary>

@@ -70,6 +70,17 @@ namespace HF
             }
         }
 
+        public void GetCurrentEquipment(out ToolDataSO itemData)
+        {
+            if (string.IsNullOrEmpty(CurrentEquipItemID))
+            {
+                itemData = null; // 현재 장착된 아이템이 없으면 null 반환
+                return;
+            }
+
+            itemData = GameDataModel.Singleton.GetToolData(CurrentEquipItemID);
+        }
+
         /// <summary>
         /// 인벤토리 상태 디버그 출력
         /// </summary>
@@ -292,7 +303,7 @@ namespace HF
                         removedCount += item.itemCount;
                         remainingToRemove -= item.itemCount;
                         InventoryData.InventoryItems.RemoveAt(i);
-                        
+
                         Debug.Log($"아이템 슬롯 완전 제거: {itemID} x{item.itemCount}");
                     }
                     else
@@ -301,11 +312,11 @@ namespace HF
                         item.itemCount -= remainingToRemove;
                         removedCount += remainingToRemove;
                         remainingToRemove = 0;
-                        
+
                         // 변경된 아이템 데이터로 업데이트
                         InventoryData.InventoryItems[i] = item;
                         OnInventoryDataChanged?.Invoke(item);
-                        
+
                         Debug.Log($"아이템 수량 감소: {itemID} x{remainingToRemove}, 남은 수량: {item.itemCount}");
                     }
                 }
@@ -328,7 +339,7 @@ namespace HF
         public bool HasSufficientItem(string itemID, int requiredQuantity)
         {
             int totalCount = 0;
-            
+
             foreach (var item in InventoryData.InventoryItems)
             {
                 if (item.itemID.Equals(itemID))
@@ -336,7 +347,7 @@ namespace HF
                     totalCount += item.itemCount;
                 }
             }
-            
+
             return totalCount >= requiredQuantity;
         }
 
@@ -348,7 +359,7 @@ namespace HF
         public int GetTotalItemCount(string itemID)
         {
             int totalCount = 0;
-            
+
             foreach (var item in InventoryData.InventoryItems)
             {
                 if (item.itemID.Equals(itemID))
@@ -356,7 +367,7 @@ namespace HF
                     totalCount += item.itemCount;
                 }
             }
-            
+
             return totalCount;
         }
 
