@@ -17,18 +17,23 @@ namespace HF
         [SerializeField] private Button confirmOkButton; // OK 버튼
         [SerializeField] private Button confirmCancelButton; // Cancel 버튼
         [SerializeField] private TextMeshProUGUI confirmText; // 확인 텍스트
-        // [SerializeField] private Image confirmItemIcon; // 확인창 아이템 아이콘
-        // [SerializeField] private TextMeshProUGUI confirmItemName; // 확인창 아이템 이름
+
 
         private List<Crafting_Recipe> reciptSlots = new List<Crafting_Recipe>();
         private string selectedRecipeID; // 선택된 레시피 ID
+        private float craftingTime; // 제작 시간 (초 단위)
 
-
+        private void OnEnable()
+        {
+            EventSystem.OnCraftingCompleted += CraftItem; // 제작 완료 시 UI 닫기
+        }
+        private void OnDisable()
+        {
+            EventSystem.OnCraftingCompleted -= CraftItem; // 제작 완료 시 UI 닫기
+        }
 
         public void Initialize()
         {
-            // TODO : 초기화 작업
-            Debug.Log("CraftingUI Initialized");
 
             ClearAllSlots();
 
@@ -62,9 +67,8 @@ namespace HF
                 ItemDataSO resultItem = GameDataModel.Singleton.GetItemData(reciptData.ResultItemId);
                 if (resultItem != null)
                 {
-                    // confirmItemIcon.sprite = resultItem.Icon;
-                    // confirmItemName.text = resultItem.ItemName;
                     confirmText.text = $"{resultItem.ItemName}을(를) 제작하시겠습니까?";
+                    craftingTime = reciptData.CraftingTime;
                 }
 
                 // 확인창 활성화
@@ -79,7 +83,8 @@ namespace HF
         {
             if (!string.IsNullOrEmpty(selectedRecipeID))
             {
-                CraftItem(selectedRecipeID);
+                // CraftItem();
+                EventSystem.OnCraftingStarted?.Invoke(craftingTime);
             }
 
             // 확인창 닫기
@@ -99,12 +104,12 @@ namespace HF
         /// <summary>
         /// 아이템 제작 실행
         /// </summary>
-        private void CraftItem(string reciptID)
+        private void CraftItem()
         {
-            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(reciptID);
+            RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(selectedRecipeID);
             if (reciptData == null)
             {
-                Debug.LogError($"Recipe data not found for ID: {reciptID}");
+                Debug.LogError($"Recipe data not found for ID: {selectedRecipeID}");
                 return;
             }
 

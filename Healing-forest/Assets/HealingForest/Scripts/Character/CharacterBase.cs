@@ -66,10 +66,12 @@ namespace HF
         private void OnEnable()
         {
             EventSystem.OnPlayerConnected += ResetAnimatorLayer;
+            EventSystem.OnCraftingStarted += CraftingStart;
         }
         private void OnDisable()
         {
             EventSystem.OnPlayerConnected -= ResetAnimatorLayer;
+            EventSystem.OnCraftingStarted -= CraftingStart;
         }
 
         /// <summary> 바닥 체크 메소드 </summary>
@@ -334,9 +336,28 @@ namespace HF
         }
 
 
+        private void CraftingStart(float craftingTime)
+        {
+            animator.SetFloat("Creating Time", craftingTime);
+            animator.Play("Action Create");
 
+            StartCoroutine(CraftingTimer(craftingTime));
+        }
 
+        private IEnumerator CraftingTimer(float totalTime)
+        {
+            float remainingTime = totalTime;
 
+            while (remainingTime > 0)
+            {
+                remainingTime -= Time.deltaTime;
+                animator.SetFloat("Creating Time", remainingTime);
+
+                yield return null;
+            }
+
+            EventSystem.OnCraftingCompleted?.Invoke();
+        }
 
         private void OnDrawGizmos()
         {

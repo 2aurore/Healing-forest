@@ -20,7 +20,7 @@ namespace HF
 
         // 제작 관련 이벤트
         public static System.Action<string> OnItemCrafted; // 제작된 아이템 ID
-        public static System.Action<string> OnCraftingStarted; // 제작 시작된 레시피 ID
+        public static System.Action<float> OnCraftingStarted; // 제작 시작된 레시피 ID
         public static System.Action OnCraftingCompleted; // 제작 완료
     }
 }
