@@ -12,6 +12,9 @@ namespace HF
         [SerializeField] private Transform reciptItemsParent;
         [SerializeField] private GameObject reciptItemPrefab;
 
+        [Header("Crafting Popup")]
+        [SerializeField] private GameObject craftingPopup;  // 제작 팝업
+
         [Header("Confirm Dialog")]
         [SerializeField] private GameObject confirmDialog; // 확인 대화상자
         [SerializeField] private Button confirmOkButton; // OK 버튼
@@ -89,6 +92,7 @@ namespace HF
 
             // 확인창 닫기
             confirmDialog.SetActive(false);
+            craftingPopup.SetActive(false);
         }
 
         /// <summary>
@@ -129,6 +133,7 @@ namespace HF
 
             // 인벤토리 UI 업데이트 (필요시)
             EventSystem.OnInventoryChanged?.Invoke();
+            craftingPopup.SetActive(true);
         }
 
 

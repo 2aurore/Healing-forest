@@ -823,7 +823,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4571339810367455395}
   m_HandleRect: {fileID: 2682448145187355871}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1292,6 +1292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   reciptItemsParent: {fileID: 3494595079855176432}
   reciptItemPrefab: {fileID: 1734397579001721967, guid: 714c0634cbd68584d8f02cf2524f785c, type: 3}
+  craftingPopup: {fileID: 1537496032654728057}
   confirmDialog: {fileID: 5662935907967071744}
   confirmOkButton: {fileID: 7937453229444689636}
   confirmCancelButton: {fileID: 3105406655492489594}
