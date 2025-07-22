@@ -71,6 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enterPoint: {fileID: 5533297744402779295}
   exitPoint: {fileID: 568512907077081837}
+  rotationOffset: {x: 0, y: 180, z: 0}
 --- !u!1 &1693561766202084611
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,7 +127,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5323379576040271151}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -1, y: 0, z: -0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
