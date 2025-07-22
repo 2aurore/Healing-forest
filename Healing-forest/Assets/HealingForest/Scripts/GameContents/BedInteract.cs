@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HF
 {
-    public class BedInteract : MonoBehaviour, IInteractable
+    public class BedInteract : FieldObjectBase, IInteractable
     {
         public Transform enterPoint; // 침대에 눕기 위한 위치
         public Transform exitPoint; // 침대에서 일어나기 위한 위치
@@ -15,6 +15,9 @@ namespace HF
 
         private CharacterBase currentCharacter; // 현재 침대를 사용 중인 캐릭터
         private bool isCharacterSleeping = false; // 캐릭터가 잠들어 있는지 여부
+        private bool isProgressInAction = false;
+        private float bedExitDelay = 1f; // 침대에서 일어날 때 딜레이 시간
+        private float bedEnterTime = 0f;
 
         public void Interact(CharacterBase actor)
         {
@@ -42,14 +45,18 @@ namespace HF
 
             // 캐릭터의 움직임을 제한
             actor.IsProgressingAction = true;
+            bedEnterTime = Time.time;
         }
 
         private void Update()
         {
-            // 캐릭터가 잠들어 있을 때만 입력 확인
-            if (isCharacterSleeping && currentCharacter != null)
+            if (Time.time > bedEnterTime + bedExitDelay)
             {
-                CheckForWakeUpInput();
+                // 캐릭터가 잠들어 있을 때만 입력 확인
+                if (isCharacterSleeping && currentCharacter != null && !isProgressInAction)
+                {
+                    CheckForWakeUpInput();
+                }
             }
         }
 
@@ -63,46 +70,52 @@ namespace HF
             Vector2 input = new Vector2(horizontal, vertical);
             if (input.sqrMagnitude > 0.1f) // 0.1f는 입력 감도 임계값
             {
-                WakeUp();
+                StartCoroutine(WakeUpCoroutine());
             }
         }
 
-        private void WakeUp()
+        private IEnumerator WakeUpCoroutine()
         {
-            if (currentCharacter == null) return;
+            isProgressInAction = true; // 애니메이션 진행 중임을 표시
+            if (currentCharacter == null)
+                yield break;
 
             // 잠자는 애니메이션 해제
             currentCharacter.animator.SetBool("IsSleeping", false);
 
-            // exitPoint가 설정되어 있으면 해당 위치로, 없으면 현재 위치에서 일어남
-            if (exitPoint != null)
-            {
-                currentCharacter.transform.SetPositionAndRotation(exitPoint.position, exitPoint.rotation);
-            }
+            bool isLandingComlpete = false;
 
-            // 캐릭터의 움직임 제한 해제
-            currentCharacter.IsProgressingAction = false;
+            // 애니메이션이 끝날 때까지 대기
+            while (!isLandingComlpete)
+            {
+
+                Vector3 lerpPosition = Vector3.Lerp(
+                    currentCharacter.transform.position,
+                     exitPoint != null ? exitPoint.position : currentCharacter.transform.position,
+                     Time.deltaTime);
+                currentCharacter.transform.position = lerpPosition;
+
+                yield return null;
+
+                float curve = currentCharacter.animator.GetFloat("TransformLerpCurve");
+                if (curve >= 1f)
+                {
+                    // exitPoint가 설정되어 있으면 해당 위치로, 없으면 현재 위치에서 일어남
+                    if (exitPoint != null)
+                    {
+                        currentCharacter.transform.SetPositionAndRotation(exitPoint.position, exitPoint.rotation);
+                    }
+                    isLandingComlpete = true;
+                }
+            }
 
             // 상태 초기화
             isCharacterSleeping = false;
             currentCharacter = null;
 
             Debug.Log("캐릭터가 침대에서 일어났습니다!");
+            isProgressInAction = false; // 애니메이션 진행 완료 표시
         }
 
-        // 외부에서 강제로 일어나게 하는 메서드 (필요시 사용)
-        public void ForceWakeUp()
-        {
-            if (isCharacterSleeping)
-            {
-                WakeUp();
-            }
-        }
-
-        // 현재 누군가 침대를 사용 중인지 확인하는 메서드
-        public bool IsOccupied()
-        {
-            return isCharacterSleeping;
-        }
     }
 }

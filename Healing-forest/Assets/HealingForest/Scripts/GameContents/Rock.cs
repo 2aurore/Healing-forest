@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HF
 {
-    public class Rock : MonoBehaviour, IHit
+    public class Rock : FieldObjectBase, IHit
     {
         public GameObject[] stonePrefabs; // 돌 프리팹들
 

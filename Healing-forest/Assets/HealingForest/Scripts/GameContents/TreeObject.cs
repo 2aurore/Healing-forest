@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 
 namespace HF
 {
-    public class TreeObject : MonoBehaviour, IChop, IInteractable
+    public class TreeObject : FieldObjectBase, IChop, IInteractable
     {
         public List<GameObject> fruits = new List<GameObject>(); // 과일들을 담을 리스트
         public GameObject fruitPrefab; // 열매 프리팹
@@ -15,8 +15,9 @@ namespace HF
 
         private int branchCount = 5; // 나뭇가지 최대 개수
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
             CollectFruits();
         }
 

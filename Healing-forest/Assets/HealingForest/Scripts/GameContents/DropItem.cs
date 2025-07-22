@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HF
 {
-    public class DropItem : MonoBehaviour, IInteractable
+    public class DropItem : FieldObjectBase, IInteractable
     {
         [SerializeField] private string itemId;  // 아이템 데이터
         [SerializeField] private int quantity = 1;   // 아이템 수량
@@ -13,14 +13,14 @@ namespace HF
         public void Interact(CharacterBase actor)
         {
             Debug.Log($"DropItem Interact 시도: {gameObject.name} (ItemID: {itemId}, Quantity: {quantity})");
-            
+
             // 인벤토리 상태 디버그 출력
             UserDataModel.Singleton.DebugInventoryStatus();
-            
+
             bool isAddAllItem = UserDataModel.Singleton.AddItemToInventory(itemId, quantity, currentDurability, out int failedCount);
-            
+
             Debug.Log($"AddItemToInventory 결과: {isAddAllItem}, 실패 수량: {failedCount}");
-            
+
             if (isAddAllItem)
             {
                 // 아이템을 줍고 나면 해당 셀을 사용 가능 상태로 변경합니다.
