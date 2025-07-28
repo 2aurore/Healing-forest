@@ -37,6 +37,12 @@ namespace HF
             RenderSettings.skybox = skyboxInstatnce;
         }
 
+        private void Start()
+        {
+            // 이벤트 구독
+            EventSystem.OnLightToggle += SetActive;
+        }
+
         private void Update()
         {
             timeOfDay += (Time.deltaTime / fullDayLength);
@@ -97,6 +103,19 @@ namespace HF
 
             //post processing volume 변경
             nightVolume.weight = normalizedBlend;
+        }
+
+        public void SetActive(bool isActive)
+        {
+            if (isActive)
+            {
+                gameObject.SetActive(true);
+                UpdateLighting(); // 초기화 시 조명 업데이트
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

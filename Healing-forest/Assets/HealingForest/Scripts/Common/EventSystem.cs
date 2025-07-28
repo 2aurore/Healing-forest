@@ -22,5 +22,9 @@ namespace HF
         public static System.Action<string> OnItemCrafted; // 제작된 아이템 ID
         public static System.Action<float> OnCraftingStarted; // 제작 시작된 레시피 ID
         public static System.Action OnCraftingCompleted; // 제작 완료
+
+        // Light 관련 이벤트
+        public static System.Action<bool> OnLightToggle; // 라이트 토글 이벤트
+
     }
 }
