@@ -59,12 +59,12 @@ namespace HF
             animator.SetFloat("Vertical", animationParameterVertical);
             animator.SetBool("IsRunning", IsRunning);
 
-            UserDataModel.Singleton.SetCharacterPosition(transform.position); // 캐릭터 위치 저장
 
         }
 
         private void OnEnable()
         {
+            UserDataModel.Singleton.SetCharacterPosition(transform.position); // 캐릭터 위치 저장
             EventSystem.OnPlayerConnected += ResetAnimatorLayer;
             EventSystem.OnCraftingStarted += CraftingStart;
         }
@@ -180,6 +180,7 @@ namespace HF
                 new TreeShakeHandler(),
                 new ToolSpecificHandler(),
                 new BedInteractionHandler(),
+                new HouseInteractionHandler() // 집 상호작용 핸들러 추가
             };
 
             // 우선순위에 따라 정렬
@@ -359,11 +360,13 @@ namespace HF
             EventSystem.OnCraftingCompleted?.Invoke();
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = new Color(1, 0, 0, 0.5f);
-            Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
-        }
+
+        /// <summary> 캐릭터가 제작 중일 때 애니메이션 레이어 </summary>
+        // private void OnDrawGizmos()
+        // {
+        //     Gizmos.color = new Color(1, 0, 0, 0.5f);
+        //     Gizmos.DrawSphere(transform.position + Vector3.up * 0.3f + transform.forward * 0.5f, interactRadius);
+        // }
 
 
 
