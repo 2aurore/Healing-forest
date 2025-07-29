@@ -19,13 +19,39 @@ namespace HF
 
         private void Start()
         {
+            // 씬 로딩 완료 후 InputSystem 연결을 보장
+            StartCoroutine(InitializeInputSystem());
+        }
+
+        private IEnumerator InitializeInputSystem()
+        {
+            // InputSystem 초기화 대기
+            yield return new WaitUntil(() => InputSystem.Singleton != null);
+
+            // 기존 이벤트 구독 해제 (중복 방지)
+            if (InputSystem.Singleton != null)
+            {
+                InputSystem.Singleton.OnLeftMouseButtonDown -= LeftMouseButtonEvent;
+                InputSystem.Singleton.OnRightMouseButtonDown -= RightMouseButtonEvent;
+            }
+
+            // 새로 이벤트 구독
             InputSystem.Singleton.OnLeftMouseButtonDown += LeftMouseButtonEvent;
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
             EventSystem.ReleaseTool += UnEqqipTool;
+
+            Debug.Log($"[CharacterController] InputSystem 연결 완료 - {gameObject.name}");
         }
 
         private void OnDestroy()
         {
+            if (InputSystem.Singleton != null)
+            {
+                InputSystem.Singleton.OnLeftMouseButtonDown -= LeftMouseButtonEvent;
+                InputSystem.Singleton.OnRightMouseButtonDown -= RightMouseButtonEvent;
+            }
+            EventSystem.ReleaseTool -= UnEqqipTool;
+
             Instance = null;
         }
 

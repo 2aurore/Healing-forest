@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Sirenix.OdinInspector;
+using StylizedWater2;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +24,7 @@ namespace HF
 
         public event System.Action OnLevelLoadStart;
         public event System.Action OnLevelLoadComplete;
+        public event System.Action OnCharacterInitializeComplete;
 
         private void Awake()
         {
@@ -52,6 +54,7 @@ namespace HF
         [Button]
         public void LoadLevel(LevelType levelType)
         {
+            UIManager.Show<LoadingUI>(UIList.LoadingUI);
             switch (levelType)
             {
                 case LevelType.Field:
@@ -83,6 +86,16 @@ namespace HF
             }
 
             OnLevelLoadComplete?.Invoke();
+
+
+            // 캐릭터 초기화를 위한 추가 대기
+            yield return new WaitForSeconds(0.1f);
+
+            // 캐릭터 컨트롤러가 제대로 초기화될 때까지 대기
+            yield return new WaitUntil(() => CharacterController.Instance != null);
+
+            OnCharacterInitializeComplete?.Invoke(); // 캐릭터 초기화 완료
+
         }
 
     }
