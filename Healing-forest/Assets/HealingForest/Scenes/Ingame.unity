@@ -859,7 +859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeOfDay: 0
-  fullDayLength: 120
+  fullDayLength: 300
   mainLight: {fileID: 705507994}
   lightGradient:
     serializedVersion: 2
@@ -871,9 +871,9 @@ MonoBehaviour:
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 193
+    ctime0: 3277
     ctime1: 32768
-    ctime2: 65535
+    ctime2: 62258
     ctime3: 0
     ctime4: 0
     ctime5: 0

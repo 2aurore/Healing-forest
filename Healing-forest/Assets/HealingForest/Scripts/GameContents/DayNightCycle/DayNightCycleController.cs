@@ -27,7 +27,7 @@ namespace HF
         public Volume nightVolume; // Night Volume
 
         private Material skyboxInstatnce; // 원본을 복사한 Material 인스턴스
-
+        private int lastHour = -1; // 이전 시간 추적용
 
         private void Awake()
         {
@@ -41,14 +41,17 @@ namespace HF
         {
             // 이벤트 구독
             EventSystem.OnLightToggle += SetActive;
+
+            // 초기 시간 설정
+            lastHour = GetCurrentHour();
         }
 
         private void Update()
         {
             timeOfDay += (Time.deltaTime / fullDayLength);
-            // TODO: timeOfDay 값을 계산해서 24시간 현실시간을 기준으로 1시간이 바뀌었는지 확인
-            // OnHourChanged?.Invoke(); // Notify - Hour changed event
 
+            // 시간 변경 체크
+            CheckHourChange();
 
             if (timeOfDay >= 1f)
             {
@@ -57,6 +60,78 @@ namespace HF
             }
 
             UpdateLighting();
+        }
+
+        /// <summary>
+        /// 현재 게임 시간의 시(hour)를 반환 (0-23)
+        /// </summary>
+        /// <returns>현재 시간</returns>
+        public int GetCurrentHour()
+        {
+            return Mathf.FloorToInt(timeOfDay * 24f);
+        }
+
+        /// <summary>
+        /// 현재 게임 시간의 분(minute)를 반환 (0-59)
+        /// </summary>
+        /// <returns>현재 분</returns>
+        public int GetCurrentMinute()
+        {
+            float totalMinutes = (timeOfDay * 24f * 60f) % 60f;
+            return Mathf.FloorToInt(totalMinutes);
+        }
+
+        /// <summary>
+        /// 현재 게임 시간을 TimeSpan으로 반환
+        /// </summary>
+        /// <returns>현재 게임 시간</returns>
+        public TimeSpan GetCurrentGameTime()
+        {
+            float totalHours = timeOfDay * 24f;
+            int hours = Mathf.FloorToInt(totalHours);
+            int minutes = Mathf.FloorToInt((totalHours - hours) * 60f);
+            int seconds = Mathf.FloorToInt(((totalHours - hours) * 60f - minutes) * 60f);
+
+            return new TimeSpan(hours, minutes, seconds);
+        }
+
+        /// <summary>
+        /// 시간 변경을 체크하고 이벤트를 발생시킴
+        /// </summary>
+        private void CheckHourChange()
+        {
+            int currentHour = GetCurrentHour();
+
+            if (currentHour != lastHour)
+            {
+                lastHour = currentHour;
+                OnHourChanged?.Invoke(); // Notify - Hour changed event
+            }
+        }
+
+        /// <summary>
+        /// 특정 시간으로 설정 (0-1 범위)
+        /// </summary>
+        /// <param name="time">설정할 시간 (0: 자정, 0.5: 정오)</param>
+        public void SetTimeOfDay(float time)
+        {
+            timeOfDay = Mathf.Clamp01(time);
+            lastHour = GetCurrentHour();
+            UpdateLighting();
+        }
+
+        /// <summary>
+        /// 특정 시간으로 설정 (시간 단위)
+        /// </summary>
+        /// <param name="hour">시간 (0-23)</param>
+        /// <param name="minute">분 (0-59)</param>
+        public void SetTime(int hour, int minute = 0)
+        {
+            hour = Mathf.Clamp(hour, 0, 23);
+            minute = Mathf.Clamp(minute, 0, 59);
+
+            float timeValue = (hour + minute / 60f) / 24f;
+            SetTimeOfDay(timeValue);
         }
 
         void UpdateLighting()
