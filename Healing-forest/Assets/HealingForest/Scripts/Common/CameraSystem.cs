@@ -11,6 +11,12 @@ namespace HF
         public CinemachineFreeLook playerCamera;
         public CinemachineVirtualCamera craftCamera;
 
+
+        private void Update()
+        {
+            playerCamera.m_YAxis.m_InputAxisValue = Input.GetAxis("Mouse ScrollWheel");
+        }
+
         private void OnEnable()
         {
             // 이벤트 구독
