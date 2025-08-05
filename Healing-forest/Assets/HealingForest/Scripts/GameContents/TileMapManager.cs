@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,6 +9,7 @@ namespace HF
 {
     public class TileMapManager : MonoBehaviour
     {
+
         public static TileMapManager Instance { get; private set; } = null;// 싱글톤 인스턴스
         public Grid grid; // 그리드 시스템
         public Tilemap groundMap;
@@ -15,10 +18,28 @@ namespace HF
         // manager에서 드롭 아이템에 사용한 위치값 관리
         private HashSet<Vector3Int> usedPositions = new HashSet<Vector3Int>();
 
+        [SerializeField, Sirenix.OdinInspector.ReadOnly] private SerializableDictionary<Vector3Int, GameObject> objectMapData = new();
 
         private void Awake()
         {
             Instance = this; // 싱글톤 인스턴스 설정
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(0)) // 마우스 왼쪽 버튼 클릭 시
+            {
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hitInfo))
+                {
+                    Vector3Int clickCellPos = grid.WorldToCell(hitInfo.point);
+                    bool isEmptyCell = IsEmptyGroundCell(hitInfo.point);
+                    Debug.Log("Clicked Cell Position: " + clickCellPos + ", Is Empty: " + isEmptyCell);
+                }
+            }
+
+
         }
 
         private void OnDestroy()
@@ -71,6 +92,18 @@ namespace HF
         public void ResetUsedPositions(Vector3Int pivot)
         {
             usedPositions.Remove(pivot); // 특정 pivot 위치 제거
+        }
+
+        public void RegistObejctToObjectMap(GameObject go, Vector3 position)
+        {
+            Vector3Int cellPosition = objectMap.WorldToCell(position);
+            objectMapData.Add(cellPosition, go);
+        }
+
+        public bool IsEmptyGroundCell(Vector3 worldPos)
+        {
+            return groundMap.HasTile(groundMap.WorldToCell(worldPos))
+                && !objectMapData.ContainsKey(objectMap.WorldToCell(worldPos));
         }
     }
 }
