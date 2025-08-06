@@ -16,25 +16,57 @@ namespace HF
         [Range(0f, 1f)] public float timeOfDay = 0f; // 0 to 1, where 0.0f is midnight and 1.0f is the next midnight
         public float fullDayLength = 300f; // Length of a full day in seconds
 
-        public Light mainLight;
+        public Light fieldLight;
+        public Light homeLight;
         public Gradient lightGradient;
         public AnimationCurve lightIntensityCurve;
 
-        public Material skyboxMaterial; // 원본 Material 파일
+        public Material skyboxMaterial_field; // field용 skybox Material 파일
+        public Material skyboxMaterial_home; // home용 skybox Material 파일
         public AnimationCurve skyboxBlendCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         public Volume dayVolume; // Day Volume
         public Volume nightVolume; // Night Volume
+        public Volume homeVolume; // home Volume
 
-        private Material skyboxInstatnce; // 원본을 복사한 Material 인스턴스
+        private Material skyboxInstance_field; // 원본을 복사한 Material 인스턴스
+        private Material skyboxInstance_home; // 원본을 복사한 Material 인스턴스
         private int lastHour = -1; // 이전 시간 추적용
+
+        public void SetRenderSetting(LevelType levelType)
+        {
+            switch (levelType)
+            {
+                case LevelType.Field:
+                    RenderSettings.skybox = skyboxInstance_field;
+                    fieldLight.gameObject.SetActive(true);
+                    homeLight.gameObject.SetActive(false);
+                    dayVolume.gameObject.SetActive(true);
+                    nightVolume.gameObject.SetActive(true);
+                    homeVolume.gameObject.SetActive(false);
+                    break;
+                case LevelType.Home:
+                    RenderSettings.skybox = skyboxInstance_home;
+                    fieldLight.gameObject.SetActive(false);
+                    homeLight.gameObject.SetActive(true);
+                    dayVolume.gameObject.SetActive(false);
+                    nightVolume.gameObject.SetActive(false);
+                    homeVolume.gameObject.SetActive(true);
+                    break;
+                default:
+                    Debug.LogWarning("Unknown LevelType for setting skybox.");
+                    break;
+            }
+        }
 
         private void Awake()
         {
             Instance = this;
 
-            skyboxInstatnce = Instantiate(skyboxMaterial);
-            RenderSettings.skybox = skyboxInstatnce;
+            skyboxInstance_field = Instantiate(skyboxMaterial_field);
+            skyboxInstance_home = Instantiate(skyboxMaterial_home);
+
+            SetRenderSetting(LevelType.Field);
         }
 
         private void Start()
@@ -153,28 +185,28 @@ namespace HF
             //     xRotation = Mathf.Lerp(30f, 150f, dayProgress);
             // }
 
-            mainLight.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            mainLight.intensity = lightIntensityCurve.Evaluate(timeOfDay);
+            fieldLight.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            fieldLight.intensity = lightIntensityCurve.Evaluate(timeOfDay);
 
             // intensity - light 의 밝기 조절
             if (timeOfDay < 0.5f)  // Day time
             {
-                mainLight.intensity = Mathf.Lerp(0.5f, 1f, timeOfDay * 2f);
+                fieldLight.intensity = Mathf.Lerp(0.5f, 1f, timeOfDay * 2f);
             }
             else    // Night time
             {
-                mainLight.intensity = Mathf.Lerp(1f, 0.2f, (timeOfDay - 0.5f) * 2f);
+                fieldLight.intensity = Mathf.Lerp(1f, 0.2f, (timeOfDay - 0.5f) * 2f);
             }
 
             // Color - light 의 색상 조절
             Color color = lightGradient.Evaluate(timeOfDay);
-            mainLight.color = color;
+            fieldLight.color = color;
 
             // Skybox - skybox material 변경
             float normalizedBlend = Mathf.Abs(timeOfDay - 0.5f) * 2f; // 0 to 1 for day, 1 to 0 for night
 
             float skyBlend = skyboxBlendCurve.Evaluate(normalizedBlend);
-            skyboxInstatnce.SetFloat("_BlendCubemaps", skyBlend);
+            skyboxInstance_field.SetFloat("_BlendCubemaps", skyBlend);
 
             //post processing volume 변경
             nightVolume.weight = normalizedBlend;
