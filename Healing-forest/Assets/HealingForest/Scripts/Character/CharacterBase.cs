@@ -46,7 +46,7 @@ namespace HF
             }
         }
 
-        void Update()
+        protected virtual void Update()
         {
             // 매 프레임마다 지면 체크
             IsGrounded = CheckGround();
@@ -359,6 +359,18 @@ namespace HF
 
             EventSystem.OnCraftingCompleted?.Invoke();
         }
+
+        public Transform GetHeadTransform()
+        {
+            // NPC의 머리 트랜스폼을 반환
+            return GetBoneTransform(HumanBodyBones.Head);
+        }
+        public Transform GetBoneTransform(HumanBodyBones bone)
+        {
+            // 지정된 본의 트랜스폼을 반환
+            return animator.GetBoneTransform(bone);
+        }
+
 
 
         /// <summary> 캐릭터가 제작 중일 때 애니메이션 레이어 </summary>

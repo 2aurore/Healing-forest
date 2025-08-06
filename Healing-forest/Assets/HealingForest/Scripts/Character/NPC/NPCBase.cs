@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace HF
 {
@@ -14,6 +16,10 @@ namespace HF
 
         public event System.Action<CharacterBase> OnDamaged;
 
+        private NPCVisualCharacter visualCharacter;
+        private NPCSensor npcSensor;
+        private Transform detectedPlayerTransform;
+
         protected override void Awake()
         {
             // VisualPrefab을 가지고와서 Visual Transform의 자식으로 생성
@@ -22,7 +28,37 @@ namespace HF
             newVisual.transform.SetParent(visualRoot);
             newVisual.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-            animator = GetComponentInChildren<Animator>();
+            // VisualCharacter 컴포넌트 초기화
+            visualCharacter = newVisual.GetComponent<NPCVisualCharacter>();
+            base.animator = visualCharacter.animator;
+            // animator = GetComponentInChildren<Animator>();
+
+            npcSensor = GetComponentInChildren<NPCSensor>();
+            npcSensor.OnDetectedPlayer += OnDetectedPlayer;
+            npcSensor.OnLostPlayer += OnLostPlayer;
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+
+            if (detectedPlayerTransform != null)
+            {
+                // NPC가 플레이어를 감지하고 있을 때, 머리 방향을 플레이어에게 향하도록 설정
+                visualCharacter.headAimingIK.HeadAimingPoint = detectedPlayerTransform.position;
+            }
+        }
+
+        private void OnDetectedPlayer(Transform target)
+        {
+            visualCharacter.headAimingIK.isActiveHeadAiming = true;
+            detectedPlayerTransform = target;
+        }
+
+        private void OnLostPlayer()
+        {
+            visualCharacter.headAimingIK.isActiveHeadAiming = false;
+            detectedPlayerTransform = null;
         }
 
         public void NotifyOnPlayerInteract(CharacterBase player)
