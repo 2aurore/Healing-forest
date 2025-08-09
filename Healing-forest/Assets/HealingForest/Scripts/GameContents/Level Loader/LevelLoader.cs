@@ -26,6 +26,8 @@ namespace HF
         public event System.Action OnLevelLoadComplete;
         public event System.Action OnCharacterInitializeComplete;
 
+        private LevelType currentLevelType = LevelType.None;
+
         private void Awake()
         {
             if (Instance == null)
@@ -55,36 +57,30 @@ namespace HF
         public void LoadLevel(LevelType levelType)
         {
             UIManager.Show<LoadingUI>(UIList.LoadingUI);
-            switch (levelType)
-            {
-                case LevelType.Field:
-                    if (SceneManager.GetSceneByName("Level_Home").isLoaded)
-                    {
-                        SceneManager.UnloadSceneAsync("Level_Home");
-                    }
-                    StartCoroutine(LoadLevel("Level_Field"));
-                    break;
-                case LevelType.Home:
-                    if (SceneManager.GetSceneByName("Level_Field").isLoaded)
-                    {
-                        SceneManager.UnloadSceneAsync("Level_Field");
-                    }
-                    StartCoroutine(LoadLevel("Level_Home"));
-                    break;
-
-            }
-
-
+            StartCoroutine(LoadLevelAsync(levelType));
         }
 
-        IEnumerator LoadLevel(string levelName)
+        IEnumerator LoadLevelAsync(LevelType levelType)
         {
-            AsyncOperation asyncLoadLevel = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
+            if (currentLevelType != LevelType.None)
+            {
+                string currentLevelName = $"Level_{currentLevelType}";
+                Scene prevScene = SceneManager.GetSceneByName(currentLevelName);
+                if (prevScene.isLoaded)
+                {
+                    SceneManager.UnloadSceneAsync(currentLevelName);
+                }
+            }
+
+            currentLevelType = levelType;
+            string nextLevelName = $"Level_{levelType}";
+            AsyncOperation asyncLoadLevel = SceneManager.LoadSceneAsync(nextLevelName, LoadSceneMode.Additive);
             while (!asyncLoadLevel.isDone)
             {
                 yield return null;
             }
 
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(nextLevelName));
             OnLevelLoadComplete?.Invoke();
 
 
@@ -95,6 +91,9 @@ namespace HF
             yield return new WaitUntil(() => CharacterController.Instance != null);
 
             OnCharacterInitializeComplete?.Invoke(); // 캐릭터 초기화 완료
+
+            DayNightCycleController.Instance.SetRenderSetting(levelType); // 하늘박스 적용
+
 
         }
 

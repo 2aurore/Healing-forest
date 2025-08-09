@@ -11,7 +11,7 @@ namespace HF
 
             UserDataModel.Singleton.SetCharacterPosition(new Vector3(0, 0, 4));
             LevelLoader.Instance.LoadLevel(LevelType.Home);
-            EventSystem.OnLightToggle(false);   // 라이트를 끄는 이벤트 호출
+            // EventSystem.OnLightToggle(false);   // 라이트를 끄는 이벤트 호출
         }
     }
 }
