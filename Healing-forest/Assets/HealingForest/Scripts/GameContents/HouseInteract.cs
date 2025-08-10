@@ -9,7 +9,7 @@ namespace HF
         public void Interact(CharacterBase actor)
         {
 
-            UserDataModel.Singleton.SetCharacterPosition(new Vector3(0, 0, 4));
+            UserDataModel.Singleton.SetCharacterPosition(new Vector3(0, 0, -2));
             LevelLoader.Instance.LoadLevel(LevelType.Home);
             // EventSystem.OnLightToggle(false);   // 라이트를 끄는 이벤트 호출
         }
