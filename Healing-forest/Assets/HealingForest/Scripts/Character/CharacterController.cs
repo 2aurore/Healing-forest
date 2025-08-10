@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,6 +41,9 @@ namespace HF
             InputSystem.Singleton.OnRightMouseButtonDown += RightMouseButtonEvent;
             EventSystem.ReleaseTool += UnEqqipTool;
 
+            LevelLoader.Instance.OnCharacterInitializeComplete += OnCharacterInitializeComplete;
+
+
             Debug.Log($"[CharacterController] InputSystem 연결 완료 - {gameObject.name}");
         }
 
@@ -52,8 +56,17 @@ namespace HF
             }
             EventSystem.ReleaseTool -= UnEqqipTool;
 
+            LevelLoader.Instance.OnCharacterInitializeComplete -= OnCharacterInitializeComplete;
+
+
             Instance = null;
         }
+
+        private void OnCharacterInitializeComplete()
+        {
+            linkedCharacter.ResetAnimatorLayer();
+        }
+
 
         private void Update()
         {
