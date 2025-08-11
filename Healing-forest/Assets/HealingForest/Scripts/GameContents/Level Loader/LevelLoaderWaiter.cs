@@ -30,8 +30,6 @@ namespace HF
         }
         private void OnLevelLoadComplete()
         {
-            UIManager.Hide<LoadingUI>(UIList.LoadingUI);
-
             // transform.position = UserDataModel.Singleton.CharacterPosition; // 저장된 캐릭터 위치로 이동
 
             Quaternion rotation = Quaternion.identity;
@@ -47,6 +45,15 @@ namespace HF
 
             transform.SetLocalPositionAndRotation(UserDataModel.Singleton.CharacterPosition, rotation);
             rb.useGravity = true;
+
+            // Coroutine으로 3초 후 UI 숨기기
+            StartCoroutine(HideLoadingUIAfterDelay(2f));
+        }
+
+        private IEnumerator HideLoadingUIAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            UIManager.Hide<LoadingUI>(UIList.LoadingUI);
         }
 
         private void OnCharacterInitializeComplete()
