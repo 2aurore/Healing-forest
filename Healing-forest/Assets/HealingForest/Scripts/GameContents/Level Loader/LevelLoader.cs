@@ -20,8 +20,6 @@ namespace HF
         public static LevelLoader Instance { get; private set; } = null;
         public LevelType DefaultLevelType = LevelType.Field;
 
-        // TODO: 씬이 로드되었을때 플레이어의 위치를 조정해야함
-
         public event System.Action OnLevelLoadStart;
         public event System.Action OnLevelLoadComplete;
         public event System.Action OnCharacterInitializeComplete;

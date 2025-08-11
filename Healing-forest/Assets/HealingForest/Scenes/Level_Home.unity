@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f49f5940bbd7524caed853922774fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  exitPosition: {x: -3, y: 0, z: 5}
+  exitPosition: {x: 5, y: 0, z: 6}
 --- !u!1 &555429512
 GameObject:
   m_ObjectHideFlags: 0

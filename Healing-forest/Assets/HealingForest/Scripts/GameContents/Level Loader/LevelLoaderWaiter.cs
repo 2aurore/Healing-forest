@@ -32,7 +32,20 @@ namespace HF
         {
             UIManager.Hide<LoadingUI>(UIList.LoadingUI);
 
-            transform.position = UserDataModel.Singleton.CharacterPosition; // 저장된 캐릭터 위치로 이동
+            // transform.position = UserDataModel.Singleton.CharacterPosition; // 저장된 캐릭터 위치로 이동
+
+            Quaternion rotation = Quaternion.identity;
+            // 현재 활성화된 씬에 따라 Y 좌표 조정
+            if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Home").isLoaded)
+            {
+                rotation = Quaternion.Euler(0, 0, 0);  // Y = 0도
+            }
+            else if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Field").isLoaded)
+            {
+                rotation = Quaternion.Euler(0, -90f, 0);  // Y = -90도
+            }
+
+            transform.SetLocalPositionAndRotation(UserDataModel.Singleton.CharacterPosition, rotation);
             rb.useGravity = true;
         }
 

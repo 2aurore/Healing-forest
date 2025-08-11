@@ -37,15 +37,6 @@ namespace HF
             // Home 씬과 Field 씬에 따른 적절한 Y 좌표 설정
             float yPosition = 1.05f; // 기본값
 
-            // 현재 활성화된 씬에 따라 Y 좌표 조정
-            if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Home").isLoaded)
-            {
-                yPosition = 0.1f; // Home 씬용 Y 좌표 (실제 바닥 높이에 맞게 조정 필요)
-            }
-            else if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Field").isLoaded)
-            {
-                yPosition = 1.05f; // Field 씬용 Y 좌표
-            }
 
             CharacterPosition = new Vector3(position.x, yPosition, position.z);
 

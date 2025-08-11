@@ -8,7 +8,7 @@ namespace HF
     {
         public void Interact(CharacterBase actor)
         {
-            UserDataModel.Singleton.SetCharacterPosition(new Vector3(0, 0, -2));
+            UserDataModel.Singleton.SetCharacterPosition(new Vector3(0, 0, -3));
             LevelLoader.Instance.LoadLevel(LevelType.Home);
         }
     }
