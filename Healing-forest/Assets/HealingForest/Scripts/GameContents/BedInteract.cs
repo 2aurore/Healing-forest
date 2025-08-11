@@ -19,6 +19,18 @@ namespace HF
         private float bedExitDelay = 1f; // 침대에서 일어날 때 딜레이 시간
         private float bedEnterTime = 0f;
 
+        protected override void Start()
+        {
+            if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Home").isLoaded)
+            {
+                // do nothing, since this script is not used in Home scene
+            }
+            else if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Field").isLoaded)
+            {
+                base.Start();
+            }
+        }
+
         public void Interact(CharacterBase actor)
         {
             if (!isCharacterSleeping)
