@@ -65,12 +65,12 @@ namespace HF
         private void OnEnable()
         {
             UserDataModel.Singleton.SetCharacterPosition(transform.position); // 캐릭터 위치 저장
-            EventSystem.OnPlayerConnected += ResetAnimatorLayer;
+            EventSystem.OnPlayerConnected += OnPlayerConnected;
             EventSystem.OnCraftingStarted += CraftingStart;
         }
         private void OnDisable()
         {
-            EventSystem.OnPlayerConnected -= ResetAnimatorLayer;
+            EventSystem.OnPlayerConnected -= OnPlayerConnected;
             EventSystem.OnCraftingStarted -= CraftingStart;
         }
 
@@ -241,7 +241,12 @@ namespace HF
             IsProgressingAction = false;
         }
 
-
+        public void OnPlayerConnected()
+        {
+            // 플레이어가 연결되었을 때 애니메이터 레이어를 초기화
+            ResetAnimatorLayer();
+            IsProgressingAction = false;
+        }
 
 
         /// <summary> 통합된 상호작용 감지 메소드 </summary>

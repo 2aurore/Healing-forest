@@ -34,11 +34,7 @@ namespace HF
 
         public void SetCharacterPosition(Vector3 position)
         {
-            // Home 씬과 Field 씬에 따른 적절한 Y 좌표 설정
-            float yPosition = 1.05f; // 기본값
-
-
-            CharacterPosition = new Vector3(position.x, yPosition, position.z);
+            CharacterPosition = new Vector3(position.x, 1.05f, position.z);
 
             Debug.Log($"[UserDataModel] 캐릭터 위치 설정: {CharacterPosition}");
         }
