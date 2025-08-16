@@ -28,25 +28,13 @@ namespace HF
         {
             rb.useGravity = false;
         }
+
         private void OnLevelLoadComplete()
         {
-            // transform.position = UserDataModel.Singleton.CharacterPosition; // 저장된 캐릭터 위치로 이동
-
-            Quaternion rotation = Quaternion.identity;
-            // 현재 활성화된 씬에 따라 Y 좌표 조정
-            if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Home").isLoaded)
-            {
-                rotation = Quaternion.Euler(0, 0, 0);  // Y = 0도
-            }
-            else if (UnityEngine.SceneManagement.SceneManager.GetSceneByName("Level_Field").isLoaded)
-            {
-                rotation = Quaternion.Euler(0, -90f, 0);  // Y = -90도
-            }
-
-            transform.SetLocalPositionAndRotation(UserDataModel.Singleton.CharacterPosition, rotation);
+            // 캐릭터 위치와 회전은 LevelLoader에서 이미 처리되었으므로 여기서는 물리 설정만 수행
             rb.useGravity = true;
 
-            // Coroutine으로 3초 후 UI 숨기기
+            // Coroutine으로 2초 후 UI 숨기기
             StartCoroutine(HideLoadingUIAfterDelay(2f));
         }
 

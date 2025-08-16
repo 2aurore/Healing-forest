@@ -108,6 +108,7 @@ namespace HF
         private void InitializeCharacterPosition(LevelType currentLevel, LevelType previousLevel)
         {
             Vector3 spawnPosition;
+            Quaternion spawnRotation = Quaternion.identity; // 기본 회전값
 
             switch (currentLevel)
             {
@@ -116,12 +117,14 @@ namespace HF
                     {
                         // Home에서 Field로 복귀하는 경우: 저장된 Field 위치 사용
                         spawnPosition = UserDataModel.Singleton.GetLastFieldPosition();
+                        spawnRotation = Quaternion.Euler(0, -90f, 0);
                         Debug.Log($"[LevelLoader] Home에서 Field로 복귀: {spawnPosition}");
                     }
                     else
                     {
                         // 게임 시작이나 다른 경우: 기본 Field 위치 사용
                         spawnPosition = fieldDefaultSpawnPosition;
+                        spawnRotation = Quaternion.Euler(0, 180, 0);
                         Debug.Log($"[LevelLoader] Field 기본 시작: {spawnPosition}");
                     }
                     break;
@@ -129,6 +132,7 @@ namespace HF
                 case LevelType.Home:
                     // Field에서 Home으로 진입하는 경우: Home 기본 위치 사용
                     spawnPosition = homeSpawnPosition;
+                    spawnRotation = Quaternion.Euler(0, 0, 0);
                     Debug.Log($"[LevelLoader] Home 진입: {spawnPosition}");
                     break;
 
@@ -137,13 +141,19 @@ namespace HF
                     break;
             }
 
-            // 캐릭터 실제 위치 설정
+            // 캐릭터 실제 위치 및 회전 설정
             if (CharacterController.Instance != null && CharacterController.Instance.linkedCharacter != null)
             {
-                CharacterController.Instance.linkedCharacter.transform.position = spawnPosition;
+                // CharacterController.Instance.linkedCharacter.transform.position = spawnPosition;
+                // CharacterController.Instance.linkedCharacter.transform.rotation = spawnRotation;
+
+                CharacterController.Instance.linkedCharacter.transform.SetLocalPositionAndRotation(
+                    spawnPosition,
+                    spawnRotation
+                );
                 UserDataModel.Singleton.SetCharacterPosition(spawnPosition);
 
-                Debug.Log($"[LevelLoader] 캐릭터 위치 초기화 완료: {currentLevel} - {spawnPosition}");
+                Debug.Log($"[LevelLoader] 캐릭터 위치 초기화 완료: {currentLevel} - {spawnPosition}, 회전: {spawnRotation.eulerAngles}");
             }
         }
 
