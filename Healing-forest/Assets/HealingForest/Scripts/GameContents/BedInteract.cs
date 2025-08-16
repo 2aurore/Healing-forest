@@ -8,6 +8,8 @@ namespace HF
     {
         public Transform enterPoint; // 침대에 눕기 위한 위치
         public Transform exitPoint; // 침대에서 일어나기 위한 위치
+        public BoxCollider boxCollider; // 침대를 통과하지 못하게 하는 콜라이더
+
 
         [Header("회전 보정 설정")]
         [SerializeField]
@@ -31,10 +33,19 @@ namespace HF
             }
         }
 
+        private void Awake()
+        {
+            if (boxCollider == null)
+            {
+                boxCollider = GetComponentInChildren<BoxCollider>();
+            }
+        }
+
         public void Interact(CharacterBase actor)
         {
             if (!isCharacterSleeping)
             {
+                boxCollider.enabled = false; // 침대에 눕는 동안 콜라이더 비활성화
                 // 침대에 눕기
                 GoToBed(actor);
             }
@@ -127,6 +138,8 @@ namespace HF
 
             Debug.Log("캐릭터가 침대에서 일어났습니다!");
             isProgressInAction = false; // 애니메이션 진행 완료 표시
+
+            boxCollider.enabled = true; // 침대에서 일어난 후 콜라이더 활성화
         }
 
     }
