@@ -21,6 +21,9 @@ namespace HF
         [SerializeField] private Button confirmCancelButton; // Cancel 버튼
         [SerializeField] private TextMeshProUGUI confirmText; // 확인 텍스트
 
+        [Header("Progress UI")]
+        [SerializeField] private Crafting_Progress craftingProgress; // 제작 진행률 UI
+
 
         private List<Crafting_Recipe> reciptSlots = new List<Crafting_Recipe>();
         private string selectedRecipeID; // 선택된 레시피 ID
@@ -86,13 +89,25 @@ namespace HF
         {
             if (!string.IsNullOrEmpty(selectedRecipeID))
             {
-                // CraftItem();
-                EventSystem.OnCraftingStarted?.Invoke(craftingTime);
+                // 진행률 UI가 존재하는지 확인
+                if (craftingProgress != null)
+                {
+                    craftingProgress.GetComponentInChildren<CanvasGroup>().alpha = 1f; // 진행률 UI 활성화
+                    // 제작 시작 이벤트 발생
+                    EventSystem.OnCraftingStarted?.Invoke(craftingTime);
+                }
+                else
+                {
+                    Debug.LogWarning("CraftingProgress component is not assigned in CraftingUI.");
+                    // 진행률 UI가 없어도 제작은 시작
+                    EventSystem.OnCraftingStarted?.Invoke(craftingTime);
+                }
             }
 
             // 확인창 닫기
             confirmDialog.SetActive(false);
-            craftingPopup.SetActive(false);
+            // 제작 중에는 제작 팝업을 닫지 않도록 수정
+            craftingPopup.GetComponentInChildren<CanvasGroup>().alpha = 0f; // 제작 팝업 비활성화
         }
 
         /// <summary>
@@ -110,6 +125,13 @@ namespace HF
         /// </summary>
         private void CraftItem()
         {
+            // selectedRecipeID가 null인 경우 에러 방지
+            if (string.IsNullOrEmpty(selectedRecipeID))
+            {
+                Debug.LogError("Selected recipe ID is null or empty. Cannot craft item.");
+                return;
+            }
+
             RecipeDataSO reciptData = GameDataModel.Singleton.GetRecipeData(selectedRecipeID);
             if (reciptData == null)
             {
@@ -133,7 +155,25 @@ namespace HF
 
             // 인벤토리 UI 업데이트 (필요시)
             EventSystem.OnInventoryChanged?.Invoke();
-            craftingPopup.SetActive(true);
+            
+            // 제작 완료 후 제작 팝업 다시 표시
+            if (craftingPopup != null)
+            {
+                var canvasGroup = craftingPopup.GetComponentInChildren<CanvasGroup>();
+                if (canvasGroup != null)
+                    canvasGroup.alpha = 1f; // 제작 팝업 다시 활성화
+            }
+            
+            // 진행률 UI 비활성화
+            if (craftingProgress != null)
+            {
+                var canvasGroup = craftingProgress.GetComponentInChildren<CanvasGroup>();
+                if (canvasGroup != null)
+                    canvasGroup.alpha = 0f;
+            }
+                
+            // 선택된 레시피 ID 초기화 (마지막에 수행)
+            selectedRecipeID = null;
         }
 
 
