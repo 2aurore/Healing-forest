@@ -361,8 +361,6 @@ namespace HF
 
                 yield return null;
             }
-
-            EventSystem.OnCraftingCompleted?.Invoke();
         }
 
         public Transform GetHeadTransform()

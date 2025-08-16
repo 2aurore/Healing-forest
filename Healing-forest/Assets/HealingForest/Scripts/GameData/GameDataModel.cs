@@ -94,6 +94,13 @@ namespace HF
 
         public RecipeDataSO GetRecipeData(string reciptID)
         {
+            // null 또는 빈 문자열 체크 추가
+            if (string.IsNullOrEmpty(reciptID))
+            {
+                Debug.LogError("Recipe ID is null or empty");
+                return null;
+            }
+
             if (RecipeDataDTO.reciptDatas.TryGetValue(reciptID, out RecipeDataSO reciptData))
             {
                 return reciptData;
