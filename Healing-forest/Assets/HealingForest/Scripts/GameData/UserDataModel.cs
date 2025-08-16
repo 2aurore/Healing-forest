@@ -14,9 +14,9 @@ namespace HF
         public event Action<UserItemDataDTO> OnInventoryDataChanged;
         public event Action<string, string> OnEquipmentChanged; // 장비 변경 이벤트 (previous, current)
 
-
-        // TODO: home <-> field 전환 시 캐릭터 Vector3 위치 저장
-        public Vector3 CharacterPosition { get; private set; } = Vector3.zero; // 캐릭터 위치
+        private Vector3 initPosition = new Vector3(0, 1.05f, 0); // 기본 캐릭터 위치
+        [field: SerializeField] public Vector3 CharacterPosition { get; private set; } = Vector3.zero; // 현재 캐릭터 위치
+        [field: SerializeField] public Vector3 LastFieldPosition { get; private set; } = Vector3.zero; // Field에서의 마지막 위치 (Home에서 복귀용)
 
         public void Initialize()
         {
@@ -24,6 +24,10 @@ namespace HF
             InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
 
             // TODO: 기존에 save된 UserData가 있다면 불러오기
+
+            // 게임 시작 시 기본 위치로 초기화
+            CharacterPosition = initPosition;
+            LastFieldPosition = Vector3.zero; // 저장된 Field 위치는 초기화
 
             // Default Tool Add To Inventory
             foreach (var toolDataFair in GameDataModel.Singleton.ToolDataDTO.toolDatas)
@@ -35,8 +39,25 @@ namespace HF
         public void SetCharacterPosition(Vector3 position)
         {
             CharacterPosition = new Vector3(position.x, 1.05f, position.z);
-
             Debug.Log($"[UserDataModel] 캐릭터 위치 설정: {CharacterPosition}");
+        }
+
+        /// <summary>Field에서의 위치를 저장합니다. (Home 진입 전에 호출)</summary>
+        public void SaveFieldPosition(Vector3 fieldPosition)
+        {
+            LastFieldPosition = new Vector3(fieldPosition.x, fieldPosition.y, fieldPosition.z);
+            Debug.Log($"[UserDataModel] Field 위치 저장: {LastFieldPosition}");
+        }
+
+        /// <summary>저장된 Field 위치를 반환합니다.</summary>
+        public Vector3 GetLastFieldPosition()
+        {
+            // 저장된 위치가 없다면 기본 위치 반환 (Y값 1.05f로 설정)
+            if (LastFieldPosition == Vector3.zero)
+            {
+                return initPosition;
+            }
+            return LastFieldPosition;
         }
 
         public bool IsExistTool(ToolType toolType, out UserItemDataDTO toolItemData)

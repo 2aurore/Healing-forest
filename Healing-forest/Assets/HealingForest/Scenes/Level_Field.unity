@@ -12095,6 +12095,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093b95c17b274c5479d12528674b53ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  homeSpawnPosition: {x: 0, y: 0, z: -3}
+  homeSpawnPoint: {fileID: 0}
 --- !u!1001 &1334011708
 PrefabInstance:
   m_ObjectHideFlags: 0
