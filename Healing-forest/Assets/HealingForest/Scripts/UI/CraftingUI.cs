@@ -14,6 +14,7 @@ namespace HF
 
         [Header("Crafting Popup")]
         [SerializeField] private GameObject craftingPopup;  // 제작 팝업
+        [SerializeField] private CanvasGroup craftCanvasGroup;
 
         [Header("Confirm Dialog")]
         [SerializeField] private GameObject confirmDialog; // 확인 대화상자
@@ -23,16 +24,30 @@ namespace HF
 
         [Header("Progress UI")]
         [SerializeField] private Crafting_Progress craftingProgress; // 제작 진행률 UI
+        [SerializeField] private CanvasGroup progressCanvasGroup;
 
 
         private List<Crafting_Recipe> reciptSlots = new List<Crafting_Recipe>();
         private string selectedRecipeID; // 선택된 레시피 ID
         private float craftingTime; // 제작 시간 (초 단위)
+        private bool isCraftingInProgress = false; // 제작 진행 중 여부 플래그
 
         private void OnEnable()
         {
             EventSystem.OnCraftingCompleted += CraftItem; // 제작 완료 시 UI 닫기
+
+            if (craftCanvasGroup == null)
+            {
+                craftCanvasGroup = craftingPopup.GetComponentInChildren<CanvasGroup>();
+            }
+            if (progressCanvasGroup == null)
+            {
+                progressCanvasGroup = craftingProgress.GetComponentInChildren<CanvasGroup>();
+            }
+
+
         }
+
         private void OnDisable()
         {
             EventSystem.OnCraftingCompleted -= CraftItem; // 제작 완료 시 UI 닫기
@@ -87,12 +102,14 @@ namespace HF
         /// </summary>
         public void OnConfirmOk()
         {
-            if (!string.IsNullOrEmpty(selectedRecipeID))
+            if (!string.IsNullOrEmpty(selectedRecipeID) && !isCraftingInProgress)
             {
+                isCraftingInProgress = true; // 제작 시작 플래그 설정
+                
                 // 진행률 UI가 존재하는지 확인
                 if (craftingProgress != null)
                 {
-                    craftingProgress.GetComponentInChildren<CanvasGroup>().alpha = 1f; // 진행률 UI 활성화
+                    progressCanvasGroup.alpha = 1f; // 진행률 UI 활성화
                     // 제작 시작 이벤트 발생
                     EventSystem.OnCraftingStarted?.Invoke(craftingTime);
                 }
@@ -107,7 +124,7 @@ namespace HF
             // 확인창 닫기
             confirmDialog.SetActive(false);
             // 제작 중에는 제작 팝업을 닫지 않도록 수정
-            craftingPopup.GetComponentInChildren<CanvasGroup>().alpha = 0f; // 제작 팝업 비활성화
+            craftCanvasGroup.alpha = 0f; // 제작 팝업 비활성화
         }
 
         /// <summary>
@@ -125,10 +142,18 @@ namespace HF
         /// </summary>
         private void CraftItem()
         {
+            // 중복 호출 방지
+            if (!isCraftingInProgress)
+            {
+                Debug.LogWarning("CraftItem called but crafting is not in progress. Ignoring call.");
+                return;
+            }
+
             // selectedRecipeID가 null인 경우 에러 방지
             if (string.IsNullOrEmpty(selectedRecipeID))
             {
                 Debug.LogError("Selected recipe ID is null or empty. Cannot craft item.");
+                isCraftingInProgress = false;
                 return;
             }
 
@@ -136,6 +161,7 @@ namespace HF
             if (reciptData == null)
             {
                 Debug.LogError($"Recipe data not found for ID: {selectedRecipeID}");
+                isCraftingInProgress = false;
                 return;
             }
 
@@ -155,24 +181,15 @@ namespace HF
 
             // 인벤토리 UI 업데이트 (필요시)
             EventSystem.OnInventoryChanged?.Invoke();
-            
+
             // 제작 완료 후 제작 팝업 다시 표시
-            if (craftingPopup != null)
-            {
-                var canvasGroup = craftingPopup.GetComponentInChildren<CanvasGroup>();
-                if (canvasGroup != null)
-                    canvasGroup.alpha = 1f; // 제작 팝업 다시 활성화
-            }
-            
+            craftCanvasGroup.alpha = 1f;
+
             // 진행률 UI 비활성화
-            if (craftingProgress != null)
-            {
-                var canvasGroup = craftingProgress.GetComponentInChildren<CanvasGroup>();
-                if (canvasGroup != null)
-                    canvasGroup.alpha = 0f;
-            }
-                
-            // 선택된 레시피 ID 초기화 (마지막에 수행)
+            progressCanvasGroup.alpha = 0f;
+
+            // 제작 상태 초기화 (마지막에 수행)
+            isCraftingInProgress = false;
             selectedRecipeID = null;
         }
 
