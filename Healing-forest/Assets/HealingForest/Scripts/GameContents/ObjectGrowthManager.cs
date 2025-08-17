@@ -27,19 +27,21 @@ namespace HF
         [Tooltip("돌이 생성될 확률 (0~100)")]
         [Range(0f, 100f)] public float rockSpawnChance = 30f;
 
-        [Header("Growth Area Settings")]
-        [Tooltip("오브젝트가 자랄 수 있는 최소 범위")]
-        public Vector2Int growthAreaMin = new Vector2Int(-50, -50);
-        [Tooltip("오브젝트가 자랄 수 있는 최대 범위")]
-        public Vector2Int growthAreaMax = new Vector2Int(50, 50);
-
         [Header("Growth Constraints")]
         [Tooltip("빈 공간을 찾기 위한 최대 시도 횟수")]
-        public int maxAttempts = 100;
+        public int maxAttempts = 5;
         [Tooltip("기존 오브젝트 주변에서 제외할 거리 (1 = 8방향)")]
         public int exclusionRadius = 1;
 
+        [Header("Ground Tile Sampling")]
+        [Tooltip("Ground 타일 위치들을 미리 캐시할지 여부 (성능 향상)")]
+        public bool cacheGroundTiles = true;
+        [Tooltip("캐시 업데이트 간격 (초) - 0이면 시작시 한번만")]
+        public float cacheUpdateInterval = 0f;
+
         private TileMapManager tileMapManager;
+        private List<Vector3Int> cachedGroundTilePositions = new List<Vector3Int>();
+        private float lastCacheUpdateTime = 0f;
 
         private void Awake()
         {
@@ -48,13 +50,18 @@ namespace HF
 
         private void Start()
         {
-            // TileMapManager 참조 획득
             tileMapManager = TileMapManager.Instance;
 
             if (tileMapManager == null)
             {
                 Debug.LogError("TileMapManager instance not found!");
                 return;
+            }
+
+            // Ground 타일 캐시 초기화
+            if (cacheGroundTiles)
+            {
+                UpdateGroundTileCache();
             }
 
             // DayNightCycleController의 OnDayChanged 이벤트에 구독
@@ -68,17 +75,128 @@ namespace HF
             }
         }
 
+        private void Update()
+        {
+            // 캐시 업데이트 체크
+            if (cacheGroundTiles && cacheUpdateInterval > 0f &&
+                Time.time - lastCacheUpdateTime > cacheUpdateInterval)
+            {
+                UpdateGroundTileCache();
+            }
+        }
+
         private void OnDestroy()
         {
-            // 이벤트 구독 해제
             if (DayNightCycleController.Instance != null)
             {
                 DayNightCycleController.Instance.OnDayChanged -= OnDayComplete;
             }
+
             if (Instance == this)
             {
                 Instance = null;
             }
+        }
+
+        /// <summary>
+        /// Ground Tilemap에서 실제 타일이 있는 모든 위치를 캐시
+        /// </summary>
+        private void UpdateGroundTileCache()
+        {
+            cachedGroundTilePositions.Clear();
+
+            if (tileMapManager?.groundMap == null)
+            {
+                Debug.LogError("Ground Tilemap not found!");
+                return;
+            }
+
+            BoundsInt bounds = tileMapManager.groundMap.cellBounds;
+
+            Debug.Log($"Ground Tilemap 스캔 시작: {bounds.min} ~ {bounds.max}");
+
+            int totalCells = 0;
+            int groundTileCells = 0;
+
+            // Ground Tilemap의 모든 셀을 순회
+            for (int x = bounds.xMin; x < bounds.xMax; x++)
+            {
+                for (int y = bounds.yMin; y < bounds.yMax; y++)
+                {
+                    totalCells++;
+                    Vector3Int position = new Vector3Int(x, y, 0);
+
+                    // 해당 위치에 타일이 있는지 확인
+                    TileBase tile = tileMapManager.groundMap.GetTile(position);
+                    if (tile != null)
+                    {
+                        cachedGroundTilePositions.Add(position);
+                        groundTileCells++;
+                    }
+                }
+            }
+
+            lastCacheUpdateTime = Time.time;
+
+            Debug.Log($"Ground 타일 캐시 완료: {groundTileCells}/{totalCells} 셀 ({(float)groundTileCells / totalCells * 100f:F1}%)");
+        }
+
+        /// <summary>
+        /// Ground 타일이 있는 위치에서 랜덤하게 선택
+        /// </summary>
+        private Vector3Int GetRandomGroundTilePosition()
+        {
+            if (cacheGroundTiles)
+            {
+                // 캐시 사용
+                if (cachedGroundTilePositions.Count == 0)
+                {
+                    Debug.LogWarning("캐시된 Ground 타일이 없습니다. 캐시를 업데이트합니다.");
+                    UpdateGroundTileCache();
+                }
+
+                if (cachedGroundTilePositions.Count > 0)
+                {
+                    int randomIndex = Random.Range(0, cachedGroundTilePositions.Count);
+                    return cachedGroundTilePositions[randomIndex];
+                }
+            }
+            else
+            {
+                // 실시간 검색 (느리지만 항상 최신)
+                return GetRandomGroundTilePositionRealtime();
+            }
+
+            Debug.LogError("Ground 타일을 찾을 수 없습니다!");
+            return Vector3Int.zero;
+        }
+
+        /// <summary>
+        /// 실시간으로 Ground 타일 위치를 찾는 방법 (캐시 미사용)
+        /// </summary>
+        private Vector3Int GetRandomGroundTilePositionRealtime()
+        {
+            BoundsInt bounds = tileMapManager.groundMap.cellBounds;
+            int attempts = 0;
+            int maxSearchAttempts = 1000; // 무한루프 방지
+
+            while (attempts < maxSearchAttempts)
+            {
+                attempts++;
+
+                int randomX = Random.Range(bounds.xMin, bounds.xMax);
+                int randomY = Random.Range(bounds.yMin, bounds.yMax);
+                Vector3Int position = new Vector3Int(randomX, randomY, 0);
+
+                TileBase tile = tileMapManager.groundMap.GetTile(position);
+                if (tile != null)
+                {
+                    return position;
+                }
+            }
+
+            Debug.LogWarning($"실시간 검색으로 Ground 타일을 찾지 못했습니다. ({attempts}회 시도)");
+            return Vector3Int.zero;
         }
 
         private void OnDayComplete()
@@ -106,10 +224,10 @@ namespace HF
             {
                 attempts++;
 
-                // 랜덤한 위치 선택
-                Vector3Int randomPosition = GetRandomGrowthPosition();
+                // Ground 타일이 있는 랜덤한 위치 선택
+                Vector3Int randomPosition = GetRandomGroundTilePosition();
 
-                // 해당 위치가 유효한지 확인
+                // 해당 위치가 유효한지 확인 (오브젝트 겹침, 거리 등)
                 if (IsValidGrowthPosition(randomPosition))
                 {
                     // 나무 또는 돌 중 랜덤하게 선택
@@ -117,75 +235,43 @@ namespace HF
 
                     if (selectedPrefab != null)
                     {
-                        // 디버그: Object Tilemap Transform 확인
-                        Debug.Log($"Object Tilemap Transform Y: {tileMapManager.objectMap.transform.position.y}");
-
-                        // 오브젝트 생성 - Object Tilemap의 자식으로 설정
+                        // 오브젝트 생성
                         Vector3 worldPosition = tileMapManager.GetCellToWorld(randomPosition);
-                        Debug.Log($"Grid Cell {randomPosition} to World: {worldPosition}");
 
-                        // Object Tilemap의 자식으로 생성 (임시로 원점에 생성)
                         GameObject newObject = Instantiate(selectedPrefab, Vector3.zero,
-                        Quaternion.Euler(0, Random.Range(0, 360), 0), // 랜덤 회전
-                        tileMapManager.objectMap.transform); // Object Tilemap의 자식으로 설정
+                            Quaternion.Euler(0, Random.Range(0, 360), 0),
+                            tileMapManager.objectMap.transform);
 
-                        Debug.Log($"After Instantiate - Object World Position: {newObject.transform.position}");
-                        Debug.Log($"After Instantiate - Object Local Position: {newObject.transform.localPosition}");
-
-                        // 자식 오브젝트의 로컬 좌표 설정 (Y=0으로 고정)
+                        // 위치 설정
                         Vector3 localPosition = tileMapManager.objectMap.transform.InverseTransformPoint(worldPosition);
-                        Debug.Log($"Calculated Local Position (before Y fix): {localPosition}");
-
-                        localPosition.y = 0f; // 로컬 Y 좌표를 0으로 설정
+                        localPosition.y = 0f;
                         newObject.transform.localPosition = localPosition;
 
-                        Debug.Log($"Final Local Position: {newObject.transform.localPosition}");
-                        Debug.Log($"Final World Position: {newObject.transform.position}");
-
-                        // TreeObject 컴포넌트가 없다면 추가 (나무인 경우)
+                        // 컴포넌트 및 태그 설정
                         if (IsTreePrefab(selectedPrefab) && newObject.GetComponent<TreeObject>() == null)
                         {
                             newObject.AddComponent<TreeObject>();
                         }
 
-                        // 돌인 경우 태그 설정
-                        if (IsRockPrefab(selectedPrefab))
+                        if (IsRockPrefab(selectedPrefab) && newObject.GetComponent<Rock>() == null)
                         {
-                            if (!newObject.CompareTag("Rock") && !newObject.CompareTag("Stone"))
-                            {
-                                newObject.tag = "Rock";
-                            }
+                            newObject.AddComponent<Rock>();
                         }
 
-                        // TileMapManager의 objectMapData에 등록 (월드 좌표 사용)
+                        // TileMapManager에 등록
                         Vector3 finalWorldPosition = newObject.transform.position;
-                        Vector3 positionBeforeReg = finalWorldPosition;
-
                         tileMapManager.RegistObejctToObjectMap(newObject, finalWorldPosition);
 
-                        Vector3 positionAfterReg = newObject.transform.position;
-                        Debug.Log($"Before Registration: {positionBeforeReg}");
-                        Debug.Log($"After Registration: {positionAfterReg}");
-
-                        // RegistObejctToObjectMap에서 위치가 변경되었다면 다시 올바른 Y 좌표로 수정
-                        if (positionBeforeReg != positionAfterReg)
-                        {
-                            Debug.Log("Position changed by RegistObejctToObjectMap - fixing Y coordinate");
-                            Vector3 correctedPosition = newObject.transform.position;
-
-                            // Object Tilemap의 자식이니까 로컬 Y=0으로 수정
-                            Vector3 correctedLocal = tileMapManager.objectMap.transform.InverseTransformPoint(correctedPosition);
-                            correctedLocal.y = 0f;
-                            newObject.transform.localPosition = correctedLocal;
-
-                            Debug.Log($"Corrected Final Position: {newObject.transform.position}");
-                        }
+                        // 등록 후 위치 보정
+                        Vector3 correctedPosition = newObject.transform.position;
+                        Vector3 correctedLocal = tileMapManager.objectMap.transform.InverseTransformPoint(correctedPosition);
+                        correctedLocal.y = 0f;
+                        newObject.transform.localPosition = correctedLocal;
 
                         objectsGrown++;
                         string objectType = IsTreePrefab(selectedPrefab) ? "Tree" : "Rock";
-                        Debug.Log($"{objectType} {objectsGrown} grown at position: {randomPosition} (Local: {localPosition}, World: {finalWorldPosition})");
+                        Debug.Log($"{objectType} {objectsGrown} grown at position: {randomPosition}");
 
-                        // 약간의 지연을 주어 자연스럽게 보이도록
                         yield return new WaitForSeconds(0.1f);
                     }
                 }
@@ -194,24 +280,85 @@ namespace HF
             Debug.Log($"Object growth completed! {objectsGrown} objects grown in {attempts} attempts.");
         }
 
+        /// <summary>
+        /// 위치 유효성 검사 - Ground 타일 체크는 이미 GetRandomGroundTilePosition에서 했으므로 제외
+        /// </summary>
+        private bool IsValidGrowthPosition(Vector3Int position)
+        {
+            Debug.Log($"=== Validating Position {position} ===");
+
+            // 1. Object Tilemap에 이미 타일이 있는지 확인
+            bool hasObjectTile = tileMapManager.objectMap.HasTile(position);
+            Debug.Log($"1. Object Tile exists at {position}: {hasObjectTile}");
+            if (hasObjectTile)
+            {
+                Debug.Log($"❌ Object tile already exists at {position}");
+                return false;
+            }
+
+            // 2. TileMapManager의 objectMapData에 이미 등록된 오브젝트가 있는지 확인
+            bool hasObjectData = tileMapManager.objectMapData.ContainsKey(position);
+            Debug.Log($"2. ObjectMapData contains {position}: {hasObjectData}");
+            if (hasObjectData)
+            {
+                Debug.Log($"❌ ObjectMapData already contains {position}");
+                return false;
+            }
+
+            // 3. 기존 오브젝트들과의 exclusionRadius 거리 확인
+            bool isNearObjects = IsNearExistingObjects(position);
+            Debug.Log($"3. IsNearExistingObjects: {isNearObjects}");
+            if (isNearObjects)
+            {
+                Debug.Log($"❌ Too close to existing objects at {position}");
+                return false;
+            }
+
+            Debug.Log($"✅ Position {position} is valid for growth");
+            return true;
+        }
+
+        private bool IsNearExistingObjects(Vector3Int position)
+        {
+            for (int x = -exclusionRadius; x <= exclusionRadius; x++)
+            {
+                for (int y = -exclusionRadius; y <= exclusionRadius; y++)
+                {
+                    Vector3Int checkPosition = position + new Vector3Int(x, y, 0);
+
+                    if (tileMapManager.objectMapData.ContainsKey(checkPosition))
+                    {
+                        GameObject existingObject = tileMapManager.objectMapData[checkPosition];
+
+                        if (existingObject != null)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            tileMapManager.objectMapData.Remove(checkPosition);
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private GameObject SelectRandomPrefab()
         {
-            // 사용 가능한 프리팹 리스트 생성
             List<GameObject> availablePrefabs = new List<GameObject>();
 
-            // 확률에 따라 나무 추가
             if (treePrefabs.Count > 0 && Random.Range(0f, 100f) < treeSpawnChance)
             {
                 availablePrefabs.AddRange(treePrefabs);
             }
 
-            // 확률에 따라 돌 추가
             if (rockPrefabs.Count > 0 && Random.Range(0f, 100f) < rockSpawnChance)
             {
                 availablePrefabs.AddRange(rockPrefabs);
             }
 
-            // 아무것도 선택되지 않은 경우 기본적으로 나무 선택
             if (availablePrefabs.Count == 0)
             {
                 if (treePrefabs.Count > 0)
@@ -242,121 +389,44 @@ namespace HF
             return rockPrefabs.Contains(prefab);
         }
 
-        private Vector3Int GetRandomGrowthPosition()
-        {
-            // Ground Tilemap의 범위를 고려하여 더 효율적인 위치 선택
-            BoundsInt groundBounds = tileMapManager.groundMap.cellBounds;
-
-            // Growth Area와 Ground Tilemap 범위의 교집합 계산
-            int minX = Mathf.Max(growthAreaMin.x, groundBounds.xMin);
-            int maxX = Mathf.Min(growthAreaMax.x, groundBounds.xMax - 1);
-            int minY = Mathf.Max(growthAreaMin.y, groundBounds.yMin);
-            int maxY = Mathf.Min(growthAreaMax.y, groundBounds.yMax - 1);
-
-            // 유효한 범위가 있는지 확인
-            if (minX > maxX || minY > maxY)
-            {
-                Debug.LogWarning("Growth area does not overlap with Ground Tilemap bounds!");
-                // 기본 방식으로 폴백
-                int x = Random.Range(growthAreaMin.x, growthAreaMax.x + 1);
-                int y = Random.Range(growthAreaMin.y, growthAreaMax.y + 1);
-                return new Vector3Int(x, y, 0);
-            }
-
-            // 교집합 범위 내에서 랜덤 위치 선택
-            int randomX = Random.Range(minX, maxX + 1);
-            int randomY = Random.Range(minY, maxY + 1);
-            return new Vector3Int(randomX, randomY, 0);
-        }
-
-        private bool IsValidGrowthPosition(Vector3Int position)
-        {
-            Debug.Log($"=== Validating Position {position} ===");
-
-            // 1. Ground Tilemap에 실제로 타일이 있는지 확인 (물 위 생성 방지)
-            TileBase groundTile = tileMapManager.groundMap.GetTile(position);
-            Debug.Log($"1. Ground Tile at {position}: {(groundTile != null ? groundTile.name : "NULL")}");
-            if (groundTile == null)
-            {
-                Debug.Log($"❌ Ground tile is NULL at {position}");
-                return false;
-            }
-
-            // 2. Object Tilemap에 이미 타일이 있는지 확인 (충돌 방지)
-            bool hasObjectTile = tileMapManager.objectMap.HasTile(position);
-            Debug.Log($"2. Object Tile exists at {position}: {hasObjectTile}");
-            if (hasObjectTile)
-            {
-                Debug.Log($"❌ Object tile already exists at {position}");
-                return false;
-            }
-
-            // 3. TileMapManager의 objectMapData에 이미 등록된 오브젝트가 있는지 확인
-            bool hasObjectData = tileMapManager.objectMapData.ContainsKey(position);
-            Debug.Log($"3. ObjectMapData contains {position}: {hasObjectData}");
-            if (hasObjectData)
-            {
-                Debug.Log($"❌ ObjectMapData already contains {position}");
-                return false;
-            }
-
-            // 4. TileMapManager의 IsEmptyGroundCell을 활용하여 추가 검사 (이중 안전장치)
-            Vector3 worldPosition = tileMapManager.GetCellToWorld(position);
-            bool isEmpty = tileMapManager.IsEmptyGroundCell(worldPosition);
-            Debug.Log($"4. IsEmptyGroundCell at {worldPosition}: {isEmpty}");
-            if (!isEmpty)
-            {
-                Debug.Log($"❌ IsEmptyGroundCell returned false for {position}");
-                return false;
-            }
-
-            // 5. 기존 오브젝트들과의 exclusionRadius 거리 확인
-            bool isNearObjects = IsNearExistingObjects(position);
-            Debug.Log($"5. IsNearExistingObjects: {isNearObjects}");
-            if (isNearObjects)
-            {
-                Debug.Log($"❌ Too close to existing objects at {position}");
-                return false;
-            }
-
-            Debug.Log($"✅ Position {position} is valid for growth");
-            return true;
-        }
-
         /// <summary>
-        /// 특정 위치가 기존 오브젝트들의 exclusionRadius 범위 내에 있는지 확인
+        /// 사용 가능한 빈 공간의 개수를 반환
         /// </summary>
-        /// <param name="position">확인할 셀 좌표</param>
-        /// <returns>기존 오브젝트 근처면 true, 아니면 false</returns>
-        private bool IsNearExistingObjects(Vector3Int position)
+        public int GetAvailableSpaceCount()
         {
-            // TileMapManager의 objectMapData를 활용하여 효율적으로 검사
-            for (int x = -exclusionRadius; x <= exclusionRadius; x++)
+            if (cacheGroundTiles)
             {
-                for (int y = -exclusionRadius; y <= exclusionRadius; y++)
+                int availableCount = 0;
+                foreach (Vector3Int position in cachedGroundTilePositions)
                 {
-                    Vector3Int checkPosition = position + new Vector3Int(x, y, 0);
-
-                    // objectMapData에 해당 위치에 오브젝트가 등록되어 있는지 확인
-                    if (tileMapManager.objectMapData.ContainsKey(checkPosition))
+                    if (IsValidGrowthPosition(position))
                     {
-                        GameObject existingObject = tileMapManager.objectMapData[checkPosition];
+                        availableCount++;
+                    }
+                }
+                return availableCount;
+            }
+            else
+            {
+                // 실시간 계산 (느림)
+                BoundsInt bounds = tileMapManager.groundMap.cellBounds;
+                int count = 0;
 
-                        // 오브젝트가 실제로 존재하는지 확인 (삭제되었을 수도 있음)
-                        if (existingObject != null)
+                for (int x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    for (int y = bounds.yMin; y < bounds.yMax; y++)
+                    {
+                        Vector3Int position = new Vector3Int(x, y, 0);
+                        TileBase tile = tileMapManager.groundMap.GetTile(position);
+
+                        if (tile != null && IsValidGrowthPosition(position))
                         {
-                            return true;
-                        }
-                        else
-                        {
-                            // 삭제된 오브젝트면 objectMapData에서 제거
-                            tileMapManager.objectMapData.Remove(checkPosition);
+                            count++;
                         }
                     }
                 }
+                return count;
             }
-
-            return false;
         }
 
 
