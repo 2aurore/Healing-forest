@@ -20,7 +20,7 @@ namespace HF
 
         public void Initialize()
         {
-            Debug.Log("UserDataModel Initialize");
+            // Debug.Log("UserDataModel Initialize");
             InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
 
             // TODO: 기존에 save된 UserData가 있다면 불러오기
@@ -39,14 +39,14 @@ namespace HF
         public void SetCharacterPosition(Vector3 position)
         {
             CharacterPosition = new Vector3(position.x, 1.05f, position.z);
-            Debug.Log($"[UserDataModel] 캐릭터 위치 설정: {CharacterPosition}");
+            // Debug.Log($"[UserDataModel] 캐릭터 위치 설정: {CharacterPosition}");
         }
 
         /// <summary>Field에서의 위치를 저장합니다. (Home 진입 전에 호출)</summary>
         public void SaveFieldPosition(Vector3 fieldPosition)
         {
             LastFieldPosition = new Vector3(fieldPosition.x, fieldPosition.y, fieldPosition.z);
-            Debug.Log($"[UserDataModel] Field 위치 저장: {LastFieldPosition}");
+            // Debug.Log($"[UserDataModel] Field 위치 저장: {LastFieldPosition}");
         }
 
         /// <summary>저장된 Field 위치를 반환합니다.</summary>
