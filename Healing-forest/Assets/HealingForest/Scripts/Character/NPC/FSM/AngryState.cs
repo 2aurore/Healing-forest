@@ -6,7 +6,7 @@ namespace HF
 {
     public class AngryState : IState
     {
-        private const float angryDuration = 5f; // 화난 상태 지속 시간
+        private const float angryDuration = 2f; // 화난 상태 지속 시간
         private float angryTimer = 0f; // 화난 상태 타이머
 
         public void Enter(AIBrain brain)

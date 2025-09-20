@@ -8,6 +8,14 @@ namespace HF
 {
     public class NPCBase : CharacterBase, IDamage
     {
+        void OnDrawGizmos()
+        {
+            if (headTransform)
+            {
+                GizmoUtility.DrawArrowHandle(headTransform.position, headTransform.up, 1f, Color.green);
+            }
+        }
+
         public string NpcID => npcId;
 
         [Header("NPC Base Settings")]
@@ -19,6 +27,7 @@ namespace HF
         private NPCVisualCharacter visualCharacter;
         private NPCSensor npcSensor;
         private Transform detectedPlayerTransform;
+        private Transform headTransform;
 
         protected override void Awake()
         {
@@ -32,6 +41,8 @@ namespace HF
             visualCharacter = newVisual.GetComponent<NPCVisualCharacter>();
             base.animator = visualCharacter.animator;
             // animator = GetComponentInChildren<Animator>();
+
+            headTransform = base.animator.GetBoneTransform(HumanBodyBones.Head);
 
             npcSensor = GetComponentInChildren<NPCSensor>();
             npcSensor.OnDetectedPlayer += OnDetectedPlayer;

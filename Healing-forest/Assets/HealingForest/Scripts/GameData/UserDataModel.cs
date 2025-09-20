@@ -20,7 +20,6 @@ namespace HF
 
         public void Initialize()
         {
-            // Debug.Log("UserDataModel Initialize");
             InventoryData = new InventoryDTO(); // 인벤토리 데이터 초기화
 
             // TODO: 기존에 save된 UserData가 있다면 불러오기
